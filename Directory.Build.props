@@ -2,9 +2,9 @@
     <PropertyGroup>
         <Authors>Jerome Haltom</Authors>
         <Company>Alethic Solutions</Company>
-        <RepositoryUrl>https://github.com/alethic/Cogito.Components.MassTransit</RepositoryUrl>
+        <RepositoryUrl>https://github.com/alethic/Cogito.MassTransit</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageProjectUrl>https://github.com/alethic/Cogito.Components.MassTransit</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/alethic/Cogito.MassTransit</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>icon.png</PackageIcon>
         <LangVersion>8.0</LangVersion>

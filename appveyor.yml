@@ -17,11 +17,11 @@ before_build:
 
 build:
   verbosity: minimal
-  project: Cogito.Components.MassTransit.sln
+  project: Cogito.MassTransit.sln
 
 artifacts:
   - path: pkg\*.nupkg
-    name: Cogito.Components.MassTransit
+    name: Cogito.MassTransit
 
 deploy:
   provider: NuGet
