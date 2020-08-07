@@ -36,7 +36,7 @@ namespace Cogito.MassTransit
                 throw new ArgumentNullException(nameof(bus));
             if (endpointUri == null)
                 throw new ArgumentNullException(nameof(endpointUri));
-            
+
             return new Uri(GetUri(bus), endpointUri);
         }
 
