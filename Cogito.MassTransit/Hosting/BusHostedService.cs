@@ -6,7 +6,7 @@ using MassTransit;
 
 using Microsoft.Extensions.Hosting;
 
-namespace Cogito.MassTransit
+namespace Cogito.MassTransit.Hosting
 {
 
     /// <summary>
