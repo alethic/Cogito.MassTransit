@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cogito.Autofac" Version="2.2.10" />
+        <PackageReference Include="Cogito.Components" Version="0.1.6" />
+        <PackageReference Include="Cogito.Extensions.Logging.Autofac" Version="2.0.12" />
+        <PackageReference Include="Cogito.Extensions.Options.Autofac" Version="2.0.17" />
+        <PackageReference Include="Cogito.MassTransit" Version="0.1.3" />
+        <PackageReference Include="MassTransit.Autofac" Version="7.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+    </ItemGroup>
+
+</Project>

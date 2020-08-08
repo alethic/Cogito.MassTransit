@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
+    <ProjectReference Include="..\Cogito.MassTransit.Azure.ServiceBus\Cogito.MassTransit.Azure.ServiceBus.csproj" />
+  </ItemGroup>
+
+</Project>
