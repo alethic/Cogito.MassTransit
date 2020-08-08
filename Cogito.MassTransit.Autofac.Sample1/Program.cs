@@ -20,15 +20,8 @@ namespace Cogito.MassTransit.Autofac.Sample1
         {
             await Host.CreateDefaultBuilder(args)
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory(b => b
-                    .RegisterMassTransitBus(b => b
-                        .UsingAzureServiceBus(o => o.ConnectionString = "")
-                        .WithHostedService())
                     .RegisterMassTransitBus("bus1", b => b
-                        .UsingAzureServiceBus(o => o.ConnectionString = "")
-                        .WithHostedService())
-                    .RegisterMassTransitBus("bus2", b => b
-                        .UsingAzureServiceBus(o => o.ConnectionString = "")
-                        .WithHostedService())
+                        .UsingAzureServiceBus(o => o.ConnectionString = ""))
                     .RegisterAllAssemblyModules()))
                 .ConfigureAppConfiguration(b => b.AddEnvironmentVariables())
                 .Build()

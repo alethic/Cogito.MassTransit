@@ -1,6 +1,7 @@
 ﻿using Autofac;
 
 using Cogito.Autofac;
+using Cogito.MassTransit.Autofac.Internal;
 using Cogito.MassTransit.Registration;
 
 using MassTransit;
@@ -21,6 +22,16 @@ namespace Cogito.MassTransit.Autofac
     {
 
         /// <summary>
+        /// Registers any additional scoped classes.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="context"></param>
+        static void RegisterScope(ContainerBuilder builder, ConsumeContext context)
+        {
+            builder.RegisterGeneric(typeof(ConsumeContextRequestClientProxy<>)).AsImplementedInterfaces();
+        }
+
+        /// <summary>
         /// Creates the <see cref="IConsumerScopeProvider"/>.
         /// </summary>
         /// <param name="context"></param>
@@ -28,7 +39,7 @@ namespace Cogito.MassTransit.Autofac
         static IConsumerScopeProvider CreateConsumerScopeProvider(IComponentContext context)
         {
             var lifetimeScopeProvider = new SingleLifetimeScopeProvider(context.Resolve<ILifetimeScope>());
-            return new AutofacConsumerScopeProvider(lifetimeScopeProvider, "message", (b, c) => { });
+            return new AutofacConsumerScopeProvider(lifetimeScopeProvider, "message", RegisterScope);
         }
 
         /// <summary>

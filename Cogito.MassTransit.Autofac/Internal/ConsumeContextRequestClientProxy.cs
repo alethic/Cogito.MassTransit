@@ -1,20 +1,18 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
-using Cogito.Autofac;
+using GreenPipes;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Autofac
+namespace Cogito.MassTransit.Autofac.Internal
 {
 
     /// <summary>
-    /// Simple request client class that can be registered as an open generic.
+    /// Proxies the implementation of <see cref="IRequestClient{TRequest}"/>.
     /// </summary>
     /// <typeparam name="TRequest"></typeparam>
-    [RegisterAs(typeof(IRequestClient<>))]
-    class DefaultPublishRequestClient<TRequest> : IRequestClient<TRequest>
+    class ConsumeContextRequestClientProxy<TRequest> : IRequestClient<TRequest>
         where TRequest : class
     {
 
@@ -24,9 +22,9 @@ namespace Cogito.MassTransit.Autofac
         /// Initializes a new instance.
         /// </summary>
         /// <param name="bus"></param>
-        public DefaultPublishRequestClient(IBus bus)
+        public ConsumeContextRequestClientProxy(ConsumeContext context)
         {
-            this.impl = bus.CreateRequestClient<TRequest>(TimeSpan.FromMinutes(1));
+            this.impl = context.CreateRequestClient<TRequest>(context.GetPayload<IBus>());
         }
 
         public RequestHandle<TRequest> Create(TRequest message, CancellationToken cancellationToken = default(CancellationToken), RequestTimeout timeout = default(RequestTimeout))

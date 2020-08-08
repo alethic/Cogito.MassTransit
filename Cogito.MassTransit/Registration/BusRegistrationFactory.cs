@@ -18,7 +18,6 @@ namespace Cogito.MassTransit.Registration
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="names"></param>
         /// <param name="definitions"></param>
         /// <param name="configurations"></param>
         public BusRegistrationFactory(BusDefinitionProvider definitions, BusConfigurationProvider configurations)
