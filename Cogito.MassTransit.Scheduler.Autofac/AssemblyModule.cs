@@ -21,8 +21,9 @@ namespace Cogito.MassTransit.Scheduler.Autofac
             builder.RegisterFromAttributes(typeof(AssemblyModule).Assembly);
             builder.RegisterType<PeriodicJob>().AsSelf();
             builder.RegisterType<PeriodicScheduler>().As<IHostedService>();
+            builder.RegisterType<PeriodicSchedulerJob>().AsSelf();
+            builder.RegisterType<ScheduledMessageJob>().AsSelf();
             builder.RegisterConsumer<ScheduledMessageConsumer>("scheduler");
-            builder.RegisterType<ScheduledMessageJob>().As<IJob>();
         }
 
     }
