@@ -21,13 +21,13 @@ namespace Cogito.MassTransit.Autofac.Sample1
             await Host.CreateDefaultBuilder(args)
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory(b => b
                     .RegisterMassTransitBus(b => b
-                        .UsingAzureServiceBus(o => o.ConnectionString = "Endpoint=sb://revelwe-dev1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=taa0eTR5bNJ2g4ZV6Q1aygVDBroGRVSqzaJzKb0WNYk=")
+                        .UsingAzureServiceBus(o => o.ConnectionString = "")
                         .WithHostedService())
                     .RegisterMassTransitBus("bus1", b => b
-                        .UsingAzureServiceBus(o => o.ConnectionString = "Endpoint=sb://revelwe-dev1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=taa0eTR5bNJ2g4ZV6Q1aygVDBroGRVSqzaJzKb0WNYk=")
+                        .UsingAzureServiceBus(o => o.ConnectionString = "")
                         .WithHostedService())
                     .RegisterMassTransitBus("bus2", b => b
-                        .UsingAzureServiceBus(o => o.ConnectionString = "Endpoint=sb://revelwe-dev1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=taa0eTR5bNJ2g4ZV6Q1aygVDBroGRVSqzaJzKb0WNYk=")
+                        .UsingAzureServiceBus(o => o.ConnectionString = "")
                         .WithHostedService())
                     .RegisterAllAssemblyModules()))
                 .ConfigureAppConfiguration(b => b.AddEnvironmentVariables())
