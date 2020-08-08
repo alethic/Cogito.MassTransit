@@ -2,6 +2,7 @@
 
 using Autofac;
 
+using Cogito.MassTransit.Hosting;
 using Cogito.MassTransit.Registration;
 
 using Microsoft.Extensions.Hosting;
