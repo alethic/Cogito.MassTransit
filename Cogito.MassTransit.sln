@@ -13,11 +13,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit", "Cogit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Azure.ServiceBus", "Cogito.MassTransit.Azure.ServiceBus\Cogito.MassTransit.Azure.ServiceBus.csproj", "{7A818445-3934-4946-BCA9-A7C21C32305D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Autofac", "Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj", "{961BADA2-34FE-40F5-91AE-350566805AF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Autofac", "Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj", "{961BADA2-34FE-40F5-91AE-350566805AF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Autofac.Sample1", "Cogito.MassTransit.Autofac.Sample1\Cogito.MassTransit.Autofac.Sample1.csproj", "{EF8DB0F5-095E-4AAC-8661-BB52979C5A34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Autofac.Sample1", "Cogito.MassTransit.Autofac.Sample1\Cogito.MassTransit.Autofac.Sample1.csproj", "{EF8DB0F5-095E-4AAC-8661-BB52979C5A34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Azure.ServiceBus.Autofac", "Cogito.MassTransit.Azure.ServiceBus.Autofac\Cogito.MassTransit.Azure.ServiceBus.Autofac.csproj", "{172D0091-A150-41C1-8ECF-4872F6D641E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Azure.ServiceBus.Autofac", "Cogito.MassTransit.Azure.ServiceBus.Autofac\Cogito.MassTransit.Azure.ServiceBus.Autofac.csproj", "{172D0091-A150-41C1-8ECF-4872F6D641E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Scheduler", "Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj", "{8A3451E1-F6D5-4AB9-A377-4ED269C4363A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Scheduler.Autofac", "Cogito.MassTransit.Scheduler.Autofac\Cogito.MassTransit.Scheduler.Autofac.csproj", "{3C779F60-08EA-493C-A5CA-17380C74ADA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Scheduler.Sample1", "Cogito.MassTransit.Scheduler.Sample1\Cogito.MassTransit.Scheduler.Sample1.csproj", "{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +51,18 @@ Global
 		{172D0091-A150-41C1-8ECF-4872F6D641E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{172D0091-A150-41C1-8ECF-4872F6D641E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{172D0091-A150-41C1-8ECF-4872F6D641E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A3451E1-F6D5-4AB9-A377-4ED269C4363A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A3451E1-F6D5-4AB9-A377-4ED269C4363A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A3451E1-F6D5-4AB9-A377-4ED269C4363A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A3451E1-F6D5-4AB9-A377-4ED269C4363A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C779F60-08EA-493C-A5CA-17380C74ADA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C779F60-08EA-493C-A5CA-17380C74ADA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C779F60-08EA-493C-A5CA-17380C74ADA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C779F60-08EA-493C-A5CA-17380C74ADA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
