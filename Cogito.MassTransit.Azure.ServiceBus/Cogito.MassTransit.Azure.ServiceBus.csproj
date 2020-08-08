@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Description>Extensions and utilities for working with MassTransit Azure Service Bus.</Description>
-        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
