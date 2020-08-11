@@ -5,8 +5,6 @@ using Cogito.MassTransit.Autofac;
 
 using Microsoft.Extensions.Hosting;
 
-using Quartz;
-
 namespace Cogito.MassTransit.Scheduler.Autofac
 {
 
@@ -19,9 +17,9 @@ namespace Cogito.MassTransit.Scheduler.Autofac
         protected override void Register(ContainerBuilder builder)
         {
             builder.RegisterFromAttributes(typeof(AssemblyModule).Assembly);
-            builder.RegisterType<PeriodicJob>().AsSelf();
             builder.RegisterType<PeriodicScheduler>().As<IHostedService>();
             builder.RegisterType<PeriodicSchedulerJob>().AsSelf();
+            builder.RegisterType<PeriodicJob>().AsSelf();
             builder.RegisterType<ScheduledMessageJob>().AsSelf();
             builder.RegisterConsumer<ScheduledMessageConsumer>("scheduler");
         }

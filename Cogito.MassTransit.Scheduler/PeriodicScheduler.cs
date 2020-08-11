@@ -17,9 +17,9 @@ namespace Cogito.MassTransit.Scheduler
     public class PeriodicScheduler : IHostedService
     {
 
-        const string JOB_GROUP = "Cogito.Components.MassTransit.Scheduler";
+        const string JOB_GROUP = "Cogito.MassTransit.Scheduler";
         const string JOB_NAME = "PeriodicScheduler";
-        const string TRIGGER_GROUP = "Cogito.Components.MassTransit.Scheduler";
+        const string TRIGGER_GROUP = "Cogito.MassTransit.Scheduler";
         const string TRIGGER_NAME = "PeriodicScheduler";
 
         static readonly JobKey JOB_KEY = new JobKey(JOB_NAME, JOB_GROUP);

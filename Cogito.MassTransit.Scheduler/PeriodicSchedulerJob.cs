@@ -17,9 +17,10 @@ namespace Cogito.MassTransit.Scheduler
     {
 
         const int VERSION = 2;
-        const string JOB_GROUP = "Cogito.Components.MassTransit.Scheduler";
+        const string JOB_GROUP = "Cogito.MassTransit.Scheduler";
         const string JOB_NAME = "Periodic";
-        const string TRIGGER_GROUP = "Cogito.Components.MassTransit.Scheduler.Periodic";
+        const string TRIGGER_GROUP = "Cogito.MassTransit.Scheduler.Periodic";
+
         static readonly JobKey JOB_KEY = new JobKey(JOB_NAME, JOB_GROUP);
 
         /// <summary>
@@ -60,11 +61,11 @@ namespace Cogito.MassTransit.Scheduler
 
             // if the job version is unknown, simply ignore
             // downstream scheduler versions ignore
-            if (int.Parse(((string)job.JobDataMap["Version"] ?? "0")) > VERSION)
+            if (int.Parse((string)job.JobDataMap["Version"] ?? "0") > VERSION)
                 return;
 
             // replace existing job if upgrading
-            if (int.Parse(((string)job.JobDataMap["Version"] ?? "0")) < VERSION)
+            if (int.Parse((string)job.JobDataMap["Version"] ?? "0") < VERSION)
                 await context.Scheduler.AddJob(job, true);
 
             // schedule job only if triggers do not match
