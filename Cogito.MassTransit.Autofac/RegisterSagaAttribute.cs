@@ -1,11 +1,7 @@
 ﻿using System;
 
-using Autofac.Builder;
-
 using Cogito.Autofac;
 using Cogito.MassTransit.Registration;
-
-using MassTransit;
 
 namespace Cogito.MassTransit.Autofac
 {

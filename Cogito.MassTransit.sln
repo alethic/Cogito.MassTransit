@@ -21,9 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Azure.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Scheduler", "Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj", "{8A3451E1-F6D5-4AB9-A377-4ED269C4363A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Scheduler.Autofac", "Cogito.MassTransit.Scheduler.Autofac\Cogito.MassTransit.Scheduler.Autofac.csproj", "{3C779F60-08EA-493C-A5CA-17380C74ADA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Scheduler.Autofac", "Cogito.MassTransit.Scheduler.Autofac\Cogito.MassTransit.Scheduler.Autofac.csproj", "{3C779F60-08EA-493C-A5CA-17380C74ADA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Scheduler.Sample1", "Cogito.MassTransit.Scheduler.Sample1\Cogito.MassTransit.Scheduler.Sample1.csproj", "{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Scheduler.Sample1", "Cogito.MassTransit.Scheduler.Sample1\Cogito.MassTransit.Scheduler.Sample1.csproj", "{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.InMemory", "Cogito.MassTransit.InMemory\Cogito.MassTransit.InMemory.csproj", "{956B44D2-4C64-417C-9E09-119E217450F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.InMemory.Autofac", "Cogito.MassTransit.InMemory.Autofac\Cogito.MassTransit.InMemory.Autofac.csproj", "{05EC7461-0F2B-410F-8E88-ED6BE4F16B0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +67,14 @@ Global
 		{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F7688AF-632B-46C3-BE16-C07BDBFEF5DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{956B44D2-4C64-417C-9E09-119E217450F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{956B44D2-4C64-417C-9E09-119E217450F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{956B44D2-4C64-417C-9E09-119E217450F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{956B44D2-4C64-417C-9E09-119E217450F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05EC7461-0F2B-410F-8E88-ED6BE4F16B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05EC7461-0F2B-410F-8E88-ED6BE4F16B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05EC7461-0F2B-410F-8E88-ED6BE4F16B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05EC7461-0F2B-410F-8E88-ED6BE4F16B0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,8 +16,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
-        <ProjectReference Include="..\Cogito.MassTransit.Azure.ServiceBus.Autofac\Cogito.MassTransit.Azure.ServiceBus.Autofac.csproj" />
-        <ProjectReference Include="..\Cogito.MassTransit.Azure.ServiceBus\Cogito.MassTransit.Azure.ServiceBus.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.InMemory.Autofac\Cogito.MassTransit.InMemory.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.InMemory\Cogito.MassTransit.InMemory.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
     </ItemGroup>
 

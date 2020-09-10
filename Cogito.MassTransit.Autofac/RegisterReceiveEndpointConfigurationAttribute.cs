@@ -3,23 +3,21 @@
 using Cogito.Autofac;
 using Cogito.MassTransit.Registration;
 
-using MassTransit;
-
 namespace Cogito.MassTransit.Autofac
 {
 
     /// <summary>
-    /// Registers the class as a <see cref="IConsumer"/> to consume messages on a given receive endpoint.
+    /// Registers the class as a <see cref="IReceiveEndpointConfiguration"/> for a given receive endpoint.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class RegisterConsumerAttribute : Attribute, IRegistrationRootAttribute, IReceiveEndpointMetadata
+    public class RegisterReceiveEndpointConfigurationAttribute : Attribute, IRegistrationRootAttribute, IReceiveEndpointMetadata
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="endpointName"></param>
-        public RegisterConsumerAttribute()
+        public RegisterReceiveEndpointConfigurationAttribute()
         {
 
         }
@@ -28,7 +26,7 @@ namespace Cogito.MassTransit.Autofac
         /// Initializes a new instance.
         /// </summary>
         /// <param name="endpointName"></param>
-        public RegisterConsumerAttribute(string endpointName) :
+        public RegisterReceiveEndpointConfigurationAttribute(string endpointName) :
             this("", endpointName)
         {
 
@@ -38,7 +36,7 @@ namespace Cogito.MassTransit.Autofac
         /// Initializes a new instance.
         /// </summary>
         /// <param name="endpointName"></param>
-        public RegisterConsumerAttribute(string busName, string endpointName)
+        public RegisterReceiveEndpointConfigurationAttribute(string busName, string endpointName)
         {
             BusName = busName ?? throw new ArgumentNullException(nameof(busName));
             EndpointName = endpointName ?? throw new ArgumentNullException(nameof(endpointName));
@@ -54,7 +52,7 @@ namespace Cogito.MassTransit.Autofac
         /// </summary>
         public string EndpointName { get; set; }
 
-        Type IRegistrationRootAttribute.HandlerType => typeof(RegisterConsumerHandler);
+        Type IRegistrationRootAttribute.HandlerType => typeof(RegisterReceiveEndpointConfigurationHandler);
 
     }
 

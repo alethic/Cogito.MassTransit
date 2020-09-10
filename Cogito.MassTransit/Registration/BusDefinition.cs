@@ -6,7 +6,7 @@ namespace Cogito.MassTransit.Registration
 {
 
     /// <summary>
-    /// Defines a registered bys.
+    /// Defines a registered bus.
     /// </summary>
     public class BusDefinition
     {

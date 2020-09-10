@@ -88,14 +88,12 @@ namespace Cogito.MassTransit.Autofac
 
             // consumer related services
             builder.RegisterType<ConsumerDefinitionProvider>().SingleInstance();
-            builder.RegisterType<ConsumerDefinitionReceiveEndpointConfiguration>().As<IReceiveEndpointConfiguration>().SingleInstance();
             builder.RegisterType<ConsumerDefinitionReceiveEndpointConfigurationSource>().As<IReceiveEndpointConfigurationSource>().SingleInstance();
             builder.RegisterType<ConsumerDefinitionNameSource>().As<IBusNameSource>().As<IReceiveEndpointNameSource>().SingleInstance();
             builder.RegisterType<ContainerConsumerDefinitionSource>().As<IConsumerDefinitionSource>().SingleInstance();
 
             // saga related services
             builder.RegisterType<SagaDefinitionProvider>().SingleInstance();
-            builder.RegisterType<SagaDefinitionReceiveEndpointConfiguration>().As<IReceiveEndpointConfiguration>().SingleInstance();
             builder.RegisterType<SagaDefinitionReceiveEndpointConfigurationSource>().As<IReceiveEndpointConfigurationSource>().SingleInstance();
             builder.RegisterType<SagaDefinitionNameSource>().As<IBusNameSource>().As<IReceiveEndpointNameSource>().SingleInstance();
             builder.RegisterType<ContainerSagaDefinitionSource>().As<ISagaDefinitionSource>().SingleInstance();

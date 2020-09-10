@@ -39,6 +39,7 @@ namespace Cogito.MassTransit.Registration
         {
             return definitions.GetDefinitions().Where(i => i.BusName == busName && i.EndpointName == endpointName).Select(i => cache.GetOrAdd(i, _ => new ConsumerDefinitionReceiveEndpointConfiguration(_, scopeProvider)));
         }
+
     }
 
 }
