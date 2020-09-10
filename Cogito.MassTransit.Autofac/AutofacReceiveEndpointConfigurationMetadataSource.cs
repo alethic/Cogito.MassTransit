@@ -12,6 +12,7 @@ namespace Cogito.MassTransit.Autofac
     [RegisterAs(typeof(IReceiveEndpointNameSource))]
     [RegisterAs(typeof(IBusNameSource))]
     [RegisterWithAttributeFiltering]
+    [RegisterInstancePerLifetimeScope]
     public class AutofacReceiveEndpointConfigurationMetadataSource : IReceiveEndpointConfigurationSource, IReceiveEndpointNameSource, IBusNameSource
     {
 

@@ -98,6 +98,12 @@ namespace Cogito.MassTransit.Autofac
             builder.RegisterType<SagaDefinitionNameSource>().As<IBusNameSource>().As<IReceiveEndpointNameSource>().SingleInstance();
             builder.RegisterType<ContainerSagaDefinitionSource>().As<ISagaDefinitionSource>().SingleInstance();
 
+            // saga state machine related services
+            builder.RegisterType<SagaStateMachineDefinitionProvider>().SingleInstance();
+            builder.RegisterType<SagaStateMachineDefinitionReceiveEndpointConfigurationSource>().As<IReceiveEndpointConfigurationSource>().SingleInstance();
+            builder.RegisterType<SagaStateMachineDefinitionNameSource>().As<IBusNameSource>().As<IReceiveEndpointNameSource>().SingleInstance();
+            builder.RegisterType<ContainerSagaStateMachineDefinitionSource>().As<ISagaStateMachineDefinitionSource>().SingleInstance();
+
             // bus related services
             builder.RegisterType<ContainerBusConfigurationSource>().As<IBusConfigurationSource>().SingleInstance();
             builder.RegisterType<ContainerBusObserverConfiguration>().As<IBusConfiguration>().SingleInstance();

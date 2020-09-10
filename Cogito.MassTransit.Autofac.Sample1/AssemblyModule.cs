@@ -2,6 +2,8 @@
 
 using Cogito.Autofac;
 
+using MassTransit;
+
 namespace Cogito.MassTransit.Autofac.Sample1
 {
 
@@ -11,6 +13,7 @@ namespace Cogito.MassTransit.Autofac.Sample1
         protected override void Register(ContainerBuilder builder)
         {
             builder.RegisterFromAttributes(typeof(AssemblyModule).Assembly);
+            builder.RegisterInMemorySagaRepository<TestSagaState>();
         }
 
     }

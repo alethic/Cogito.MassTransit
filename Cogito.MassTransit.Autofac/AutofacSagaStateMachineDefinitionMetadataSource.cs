@@ -5,21 +5,23 @@ using System.Linq;
 using Autofac;
 using Autofac.Core;
 
+using Automatonymous;
+
 using Cogito.Autofac;
 using Cogito.Collections;
 using Cogito.MassTransit.Registration;
 
 using MassTransit.Internals.Extensions;
-using MassTransit.Saga;
 
 namespace Cogito.MassTransit.Autofac
 {
 
     /// <summary>
-    /// Provides <see cref="SagaDefinition"/> instances based on the registered saga types and metadata.
+    /// Provides <see cref="SagaStateMachineDefinition"/> instances based on the registered saga types and metadata.
     /// </summary>
-    [RegisterAs(typeof(ISagaDefinitionSource))]
-    public class AutofacSagaDefinitionMetadataSource : ISagaDefinitionSource
+    [RegisterAs(typeof(ISagaStateMachineDefinitionSource))]
+    [RegisterInstancePerLifetimeScope]
+    public class AutofacSagaStateMachineDefinitionMetadataSource : ISagaStateMachineDefinitionSource
     {
 
         readonly IComponentContext context;
@@ -28,23 +30,25 @@ namespace Cogito.MassTransit.Autofac
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public AutofacSagaDefinitionMetadataSource(IComponentContext context)
+        public AutofacSagaStateMachineDefinitionMetadataSource(IComponentContext context)
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>
-        /// Obtains <see cref="SagaDefinition"/> instances based on metadata.
+        /// Obtains <see cref="SagaStateMachineDefinition"/> instances based on metadata.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<SagaDefinition> GetDefinitions()
+        public IEnumerable<SagaStateMachineDefinition> GetDefinitions()
         {
             return context.ComponentRegistry.Registrations
                 .SelectMany(r => r.Services.OfType<IServiceWithType>(), (r, s) => new { r, s })
-                .Where(rs => rs.s.ServiceType.HasInterface<ISaga>())
+                .Where(rs => rs.s.ServiceType.HasInterface<StateMachine>())
+                .Where(rs => rs.s.ServiceType.IsGenericType && rs.s.ServiceType.GetGenericTypeDefinition() == typeof(SagaStateMachine<>))
+                .Where(rs => rs.s.ServiceType.GetClosingArgument(typeof(SagaStateMachine<>)) != null)
                 .Select(i => new { i.s, bs = (string)i.r.Metadata.GetOrDefault("BusName"), ep = (string)i.r.Metadata.GetOrDefault("EndpointName") })
                 .Where(i => i.bs != null && i.ep != null)
-                .Select(i => new SagaDefinition(i.s.ServiceType, i.bs, i.ep));
+                .Select(i => new SagaStateMachineDefinition(i.s.ServiceType, i.bs, i.ep));
         }
 
     }

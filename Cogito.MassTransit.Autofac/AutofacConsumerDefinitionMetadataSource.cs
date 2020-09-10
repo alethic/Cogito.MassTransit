@@ -20,6 +20,7 @@ namespace Cogito.MassTransit.Autofac
     /// Provides <see cref="ConsumerDefinition"/> instances based on the registered consumer types and metadata.
     /// </summary>
     [RegisterAs(typeof(IConsumerDefinitionSource))]
+    [RegisterInstancePerLifetimeScope]
     public class AutofacConsumerDefinitionMetadataSource : IConsumerDefinitionSource
     {
 
