@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Autofac.Features.Metadata;
-
 using Cogito.Autofac;
 using Cogito.MassTransit.Registration;
 
