@@ -1,8 +1,11 @@
-﻿using Automatonymous;
+﻿using System;
+
+using Automatonymous;
+
+using Cogito.MassTransit.Automatonymous;
 
 namespace Cogito.MassTransit.Autofac.Sample1
 {
-
 
     [RegisterSagaStateMachine("testsaga")]
     public class TestSaga : MassTransitStateMachine<TestSagaState>
@@ -11,18 +14,19 @@ namespace Cogito.MassTransit.Autofac.Sample1
         public TestSaga()
         {
             InstanceState(x => x.CurrentState);
-            Event(() => MessageReceived, x => x.CorrelateById(ctx => ctx.Message.Id));
+
+            Event(() => RequestReceived, x => x.CorrelateById(c => c.RequestId.Value));
 
             Initially(
-                When(MessageReceived)
-                    .TransitionTo(Accepted));
+                When(RequestReceived)
+                    .Then(context => context.Instance.Request = context.CaptureRequestToken<TestSagaState, TestSagaRequest, TestSagaRequestState>())
+                    .FaultedTo(context => context.Instance.Request, context => new InvalidOperationException())
+                    .Finalize());
 
             SetCompletedWhenFinalized();
         }
 
-        public State Accepted { get; }
-
-        public Event<TestSagaMessage> MessageReceived { get; }
+        public Event<TestSagaRequest> RequestReceived { get; }
 
     }
 

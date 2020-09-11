@@ -25,8 +25,9 @@ namespace Cogito.MassTransit.Autofac.Sample1
         {
             while (cancellationToken.IsCancellationRequested == false)
             {
-                await Task.Delay(TimeSpan.FromSeconds(30));
-                await bus.Publish(new TestSagaMessage() { Id = NewId.NextGuid(), Value = DateTime.Now.ToString() });
+                await Task.Delay(TimeSpan.FromSeconds(10));
+                var response = await bus.CreateRequestClient<TestSagaRequest>().GetResponse<TestSagaResponse>(new TestSagaRequest() { Echo = "Hello" });
+                Console.WriteLine("Received: {0}", response.Message.Echo);
             }
         }
 
