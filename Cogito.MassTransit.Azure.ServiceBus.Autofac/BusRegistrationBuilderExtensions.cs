@@ -2,7 +2,7 @@
 
 using Autofac;
 
-using Cogito.Autofac.DependencyInjection;
+using Cogito.Extensions.Options.Autofac;
 using Cogito.MassTransit.Autofac;
 using Cogito.MassTransit.Azure.ServiceBus.Registration;
 using Cogito.MassTransit.Registration;
@@ -51,7 +51,7 @@ namespace Cogito.MassTransit.Azure.ServiceBus.Autofac
                 throw new ArgumentNullException(nameof(configure));
 
             RegisterDefinition(builder);
-            builder.Builder.Populate(c => c.Configure(builder.Name, configure));
+            builder.Builder.Configure(builder.Name, configure);
             return builder;
         }
 
