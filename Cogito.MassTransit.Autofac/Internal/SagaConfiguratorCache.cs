@@ -3,20 +3,18 @@ using System.Collections.Concurrent;
 
 using Autofac;
 
-using Automatonymous;
-
 using MassTransit;
-using MassTransit.Internals.Extensions;
+using MassTransit.Saga;
 
 namespace Cogito.MassTransit.Autofac.Internal
 {
 
-    static class StateMachineSagaConfiguratorCache
+    static class SagaConfiguratorCache
     {
 
         static ICachedConfigurator GetOrAdd(Type type)
         {
-            return Cached.Instance.GetOrAdd(type, _ => (ICachedConfigurator)Activator.CreateInstance(typeof(CachedConfigurator<>).MakeGenericType(type.GetClosingArgument(typeof(SagaStateMachine<>)))));
+            return Cached.Instance.GetOrAdd(type, _ => (ICachedConfigurator)Activator.CreateInstance(typeof(CachedConfigurator<>).MakeGenericType(type)));
         }
 
         public static void Configure(Type sagaType, IReceiveEndpointConfigurator configurator, IComponentContext context)
@@ -33,13 +31,13 @@ namespace Cogito.MassTransit.Autofac.Internal
         }
 
 
-        class CachedConfigurator<TInstance> : ICachedConfigurator
-            where TInstance : class, SagaStateMachineInstance
+        class CachedConfigurator<TSaga> : ICachedConfigurator
+            where TSaga : class, ISaga
         {
 
             public void Configure(IReceiveEndpointConfigurator configurator, IComponentContext context)
             {
-                configurator.StateMachineSaga<TInstance>(context);
+                configurator.Saga<TSaga>(context);
             }
 
         }

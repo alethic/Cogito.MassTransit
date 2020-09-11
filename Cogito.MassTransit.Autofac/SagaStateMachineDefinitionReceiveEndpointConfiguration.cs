@@ -38,7 +38,7 @@ namespace Cogito.MassTransit.Autofac
         /// <param name="configurator"></param>
         public void Apply(string busName, string endpointName, IReceiveEndpointConfigurator configurator)
         {
-            StateMachineSagaConfiguratorCache.Configure(definition.Type, configurator, context);
+            SagaStateMachineConfiguratorCache.Configure(definition.Type, configurator, context);
         }
 
     }

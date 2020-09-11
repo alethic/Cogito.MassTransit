@@ -1,8 +1,13 @@
 ﻿using System;
 
+using Autofac;
+
+using Cogito.MassTransit.Autofac.Internal;
+using Cogito.MassTransit.Registration;
+
 using MassTransit;
 
-namespace Cogito.MassTransit.Registration
+namespace Cogito.MassTransit.Autofac
 {
 
     /// <summary>
@@ -12,14 +17,17 @@ namespace Cogito.MassTransit.Registration
     {
 
         readonly SagaDefinition definition;
+        readonly IComponentContext context;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="definition"></param>
-        public SagaDefinitionReceiveEndpointConfiguration(SagaDefinition definition)
+        /// <param name="context"></param>
+        public SagaDefinitionReceiveEndpointConfiguration(SagaDefinition definition, IComponentContext context)
         {
             this.definition = definition ?? throw new ArgumentNullException(nameof(definition));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>
@@ -30,7 +38,7 @@ namespace Cogito.MassTransit.Registration
         /// <param name="configurator"></param>
         public void Apply(string busName, string endpointName, IReceiveEndpointConfigurator configurator)
         {
-            throw new NotImplementedException();
+            SagaConfiguratorCache.Configure(definition.Type, configurator, context);
         }
 
     }

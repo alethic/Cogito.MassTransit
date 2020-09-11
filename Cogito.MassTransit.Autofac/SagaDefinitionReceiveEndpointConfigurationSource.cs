@@ -3,7 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cogito.MassTransit.Registration
+using Autofac;
+
+using Cogito.MassTransit.Registration;
+
+namespace Cogito.MassTransit.Autofac
 {
 
     /// <summary>
@@ -13,15 +17,18 @@ namespace Cogito.MassTransit.Registration
     {
 
         readonly SagaDefinitionProvider definitions;
+        readonly IComponentContext context;
         readonly ConcurrentDictionary<SagaDefinition, SagaDefinitionReceiveEndpointConfiguration> cache = new ConcurrentDictionary<SagaDefinition, SagaDefinitionReceiveEndpointConfiguration>();
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="definitions"></param>
-        public SagaDefinitionReceiveEndpointConfigurationSource(SagaDefinitionProvider definitions)
+        /// <param name="context"></param>
+        public SagaDefinitionReceiveEndpointConfigurationSource(SagaDefinitionProvider definitions, IComponentContext context)
         {
             this.definitions = definitions ?? throw new ArgumentNullException(nameof(definitions));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>
@@ -32,7 +39,7 @@ namespace Cogito.MassTransit.Registration
         /// <returns></returns>
         public IEnumerable<IReceiveEndpointConfiguration> GetConfiguration(string busName, string endpointName)
         {
-            return definitions.GetDefinitions().Where(i => i.BusName == busName && i.EndpointName == endpointName).Select(i => cache.GetOrAdd(i, _ => new SagaDefinitionReceiveEndpointConfiguration(_)));
+            return definitions.GetDefinitions().Where(i => i.BusName == busName && i.EndpointName == endpointName).Select(i => cache.GetOrAdd(i, _ => new SagaDefinitionReceiveEndpointConfiguration(_, context)));
         }
     }
 
