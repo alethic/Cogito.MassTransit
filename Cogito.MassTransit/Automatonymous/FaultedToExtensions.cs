@@ -26,7 +26,15 @@ namespace Cogito.MassTransit.Automatonymous
             where TData : class
             where TRequest : class
         {
-            return source.Add(new FaultedToActivity<TInstance, TData, TRequest>(requestTokenFactory, context => Task.FromResult(exception), contextCallback));
+            return source.Add(new FaultedToActivity<TInstance, TData, TRequest>(requestTokenFactory, context => Task.FromResult<ExceptionInfo>(new FaultExceptionInfo(exception)), contextCallback));
+        }
+
+        public static EventActivityBinder<TInstance, TData> FaultedToAsync<TInstance, TData, TRequest>(this EventActivityBinder<TInstance, TData> source, AsyncRequestTokenFactory<TInstance, TData, TRequest> requestTokenFactory, ExceptionInfo exception, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
+            where TInstance : class, SagaStateMachineInstance
+            where TData : class
+            where TRequest : class
+        {
+            return source.Add(new FaultedToActivity<TInstance, TData, TRequest>(requestTokenFactory, context => Task.FromResult<ExceptionInfo>(exception), contextCallback));
         }
 
         public static EventActivityBinder<TInstance, TData> FaultedTo<TInstance, TData, TRequest>(this EventActivityBinder<TInstance, TData> source, RequestTokenFactory<TInstance, TData, TRequest> requestTokenFactory, ExceptionFactory<TInstance, TData, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
@@ -38,6 +46,14 @@ namespace Cogito.MassTransit.Automatonymous
         }
 
         public static EventActivityBinder<TInstance, TData> FaultedTo<TInstance, TData, TRequest>(this EventActivityBinder<TInstance, TData> source, RequestTokenFactory<TInstance, TData, TRequest> requestTokenFactory, Exception exception, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
+            where TInstance : class, SagaStateMachineInstance
+            where TData : class
+            where TRequest : class
+        {
+            return source.Add(new FaultedToActivity<TInstance, TData, TRequest>(context => Task.FromResult(requestTokenFactory(context)), context => Task.FromResult<ExceptionInfo>(new FaultExceptionInfo(exception)), contextCallback));
+        }
+
+        public static EventActivityBinder<TInstance, TData> FaultedTo<TInstance, TData, TRequest>(this EventActivityBinder<TInstance, TData> source, RequestTokenFactory<TInstance, TData, TRequest> requestTokenFactory, ExceptionInfo exception, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
             where TInstance : class, SagaStateMachineInstance
             where TData : class
             where TRequest : class
