@@ -1,11 +1,11 @@
-﻿using Automatonymous;
+﻿using System;
 
-using MassTransit;
+using Automatonymous;
 
 namespace Cogito.MassTransit.Automatonymous
 {
 
-    public delegate ExceptionInfo ExceptionFactory<in TInstance, in TData, TRequest>(ConsumeEventContext<TInstance, TData> context)
+    public delegate Exception ExceptionFactory<in TInstance, in TData, TRequest>(ConsumeEventContext<TInstance, TData> context)
         where TData : class
         where TInstance : class, SagaStateMachineInstance;
 

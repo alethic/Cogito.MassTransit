@@ -54,7 +54,7 @@ namespace Cogito.MassTransit.Automatonymous
 
             var sendEndpoint = await consumeContext.GetSendEndpoint(requestToken.FaultAddress ?? requestToken.ResponseAddress);
 
-            var fault = new FaultEvent<TRequest>(requestToken.Request, requestToken.MessageId, HostMetadataCache.Host, exception != null ? new[] { exception } : new ExceptionInfo[0], new string[0]);
+            var fault = new FaultEvent<TRequest>(requestToken.Request, requestToken.MessageId, HostMetadataCache.Host, exception, new string[0]);
 
             await sendEndpoint.Send(fault, ctx =>
             {
