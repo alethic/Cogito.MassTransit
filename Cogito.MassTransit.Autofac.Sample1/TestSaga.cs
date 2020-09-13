@@ -8,7 +8,7 @@ namespace Cogito.MassTransit.Autofac.Sample1
 {
 
     [RegisterSagaStateMachine("testsaga")]
-    public class TestSaga : MassTransitStateMachine<TestSagaState>
+    public class TestSaga : global::Cogito.MassTransit.Automatonymous.MassTransitStateMachine<TestSagaState>
     {
 
         public TestSaga()

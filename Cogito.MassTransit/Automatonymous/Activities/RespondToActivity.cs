@@ -6,8 +6,9 @@ using Automatonymous;
 using GreenPipes;
 
 using MassTransit;
+using MassTransit.Context;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit.Automatonymous.Activities
 {
 
     class RespondToActivity<TInstance, TData, TRequest, TResponse> : Activity<TInstance, TData>
@@ -46,13 +47,11 @@ namespace Cogito.MassTransit.Automatonymous
 
         public async Task Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            var consumeContext = context.CreateConsumeContext();
+            var requestToken = await requestTokenFactory?.Invoke(context);
 
-            var requestToken = await requestTokenFactory?.Invoke(consumeContext);
+            var message = await messageFactory?.Invoke(context);
 
-            var message = await messageFactory?.Invoke(consumeContext);
-
-            var sendEndpoint = await consumeContext.GetSendEndpoint(requestToken.ResponseAddress);
+            var sendEndpoint = await context.GetSendEndpoint(requestToken.ResponseAddress);
 
             await sendEndpoint.Send(message, ctx =>
             {

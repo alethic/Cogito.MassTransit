@@ -11,7 +11,7 @@
         <PackageReference Include="Cogito.Autofac" Version="2.2.10" />
         <PackageReference Include="Cogito.Extensions.Logging.Autofac" Version="2.0.12" />
         <PackageReference Include="Cogito.Extensions.Options.Autofac" Version="2.0.17" />
-        <PackageReference Include="MassTransit.Autofac" Version="7.0.3" />
+        <PackageReference Include="MassTransit.Autofac" Version="7.0.4" />
     </ItemGroup>
 
     <ItemGroup>
