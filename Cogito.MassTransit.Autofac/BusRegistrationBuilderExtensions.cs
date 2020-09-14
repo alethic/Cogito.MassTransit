@@ -19,37 +19,14 @@ namespace Cogito.MassTransit.Autofac
     {
 
         /// <summary>
-        /// Adds configuration to the default bus.
+        /// Adds configuration to the named bus.
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
         public static BusRegistrationBuilder Configure(this BusRegistrationBuilder builder, Action<IBusFactoryConfigurator> configuration)
         {
-            return Configure(builder, "", configuration);
-        }
-
-        /// <summary>
-        /// Adds configuration to the default bus.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static BusRegistrationBuilder Configure(this BusRegistrationBuilder builder, Action<IComponentContext, IBusFactoryConfigurator> configuration)
-        {
-            return Configure(builder, "", configuration);
-        }
-
-        /// <summary>
-        /// Adds configuration to the named bus.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="busName"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static BusRegistrationBuilder Configure(this BusRegistrationBuilder builder, string busName, Action<IBusFactoryConfigurator> configuration)
-        {
-            builder.Builder.RegisterInstance(new DelegateBusConfiguration(busName, configuration));
+            builder.Builder.RegisterInstance(new DelegateBusConfiguration(builder.Name, configuration));
             return builder;
         }
 
@@ -57,12 +34,11 @@ namespace Cogito.MassTransit.Autofac
         /// Adds configuration to the named bus.
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="busName"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static BusRegistrationBuilder Configure(this BusRegistrationBuilder builder, string busName, Action<IComponentContext, IBusFactoryConfigurator> configuration)
+        public static BusRegistrationBuilder Configure(this BusRegistrationBuilder builder, Action<IComponentContext, IBusFactoryConfigurator> configuration)
         {
-            builder.Builder.Register(context => { var ctx = context.Resolve<IComponentContext>(); new DelegateBusConfiguration(busName, configurator => configuration(ctx, configurator)));
+            builder.Builder.Register(context => { var ctx = context.Resolve<IComponentContext>(); new DelegateBusConfiguration(builder.Name, configurator => configuration(ctx, configurator)));
             return builder;
         }
 
