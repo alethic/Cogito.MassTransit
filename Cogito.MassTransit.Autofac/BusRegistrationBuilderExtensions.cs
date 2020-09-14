@@ -15,7 +15,7 @@ namespace Cogito.MassTransit.Autofac
     /// <summary>
     /// Provides extension methods for further configuration of a bus.
     /// </summary>
-    public static partial class BusRegistrationBuilderExtensions
+    public static class BusRegistrationBuilderExtensions
     {
 
         /// <summary>
@@ -50,6 +50,38 @@ namespace Cogito.MassTransit.Autofac
 
             builder.Builder.Register(context => { var ctx = context.Resolve<IComponentContext>(); return new DelegateBusConfiguration(builder.Name, configurator => configuration(ctx, configurator)); }).As<IBusConfiguration>();
             return builder;
+        }
+
+        /// <summary>
+        /// Adds message scheduling support.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="schedulerAddress"></param>
+        /// <returns></returns>
+        public static BusRegistrationBuilder UseMessageScheduler(this BusRegistrationBuilder builder, Uri schedulerAddress)
+        {
+            return builder.Configure(c => c.UseMessageScheduler(schedulerAddress));
+        }
+
+        /// <summary>
+        /// Adds message scheduling support.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="endpointName"></param>
+        /// <returns></returns>
+        public static BusRegistrationBuilder UseMessageScheduler(this BusRegistrationBuilder builder, string endpointName)
+        {
+            return builder.Configure(c => c.UseMessageScheduler(new Uri("queue:" + endpointName)));
+        }
+
+        /// <summary>
+        /// Adds message scheduling support.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static BusRegistrationBuilder UsePublishMessageScheduler(this BusRegistrationBuilder builder)
+        {
+            return builder.Configure(c => c.UsePublishMessageScheduler());
         }
 
         /// <summary>
