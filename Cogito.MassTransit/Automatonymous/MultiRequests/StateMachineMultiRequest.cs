@@ -15,14 +15,14 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
 {
 
     /// <summary>
-    /// Implementation of the <see cref="IMultiRequest{TInstance, TKey, TRequest, TResponse}"/> for a state machine.
+    /// Implementation of the <see cref="MultiRequest{TInstance, TKey, TRequest, TResponse}"/> for a state machine.
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     class StateMachineMultiRequest<TInstance, TState, TRequest, TResponse> :
-        IMultiRequest<TInstance, TState, TRequest, TResponse>
+        MultiRequest<TInstance, TState, TRequest, TResponse>
         where TInstance : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
@@ -206,7 +206,7 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
             /// </summary>
             /// <param name="context"></param>
             /// <param name="request"></param>
-            public MultiRequestFinishedEvent(InstanceContext<TInstance> context, IMultiRequest<TInstance, TState, TRequest, TResponse> request)
+            public MultiRequestFinishedEvent(InstanceContext<TInstance> context, MultiRequest<TInstance, TState, TRequest, TResponse> request)
             {
                 this.context = context ?? throw new ArgumentNullException(nameof(context));
 

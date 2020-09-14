@@ -6,7 +6,7 @@ namespace Cogito.MassTransit.Automatonymous.Events
 {
 
     /// <summary>
-    /// Describes a finished <see cref="IMultiRequest{TInstance, TItem, TRequest, TResponse}"/>.
+    /// Describes a finished <see cref="MultiRequest{TInstance, TItem, TRequest, TResponse}"/>.
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TResponse"></typeparam>

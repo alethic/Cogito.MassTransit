@@ -19,7 +19,7 @@ namespace Cogito.MassTransit.Automatonymous
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public interface IMultiRequest<TInstance, TState, TRequest, TResponse>
+    public interface MultiRequest<TInstance, TState, TRequest, TResponse>
         where TInstance : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class

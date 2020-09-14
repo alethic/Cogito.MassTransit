@@ -161,7 +161,7 @@ namespace Cogito.MassTransit.Tests
             /// <summary>
             /// Issues multiple requests.
             /// </summary>
-            public IMultiRequest<TestSagaState, TestSagaRequestState, TestConsumerRequest, TestConsumerResponse> SendMultiRequest { get; set; }
+            public MultiRequest<TestSagaState, TestSagaRequestState, TestConsumerRequest, TestConsumerResponse> SendMultiRequest { get; set; }
 
         }
 

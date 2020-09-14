@@ -28,7 +28,7 @@ namespace Cogito.MassTransit.Automatonymous
     {
 
         /// <summary>
-        /// Sets the <see cref="IMultiRequest{TInstance, TKey, TRequest, TResponse}"/> property.
+        /// Sets the <see cref="MultiRequest{TInstance, TKey, TRequest, TResponse}"/> property.
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TRequest"></typeparam>
@@ -39,7 +39,7 @@ namespace Cogito.MassTransit.Automatonymous
         static void InitializeMultiRequest<TKey, TRequest, TResponse>(
             AutomatonymousStateMachine<TInstance> stateMachine,
             PropertyInfo property,
-            IMultiRequest<TInstance, TKey, TRequest, TResponse> request)
+            MultiRequest<TInstance, TKey, TRequest, TResponse> request)
             where TRequest : class
             where TResponse : class
         {
@@ -65,7 +65,7 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="adaptor"></param>
         /// <param name="configureRequest"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
-            Expression<Func<IMultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
+            Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor)
@@ -89,7 +89,7 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="adaptor"></param>
         /// <param name="configureRequest"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
-            Expression<Func<IMultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
+            Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor,
@@ -116,7 +116,7 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="adaptor"></param>
         /// <param name="settings"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
-            Expression<Func<IMultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
+            Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor,

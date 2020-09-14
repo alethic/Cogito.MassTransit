@@ -25,13 +25,13 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         where TResponse : class
     {
 
-        readonly IMultiRequest<TInstance, TState, TRequest, TResponse> request;
+        readonly MultiRequest<TInstance, TState, TRequest, TResponse> request;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="request"></param>
-        protected MultiRequestActivityImpl(IMultiRequest<TInstance, TState, TRequest, TResponse> request)
+        protected MultiRequestActivityImpl(MultiRequest<TInstance, TState, TRequest, TResponse> request)
         {
             this.request = request ?? throw new ArgumentNullException(nameof(request));
         }

@@ -23,7 +23,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// </summary>
         /// <param name="request"></param>
         /// <param name="messageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, EventMultiMessageFactory<TInstance, TRequest> messageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, EventMultiMessageFactory<TInstance, TRequest> messageFactory) :
             base(request)
         {
             this.messageFactory = messageFactory;
@@ -36,7 +36,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// <param name="request"></param>
         /// <param name="serviceAddressProvider"></param>
         /// <param name="messageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance> serviceAddressProvider, EventMultiMessageFactory<TInstance, TRequest> messageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance> serviceAddressProvider, EventMultiMessageFactory<TInstance, TRequest> messageFactory) :
             base(request)
         {
             this.messageFactory = messageFactory;
@@ -48,7 +48,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// </summary>
         /// <param name="request"></param>
         /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, AsyncEventMultiMessageFactory<TInstance, TRequest> asyncMessageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, AsyncEventMultiMessageFactory<TInstance, TRequest> asyncMessageFactory) :
             base(request)
         {
             this.asyncMessageFactory = asyncMessageFactory;
@@ -61,7 +61,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// <param name="request"></param>
         /// <param name="serviceAddressProvider"></param>
         /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance> serviceAddressProvider, AsyncEventMultiMessageFactory<TInstance, TRequest> asyncMessageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance> serviceAddressProvider, AsyncEventMultiMessageFactory<TInstance, TRequest> asyncMessageFactory) :
             base(request)
         {
             this.asyncMessageFactory = asyncMessageFactory;
@@ -130,7 +130,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// </summary>
         /// <param name="request"></param>
         /// <param name="messageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory) :
             base(request)
         {
             this.messageFactory = messageFactory;
@@ -143,7 +143,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// <param name="request"></param>
         /// <param name="serviceAddressProvider"></param>
         /// <param name="messageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance, TData> serviceAddressProvider, EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance, TData> serviceAddressProvider, EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory) :
             base(request)
         {
             this.messageFactory = messageFactory;
@@ -155,7 +155,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// </summary>
         /// <param name="request"></param>
         /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, AsyncEventMultiMessageFactory<TInstance, TData, TRequest> asyncMessageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, AsyncEventMultiMessageFactory<TInstance, TData, TRequest> asyncMessageFactory) :
             base(request)
         {
             this.asyncMessageFactory = asyncMessageFactory;
@@ -168,7 +168,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// <param name="request"></param>
         /// <param name="serviceAddressProvider"></param>
         /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(IMultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance, TData> serviceAddressProvider, AsyncEventMultiMessageFactory<TInstance, TData, TRequest> asyncMessageFactory) :
+        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance, TData> serviceAddressProvider, AsyncEventMultiMessageFactory<TInstance, TData, TRequest> asyncMessageFactory) :
             base(request)
         {
             this.asyncMessageFactory = asyncMessageFactory;

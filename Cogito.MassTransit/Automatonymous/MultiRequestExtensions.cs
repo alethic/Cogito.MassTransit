@@ -25,7 +25,7 @@ namespace Cogito.MassTransit.Automatonymous
         /// <returns></returns>
         public static EventActivityBinder<TInstance, TData> MultiRequest<TInstance, TData, TKey, TRequest, TResponse>(
             this EventActivityBinder<TInstance, TData> binder,
-            IMultiRequest<TInstance, TKey, TRequest, TResponse> request,
+            MultiRequest<TInstance, TKey, TRequest, TResponse> request,
             EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory)
             where TInstance : class, SagaStateMachineInstance
             where TData : class
