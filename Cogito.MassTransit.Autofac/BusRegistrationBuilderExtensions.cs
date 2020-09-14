@@ -48,7 +48,7 @@ namespace Cogito.MassTransit.Autofac
             if (configuration is null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            builder.Builder.Register(context => { var ctx = context.Resolve<IComponentContext>(); new DelegateBusConfiguration(builder.Name, configurator => configuration(ctx, configurator)));
+            builder.Builder.Register(context => { var ctx = context.Resolve<IComponentContext>(); return new DelegateBusConfiguration(builder.Name, configurator => configuration(ctx, configurator)); });
             return builder;
         }
 
