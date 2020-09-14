@@ -26,6 +26,11 @@ namespace Cogito.MassTransit.Autofac
         /// <returns></returns>
         public static BusRegistrationBuilder Configure(this BusRegistrationBuilder builder, Action<IBusFactoryConfigurator> configuration)
         {
+            if (builder is null)
+                throw new ArgumentNullException(nameof(builder));
+            if (configuration is null)
+                throw new ArgumentNullException(nameof(configuration));
+
             builder.Builder.RegisterInstance(new DelegateBusConfiguration(builder.Name, configuration));
             return builder;
         }
@@ -38,6 +43,11 @@ namespace Cogito.MassTransit.Autofac
         /// <returns></returns>
         public static BusRegistrationBuilder Configure(this BusRegistrationBuilder builder, Action<IComponentContext, IBusFactoryConfigurator> configuration)
         {
+            if (builder is null)
+                throw new ArgumentNullException(nameof(builder));
+            if (configuration is null)
+                throw new ArgumentNullException(nameof(configuration));
+
             builder.Builder.Register(context => { var ctx = context.Resolve<IComponentContext>(); new DelegateBusConfiguration(builder.Name, configurator => configuration(ctx, configurator)));
             return builder;
         }
