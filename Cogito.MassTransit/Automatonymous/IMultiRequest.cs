@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Automatonymous;
 using Automatonymous.Events;
@@ -32,12 +33,19 @@ namespace Cogito.MassTransit.Automatonymous
         /// <summary>
         /// The settings that are used for the request, including the timeout
         /// </summary>
-        RequestSettings Settings { get; }
+        MultiRequestSettings Settings { get; }
 
         /// <summary>
         /// The event that is raised when all of the requests complete.
         /// </summary>
         Event<IMultiRequestFinished<TInstance, TRequest, TResponse>> Finished { get; set; }
+
+        /// <summary>
+        /// Function to be executed when finished.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        Task OnFinished(BehaviorContext<TInstance> context);
 
         /// <summary>
         /// The event that is raised when a request completes and the response is received.

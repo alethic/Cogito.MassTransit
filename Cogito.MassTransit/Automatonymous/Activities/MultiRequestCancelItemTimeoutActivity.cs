@@ -5,6 +5,8 @@ using Automatonymous;
 
 using GreenPipes;
 
+using MassTransit;
+
 namespace Cogito.MassTransit.Automatonymous.Activities
 {
 
@@ -42,14 +44,32 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             context.CreateScope("multiRequestCancelItemTimeout");
         }
 
-        public Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            return next.Execute(context);
+            await Execute(context).ConfigureAwait(false);
+            await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
+        public async Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
-            return next.Execute(context);
+            await Execute(context).ConfigureAwait(false);
+            await next.Execute(context).ConfigureAwait(false);
+        }
+
+        Task Execute(BehaviorContext<TInstance> context)
+        {
+            var consumeContext = context.CreateConsumeContext();
+
+            var requestId = consumeContext.RequestId;
+            if (requestId.HasValue && request.Settings.Timeout > TimeSpan.Zero)
+            {
+                if (consumeContext.TryGetPayload(out MessageSchedulerContext schedulerContext))
+                    return schedulerContext.CancelScheduledSend(consumeContext.ReceiveContext.InputAddress, requestId.Value);
+
+                throw new ConfigurationException("A scheduler was not available to cancel the scheduled request timeout");
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next) where TException : Exception

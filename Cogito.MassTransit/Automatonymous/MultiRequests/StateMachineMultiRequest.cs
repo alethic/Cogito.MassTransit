@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 using Automatonymous;
 using Automatonymous.Events;
@@ -32,7 +33,7 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         readonly Func<TInstance, IEnumerable<TState>> itemsFunc;
         readonly Func<TState, Guid?> requestIdFunc;
         readonly IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor;
-        readonly RequestSettings settings;
+        readonly MultiRequestSettings settings;
 
         /// <summary>
         /// Initializes a new instance.
@@ -49,7 +50,7 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor,
-            RequestSettings settings)
+            MultiRequestSettings settings)
         {
             this.name = name ?? throw new ArgumentNullException(nameof(name));
             this.filterFunc = filterExpression?.Compile() ?? throw new ArgumentNullException(nameof(filterExpression));
@@ -67,12 +68,25 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// <summary>
         /// Gets the request settings to be applied to outgoing requests.
         /// </summary>
-        public RequestSettings Settings => settings;
+        public MultiRequestSettings Settings => settings;
 
         /// <summary>
         /// Raised when all requests have finished.
         /// </summary>
         public Event<IMultiRequestFinished<TInstance, TRequest, TResponse>> Finished { get; set; }
+
+        /// <summary>
+        /// Invoked when all requests are finished.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public async Task OnFinished(BehaviorContext<TInstance> context)
+        {
+            await context.Raise(Finished, new MultiRequestFinishedEvent(context, this));
+
+            if (settings.ClearOnFinish)
+                await accessor.Clear(context);
+        }
 
         /// <summary>
         /// Raised when a single request has completed.
@@ -176,6 +190,75 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
                 return filterFunc(context.Instance, requestId);
             else
                 return false;
+        }
+
+        /// <summary>
+        /// Event which is raised when all items have been finished.
+        /// </summary>
+        class MultiRequestFinishedEvent : IMultiRequestFinished<TInstance, TRequest, TResponse>
+        {
+
+            readonly InstanceContext<TInstance> context;
+            readonly Dictionary<Guid, IMultiRequestItem<TInstance, TRequest, TResponse>> items;
+
+            /// <summary>
+            /// Initializes a new instance.
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="request"></param>
+            public MultiRequestFinishedEvent(InstanceContext<TInstance> context, IMultiRequest<TInstance, TState, TRequest, TResponse> request)
+            {
+                this.context = context ?? throw new ArgumentNullException(nameof(context));
+
+                // index all of the request information
+                items = request.GetItems(context)
+                    .Select(i => new { RequestId = request.GetRequestId(context, i), State = i })
+                    .Where(i => i.RequestId != null)
+                    .ToDictionary(i => i.RequestId.Value, i => (IMultiRequestItem<TInstance, TRequest, TResponse>)new MultiRequestFinishedItem(context, request.Accessor, i.State));
+            }
+
+            /// <summary>
+            /// Gets all of the finished state items.
+            /// </summary>
+            /// <returns></returns>
+            public IReadOnlyDictionary<Guid, IMultiRequestItem<TInstance, TRequest, TResponse>> Items => items;
+
+            /// <summary>
+            /// Describes a finished item.
+            /// </summary>
+            struct MultiRequestFinishedItem : IMultiRequestItem<TInstance, TRequest, TResponse>
+            {
+
+                /// <summary>
+                /// Initializes a new instance.
+                /// </summary>
+                /// <param name="context"></param>
+                /// <param name="accessor"></param>
+                /// <param name="state"></param>
+                public MultiRequestFinishedItem(InstanceContext<TInstance> context, IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor, TState state)
+                {
+                    Status = accessor.GetStatus(context, state);
+                    Response = accessor.GetResponse(context, state);
+                    Fault = accessor.GetFault(context, state);
+                }
+
+                /// <summary>
+                /// Gets the status of the request.
+                /// </summary>
+                public MultiRequestItemStatus Status { get; }
+
+                /// <summary>
+                /// Gets the response data of the request.
+                /// </summary>
+                public TResponse Response { get; }
+
+                /// <summary>
+                /// Gets the fault that occurred during the request.
+                /// </summary>
+                public Fault<TRequest> Fault { get; }
+
+            }
+
         }
 
     }

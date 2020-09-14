@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Automatonymous;
 using Automatonymous.Events;
@@ -77,6 +78,12 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="state"></param>
         /// <param name="timeout"></param>
         void SetTimeoutExpired(InstanceContext<TInstance> context, TState state, RequestTimeoutExpired<TRequest> timeout);
+
+        /// <summary>
+        /// Clears the request state item collection.
+        /// </summary>
+        /// <param name="context"></param>
+        Task Clear(InstanceContext<TInstance> context);
 
     }
 

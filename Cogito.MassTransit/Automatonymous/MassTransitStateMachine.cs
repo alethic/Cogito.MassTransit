@@ -6,10 +6,10 @@ using System.Reflection;
 
 using Automatonymous;
 using Automatonymous.Events;
-using Automatonymous.SagaConfigurators;
 
 using Cogito.MassTransit.Automatonymous.Activities;
 using Cogito.MassTransit.Automatonymous.MultiRequests;
+using Cogito.MassTransit.Automatonymous.SagaConfigurators;
 
 using MassTransit;
 using MassTransit.Internals.Extensions;
@@ -72,7 +72,7 @@ namespace Cogito.MassTransit.Automatonymous
             where TRequest : class
             where TResponse : class
         {
-            MultiRequest(propertyExpression, itemsExpression, requestIdExpression, adaptor, new StateMachineRequestConfigurator<TRequest>());
+            MultiRequest(propertyExpression, itemsExpression, requestIdExpression, adaptor, new StateMachineMultiRequestConfigurator<TRequest>());
         }
 
         /// <summary>
@@ -93,11 +93,11 @@ namespace Cogito.MassTransit.Automatonymous
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor,
-            Action<IRequestConfigurator> configureRequest = null)
+            Action<IMultiRequestConfigurator> configureRequest = null)
             where TRequest : class
             where TResponse : class
         {
-            var configurator = new StateMachineRequestConfigurator<TRequest>();
+            var configurator = new StateMachineMultiRequestConfigurator<TRequest>();
             configureRequest?.Invoke(configurator);
             MultiRequest(propertyExpression, itemsExpression, requestIdExpression, adaptor, configurator);
         }
@@ -120,7 +120,7 @@ namespace Cogito.MassTransit.Automatonymous
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor,
-            RequestSettings settings = null)
+            MultiRequestSettings settings = null)
             where TRequest : class
             where TResponse : class
         {
@@ -215,18 +215,15 @@ namespace Cogito.MassTransit.Automatonymous
                 When(request.Completed, request.CompletedEventFilter)
                     .Add(new MultiRequestItemCompletedActivity<TInstance, TState, TRequest, TResponse>(request))
                     .Add(new MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestClearItemActivity<TInstance, TState, TRequest, TResponse>(request)),
+                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)),
                 When(request.Faulted, request.FaultedEventFilter)
                     .Add(new MultiRequestItemFaultedActivity<TInstance, TState, TRequest, TResponse>(request))
                     .Add(new MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestClearItemActivity<TInstance, TState, TRequest, TResponse>(request)),
+                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)),
                 When(request.TimeoutExpired, request.RequestTimeoutExpiredEventFilter)
                     .Add(new MultiRequestItemTimeoutExpiredActivity<TInstance, TState, TRequest, TResponse>(request))
                     .Add(new MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestClearItemActivity<TInstance, TState, TRequest, TResponse>(request)));
+                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)));
         }
 
     }

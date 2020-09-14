@@ -104,6 +104,13 @@ namespace Cogito.MassTransit.Tests
                 state.TimeoutExpired = timeout;
                 state.Status = MultiRequestItemStatus.TimeoutExpired;
             }
+
+            public Task Clear(InstanceContext<TestSagaState> context)
+            {
+                context.Instance.InProgress?.Clear();
+                return Task.CompletedTask;
+            }
+
         }
 
         /// <summary>
@@ -123,8 +130,9 @@ namespace Cogito.MassTransit.Tests
 
                 MultiRequest(() => SendMultiRequest, instance => instance.InProgress, state => state.RequestId, new TestSagaRequestStateAccessor(), c =>
                 {
-                    c.Timeout = TimeSpan.Zero;
+                    c.Timeout = TimeSpan.FromMinutes(1);
                     c.ServiceAddress = new Uri("loopback://localhost/consumer");
+                    c.ClearOnFinish = true;
                 });
 
                 Initially(
@@ -202,6 +210,7 @@ namespace Cogito.MassTransit.Tests
         public async Task Test_thing()
         {
             var harness = new InMemoryTestHarness();
+            harness.OnConfigureInMemoryBus += Harness_OnConfigureInMemoryBus;
             var saga = harness.StateMachineSaga(new TestSagaStateMachine(), new InMemorySagaRepository<TestSagaState>(), "saga");
             var consumer = harness.Consumer<TestConsumer>("consumer");
 
@@ -216,6 +225,11 @@ namespace Cogito.MassTransit.Tests
             {
                 await harness.Stop();
             }
+        }
+
+        void Harness_OnConfigureInMemoryBus(IInMemoryBusFactoryConfigurator obj)
+        {
+            obj.UseInMemoryScheduler();
         }
 
     }
