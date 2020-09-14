@@ -26,7 +26,7 @@ namespace Cogito.MassTransit.Registration
         /// Gets all of the known bus names.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetBusNames() => sources.SelectMany(i => i.GetBusNames());
+        public IEnumerable<string> GetBusNames() => sources.SelectMany(i => i.GetBusNames()).Distinct();
 
     }
 
