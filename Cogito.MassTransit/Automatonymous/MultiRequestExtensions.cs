@@ -23,9 +23,9 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="request">The configured request to use</param>
         /// <param name="messageFactory">The request message factory</param>
         /// <returns></returns>
-        public static EventActivityBinder<TInstance, TData> MultiRequest<TInstance, TData, TKey, TRequest, TResponse>(
+        public static EventActivityBinder<TInstance, TData> MultiRequest<TInstance, TData, TState, TRequest, TResponse>(
             this EventActivityBinder<TInstance, TData> binder,
-            MultiRequest<TInstance, TKey, TRequest, TResponse> request,
+            MultiRequest<TInstance, TState, TRequest, TResponse> request,
             EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory)
             where TInstance : class, SagaStateMachineInstance
             where TData : class
@@ -33,7 +33,7 @@ namespace Cogito.MassTransit.Automatonymous
             where TResponse : class
         {
             ScheduleTokenId.UseTokenId<RequestTimeoutExpired<TRequest>>(x => x.RequestId);
-            var activity = new MultiRequestActivity<TInstance, TData, TKey, TRequest, TResponse>(request, messageFactory);
+            var activity = new MultiRequestActivity<TInstance, TData, TState, TRequest, TResponse>(request, messageFactory);
             return binder.Add(activity);
         }
 
@@ -48,9 +48,9 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="request">The configured request to use</param>
         /// <param name="messageFactory">The request message factory</param>
         /// <returns></returns>
-        public static EventActivityBinder<TInstance, TData> MultiRequest<TInstance, TData, TKey, TRequest, TResponse>(
+        public static EventActivityBinder<TInstance, TData> MultiRequest<TInstance, TData, TState, TRequest, TResponse>(
             this EventActivityBinder<TInstance, TData> binder,
-            MultiRequest<TInstance, TKey, TRequest, TResponse> request,
+            MultiRequest<TInstance, TState, TRequest, TResponse> request,
             AsyncEventMultiMessageFactory<TInstance, TData, TRequest> messageFactory)
             where TInstance : class, SagaStateMachineInstance
             where TData : class
@@ -58,7 +58,7 @@ namespace Cogito.MassTransit.Automatonymous
             where TResponse : class
         {
             ScheduleTokenId.UseTokenId<RequestTimeoutExpired<TRequest>>(x => x.RequestId);
-            var activity = new MultiRequestActivity<TInstance, TData, TKey, TRequest, TResponse>(request, messageFactory);
+            var activity = new MultiRequestActivity<TInstance, TData, TState, TRequest, TResponse>(request, messageFactory);
             return binder.Add(activity);
         }
 
