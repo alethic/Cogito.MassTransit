@@ -24,7 +24,7 @@ namespace Cogito.MassTransit.Registration
 
         public IEnumerable<string> GetBusNames()
         {
-            return definitions.GetDefinitions().Select(i => i.BusName);
+            return definitions.GetDefinitions().Select(i => i.BusName).Distinct();
         }
 
     }

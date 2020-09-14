@@ -26,7 +26,7 @@ namespace Cogito.MassTransit.Registration
         /// Gets all of the known <see cref="IReceiveEndpointConfiguration"/> instances for the given endpoint name.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetEndpointNames(string busName) => sources.SelectMany(i => i.GetEndpointNames(busName));
+        public IEnumerable<string> GetEndpointNames(string busName) => sources.SelectMany(i => i.GetEndpointNames(busName)).Distinct();
 
     }
 
