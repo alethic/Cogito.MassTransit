@@ -27,9 +27,10 @@ namespace Cogito.MassTransit.Automatonymous
         /// Inserts a new request state item in the Pending status.
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="request"></param>
         /// <param name="requestId"></param>
         /// <returns></returns>
-        TState Insert(InstanceContext<TInstance> context, Guid requestId);
+        TState Insert(InstanceContext<TInstance> context, TRequest request, Guid requestId);
 
         /// <summary>
         /// Adapts the request state item to a common interface.

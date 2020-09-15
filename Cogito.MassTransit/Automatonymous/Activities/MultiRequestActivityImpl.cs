@@ -61,7 +61,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             }
 
             // add new state item
-            request.Accessor.Insert(context, pipe.RequestId);
+            request.Accessor.Insert(context, requestMessage, pipe.RequestId);
 
             // if a timeout is specified, schedule the timeout expired message
             if (request.Settings.Timeout > TimeSpan.Zero)
