@@ -64,6 +64,14 @@ namespace Cogito.MassTransit.Tests
         class TestSagaRequestStateAccessor : IMultiRequestStateAccessor<TestSagaState, TestSagaRequestState, TestConsumerRequest, TestConsumerResponse>
         {
 
+            public TestSagaRequestState Insert(InstanceContext<TestSagaState> context, TestConsumerRequest request, Guid requestId)
+            {
+                context.Instance.InProgress ??= new List<TestSagaRequestState>();
+                var state = new TestSagaRequestState() { RequestId = requestId, Status = MultiRequestItemStatus.Pending };
+                context.Instance.InProgress.Add(state);
+                return state;
+            }
+
             public MultiRequestItemStatus GetStatus(InstanceContext<TestSagaState> context, TestSagaRequestState state)
             {
                 return state.Status;
@@ -77,14 +85,6 @@ namespace Cogito.MassTransit.Tests
             public Fault<TestConsumerRequest> GetFault(InstanceContext<TestSagaState> context, TestSagaRequestState state)
             {
                 return state.Fault;
-            }
-
-            public TestSagaRequestState Insert(InstanceContext<TestSagaState> context, Guid requestId)
-            {
-                context.Instance.InProgress ??= new List<TestSagaRequestState>();
-                var state = new TestSagaRequestState() { RequestId = requestId, Status = MultiRequestItemStatus.Pending };
-                context.Instance.InProgress.Add(state);
-                return state;
             }
 
             public void SetCompleted(InstanceContext<TestSagaState> context, TestSagaRequestState state, TestConsumerResponse response)
