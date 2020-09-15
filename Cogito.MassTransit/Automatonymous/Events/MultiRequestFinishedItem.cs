@@ -11,7 +11,7 @@ namespace Cogito.MassTransit.Automatonymous.Events
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
-    public interface IMultiRequestItem<TInstance, TRequest, TResponse>
+    public interface MultiRequestFinishedItem<TInstance, TRequest, TResponse>
         where TInstance : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class

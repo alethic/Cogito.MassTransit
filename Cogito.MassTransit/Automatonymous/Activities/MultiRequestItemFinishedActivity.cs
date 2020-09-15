@@ -3,7 +3,11 @@ using System.Threading.Tasks;
 
 using Automatonymous;
 
+using Cogito.MassTransit.Automatonymous.Events;
+
 using GreenPipes;
+
+using MassTransit;
 
 namespace Cogito.MassTransit.Automatonymous.Activities
 {
@@ -37,19 +41,26 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             visitor.Visit(this);
         }
 
-        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        async Task Execute(BehaviorContext<TInstance> context)
         {
             if (request.IsFinished(context))
-                await request.OnFinished(context);
+            {
+                // dispatch signal to ourselves
+                var endpoint = await context.GetSendEndpoint(context.CreateConsumeContext().ReceiveContext.InputAddress);
+                var finished = new MultiRequestFinishedSignal<TInstance, TRequest, TResponse>();
+                await endpoint.Send(finished, s => s.CorrelationId = context.Instance.CorrelationId, context.CancellationToken);
+            }
+        }
 
+        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        {
+            await Execute(context);
             await next.Execute(context);
         }
 
         public async Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
-            if (request.IsFinished(context))
-                await request.OnFinished(context);
-
+            await Execute(context);
             await next.Execute(context);
         }
 

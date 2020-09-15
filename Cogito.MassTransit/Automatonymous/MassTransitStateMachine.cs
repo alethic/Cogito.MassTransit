@@ -8,6 +8,7 @@ using Automatonymous;
 using Automatonymous.Events;
 
 using Cogito.MassTransit.Automatonymous.Activities;
+using Cogito.MassTransit.Automatonymous.Events;
 using Cogito.MassTransit.Automatonymous.MultiRequests;
 using Cogito.MassTransit.Automatonymous.SagaConfigurators;
 
@@ -62,17 +63,17 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="propertyExpression"></param>
         /// <param name="itemsExpression"></param>
         /// <param name="requestIdExpression"></param>
-        /// <param name="adaptor"></param>
+        /// <param name="accessor"></param>
         /// <param name="configureRequest"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
             Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
-            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor)
+            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor)
             where TRequest : class
             where TResponse : class
         {
-            MultiRequest(propertyExpression, itemsExpression, requestIdExpression, adaptor, new StateMachineMultiRequestConfigurator<TRequest>());
+            MultiRequest(propertyExpression, itemsExpression, requestIdExpression, accessor, new StateMachineMultiRequestConfigurator<TRequest>());
         }
 
         /// <summary>
@@ -86,20 +87,20 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="propertyExpression"></param>
         /// <param name="itemsExpression"></param>
         /// <param name="requestIdExpression"></param>
-        /// <param name="adaptor"></param>
+        /// <param name="accessor"></param>
         /// <param name="configureRequest"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
             Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
-            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor,
+            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor,
             Action<IMultiRequestConfigurator> configureRequest = null)
             where TRequest : class
             where TResponse : class
         {
             var configurator = new StateMachineMultiRequestConfigurator<TRequest>();
             configureRequest?.Invoke(configurator);
-            MultiRequest(propertyExpression, itemsExpression, requestIdExpression, adaptor, configurator);
+            MultiRequest(propertyExpression, itemsExpression, requestIdExpression, accessor, configurator);
         }
 
         /// <summary>
@@ -113,17 +114,21 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="propertyExpression"></param>
         /// <param name="itemsExpression"></param>
         /// <param name="requestIdExpression"></param>
-        /// <param name="adaptor"></param>
+        /// <param name="accessor"></param>
         /// <param name="settings"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
             Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
             Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
-            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> adaptor,
+            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor,
             MultiRequestSettings settings = null)
             where TRequest : class
             where TResponse : class
         {
+            // default settings
+            if (settings == null)
+                settings = new StateMachineMultiRequestConfigurator<TRequest>();
+
             var property = propertyExpression.GetPropertyInfo();
 
             // parameters reused within expressions
@@ -146,7 +151,7 @@ namespace Cogito.MassTransit.Automatonymous
                 instanceParameter,
                 requestIdParameter);
 
-            var request = new StateMachineMultiRequest<TInstance, TState, TRequest, TResponse>(property.Name, filterExpression, itemsExpression, requestIdExpression, adaptor, settings);
+            var request = new StateMachineMultiRequest<TInstance, TState, TRequest, TResponse>(property.Name, filterExpression, itemsExpression, requestIdExpression, accessor, settings);
 
             InitializeMultiRequest(this, property, request);
 
@@ -208,6 +213,7 @@ namespace Cogito.MassTransit.Automatonymous
             Event(propertyExpression, x => x.Completed, x => x.CorrelateBy(completedExpression));
             Event(propertyExpression, x => x.Faulted, x => x.CorrelateBy(faultedExpression));
             Event(propertyExpression, x => x.TimeoutExpired, x => x.CorrelateBy(timeoutExpiredExpression));
+            Event(propertyExpression, x => x.FinishedSignal, x => x.CorrelateBy((c, o) => c.CorrelationId == o.CorrelationId));
 
             State(propertyExpression, x => x.Pending);
 
@@ -223,9 +229,10 @@ namespace Cogito.MassTransit.Automatonymous
                 When(request.TimeoutExpired, request.RequestTimeoutExpiredEventFilter)
                     .Add(new MultiRequestItemTimeoutExpiredActivity<TInstance, TState, TRequest, TResponse>(request))
                     .Add(new MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)));
+                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)),
+                When(request.FinishedSignal, request.FinishedSignalEventFilter)
+                    .Add(new MultiRequestFinishedActivity<TInstance, TState, TRequest, TResponse>(request)));
         }
-
     }
 
 }

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using Automatonymous;
@@ -13,7 +12,7 @@ namespace Cogito.MassTransit.Automatonymous.Events
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public interface IMultiRequestFinished<TInstance, TRequest, TResponse>
+    public interface MultiRequestFinished<TInstance, TRequest, TResponse>
         where TInstance : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
@@ -22,7 +21,7 @@ namespace Cogito.MassTransit.Automatonymous.Events
         /// <summary>
         /// Gets the set of request items.
         /// </summary>
-        IReadOnlyDictionary<Guid, IMultiRequestItem<TInstance, TRequest, TResponse>> Items { get; }
+        IReadOnlyDictionary<Guid, MultiRequestFinishedItem<TInstance, TRequest, TResponse>> Items { get; set; }
 
     }
 

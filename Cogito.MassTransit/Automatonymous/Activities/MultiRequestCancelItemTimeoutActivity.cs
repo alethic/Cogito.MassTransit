@@ -63,7 +63,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             var requestId = consumeContext.RequestId;
             if (requestId.HasValue && request.Settings.Timeout > TimeSpan.Zero)
             {
-                if (consumeContext.TryGetPayload(out MessageSchedulerContext schedulerContext))
+                if (consumeContext.TryGetPayload<MessageSchedulerContext>(out var schedulerContext))
                     return schedulerContext.CancelScheduledSend(consumeContext.ReceiveContext.InputAddress, requestId.Value);
 
                 throw new ConfigurationException("A scheduler was not available to cancel the scheduled request timeout");

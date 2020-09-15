@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 using Automatonymous;
 using Automatonymous.Events;
@@ -36,16 +35,14 @@ namespace Cogito.MassTransit.Automatonymous
         MultiRequestSettings Settings { get; }
 
         /// <summary>
-        /// The event that is raised when all of the requests complete.
+        /// The event that is dispatched back to the state machine to signal all requests complete.
         /// </summary>
-        Event<IMultiRequestFinished<TInstance, TRequest, TResponse>> Finished { get; set; }
+        Event<MultiRequestFinishedSignal<TInstance, TRequest, TResponse>> FinishedSignal { get; set; }
 
         /// <summary>
-        /// Function to be executed when finished.
+        /// The event that is raised when all of the requests complete.
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        Task OnFinished(BehaviorContext<TInstance> context);
+        Event<MultiRequestFinished<TInstance, TRequest, TResponse>> Finished { get; set; }
 
         /// <summary>
         /// The event that is raised when a request completes and the response is received.

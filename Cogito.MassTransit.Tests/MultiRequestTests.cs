@@ -27,7 +27,7 @@ namespace Cogito.MassTransit.Tests
         /// <summary>
         /// Represents the state of the saga.
         /// </summary>
-        class TestSagaState : SagaStateMachineInstance
+        public class TestSagaState : SagaStateMachineInstance
         {
 
             public Guid CorrelationId { get; set; }
@@ -43,7 +43,7 @@ namespace Cogito.MassTransit.Tests
         /// <summary>
         /// Represents a single request state item.
         /// </summary>
-        class TestSagaRequestState : IMultiRequestItem<TestSagaState, TestConsumerRequest, TestConsumerResponse>
+        public class TestSagaRequestState : MultiRequestFinishedItem<TestSagaState, TestConsumerRequest, TestConsumerResponse>
         {
 
             public Guid RequestId { get; set; }
@@ -61,7 +61,7 @@ namespace Cogito.MassTransit.Tests
         /// <summary>
         /// Provides an adaptor to manage request state items.
         /// </summary>
-        class TestSagaRequestStateAccessor : IMultiRequestStateAccessor<TestSagaState, TestSagaRequestState, TestConsumerRequest, TestConsumerResponse>
+        public class TestSagaRequestStateAccessor : IMultiRequestStateAccessor<TestSagaState, TestSagaRequestState, TestConsumerRequest, TestConsumerResponse>
         {
 
             public TestSagaRequestState Insert(InstanceContext<TestSagaState> context, TestConsumerRequest request, Guid requestId)
@@ -116,7 +116,7 @@ namespace Cogito.MassTransit.Tests
         /// <summary>
         /// Sample saga state machine.
         /// </summary>
-        class TestSagaStateMachine : Cogito.MassTransit.Automatonymous.MassTransitStateMachine<TestSagaState>
+        public class TestSagaStateMachine : Cogito.MassTransit.Automatonymous.MassTransitStateMachine<TestSagaState>
         {
 
             /// <summary>
@@ -165,7 +165,7 @@ namespace Cogito.MassTransit.Tests
 
         }
 
-        class TestSagaRequest : CorrelatedBy<Guid>
+        public class TestSagaRequest : CorrelatedBy<Guid>
         {
 
             public Guid CorrelationId { get; set; }
@@ -174,14 +174,14 @@ namespace Cogito.MassTransit.Tests
 
         }
 
-        class TestSagaResponse
+        public class TestSagaResponse
         {
 
             public Guid[] Values { get; set; }
 
         }
 
-        class TestConsumer : IConsumer<TestConsumerRequest>
+        public class TestConsumer : IConsumer<TestConsumerRequest>
         {
 
             public Task Consume(ConsumeContext<TestConsumerRequest> context)
@@ -192,14 +192,14 @@ namespace Cogito.MassTransit.Tests
 
         }
 
-        class TestConsumerRequest
+        public class TestConsumerRequest
         {
 
             public Guid Value { get; set; }
 
         }
 
-        class TestConsumerResponse
+        public class TestConsumerResponse
         {
 
             public Guid Value { get; set; }
