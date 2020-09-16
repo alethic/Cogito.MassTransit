@@ -31,6 +31,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.InMemory
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.MassTransit.Tests", "Cogito.MassTransit.Tests\Cogito.MassTransit.Tests.csproj", "{44F7A345-20E1-4A0C-ABB2-61F285F430C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.EntityFrameworkCore.Autofac", "Cogito.MassTransit.EntityFrameworkCore.Autofac\Cogito.MassTransit.EntityFrameworkCore.Autofac.csproj", "{B3A778F2-7BCB-4269-8A76-1CE849814C00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.EntityFrameworkCore", "Cogito.MassTransit.EntityFrameworkCore\Cogito.MassTransit.EntityFrameworkCore.csproj", "{CDF3D2EE-C390-4D68-BFD1-99AC640FB150}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,14 @@ Global
 		{44F7A345-20E1-4A0C-ABB2-61F285F430C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44F7A345-20E1-4A0C-ABB2-61F285F430C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44F7A345-20E1-4A0C-ABB2-61F285F430C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3A778F2-7BCB-4269-8A76-1CE849814C00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A778F2-7BCB-4269-8A76-1CE849814C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A778F2-7BCB-4269-8A76-1CE849814C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A778F2-7BCB-4269-8A76-1CE849814C00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF3D2EE-C390-4D68-BFD1-99AC640FB150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF3D2EE-C390-4D68-BFD1-99AC640FB150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF3D2EE-C390-4D68-BFD1-99AC640FB150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF3D2EE-C390-4D68-BFD1-99AC640FB150}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

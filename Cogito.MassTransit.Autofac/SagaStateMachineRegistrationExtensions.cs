@@ -31,6 +31,8 @@ namespace Cogito.MassTransit.Autofac
             where TStateMachine : class, SagaStateMachine<TInstance>
             where TInstance : class, SagaStateMachineInstance
         {
+            builder.RegisterModule<AssemblyModule>();
+
             return builder.RegisterType<TStateMachine>()
                 .AsSelf()
                 .As<SagaStateMachine<TInstance>>()
@@ -63,6 +65,8 @@ namespace Cogito.MassTransit.Autofac
         /// <returns></returns>
         public static IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> RegisterSagaStateMachine(this ContainerBuilder builder, Type type, string busName, string endpointName)
         {
+            builder.RegisterModule<AssemblyModule>();
+
             return builder.RegisterType(type)
                 .AsSelf()
                 .As(typeof(SagaStateMachine<>).MakeGenericType(type.GetClosingArgument(typeof(SagaStateMachine<>))))

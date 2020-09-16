@@ -15,6 +15,8 @@ namespace Cogito.MassTransit.Autofac
 
         public void Register(ContainerBuilder builder, Type type, IEnumerable<IRegistrationRootAttribute> attributes)
         {
+            builder.RegisterModule<AssemblyModule>();
+
             foreach (var attr in attributes.OfType<IReceiveEndpointMetadata>())
                 builder.RegisterSaga(type, attr.BusName ?? "", attr.EndpointName);
         }

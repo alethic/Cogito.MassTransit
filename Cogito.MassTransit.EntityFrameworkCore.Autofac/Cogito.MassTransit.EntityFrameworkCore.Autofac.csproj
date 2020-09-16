@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="7.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
+    <ProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore\Cogito.MassTransit.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+  </ItemGroup>
+
+</Project>

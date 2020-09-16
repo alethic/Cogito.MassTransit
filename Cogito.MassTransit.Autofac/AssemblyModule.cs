@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Integration.Mef;
 
 using Cogito.Autofac;
 using Cogito.MassTransit.Autofac.Internal;
@@ -72,6 +73,8 @@ namespace Cogito.MassTransit.Autofac
 
         protected override void Register(ContainerBuilder builder)
         {
+            builder.RegisterMetadataRegistrationSources();
+            builder.RegisterModule<Cogito.Autofac.AssemblyModule>();
             builder.RegisterFromAttributes(typeof(AssemblyModule).Assembly);
 
             // setup global logging

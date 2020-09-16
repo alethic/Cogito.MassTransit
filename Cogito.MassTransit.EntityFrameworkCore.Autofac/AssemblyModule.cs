@@ -1,10 +1,8 @@
 ﻿using Autofac;
 
 using Cogito.Autofac;
-using Cogito.MassTransit.InMemory.Registration;
-using Cogito.MassTransit.Registration;
 
-namespace Cogito.MassTransit.InMemory.Autofac
+namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
 {
 
     public class AssemblyModule : ModuleBase
@@ -14,7 +12,6 @@ namespace Cogito.MassTransit.InMemory.Autofac
         {
             builder.RegisterModule<Cogito.MassTransit.Autofac.AssemblyModule>();
             builder.RegisterFromAttributes(typeof(AssemblyModule).Assembly);
-            builder.RegisterType<InMemoryBusConfiguration>().As<IBusConfiguration>().SingleInstance();
         }
 
     }

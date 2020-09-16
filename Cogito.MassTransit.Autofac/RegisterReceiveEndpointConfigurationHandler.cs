@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Autofac;
-using Autofac.Integration.Mef;
 
 using Cogito.Autofac;
 using Cogito.MassTransit.Registration;
@@ -16,7 +15,7 @@ namespace Cogito.MassTransit.Autofac
 
         public void Register(ContainerBuilder builder, Type type, IEnumerable<IRegistrationRootAttribute> attributes)
         {
-            builder.RegisterMetadataRegistrationSources();
+            builder.RegisterModule<AssemblyModule>();
 
             foreach (var attr in attributes.OfType<IReceiveEndpointMetadata>())
                 builder.RegisterReceiveEndpointConfiguration(type, attr.BusName ?? "", attr.EndpointName);

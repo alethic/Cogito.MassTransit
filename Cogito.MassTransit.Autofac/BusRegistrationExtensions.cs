@@ -24,6 +24,7 @@ namespace Cogito.MassTransit.Autofac
             if (configure is null)
                 throw new ArgumentNullException(nameof(configure));
 
+            builder.RegisterModule<AssemblyModule>();
             configure(new BusRegistrationBuilder(builder, name));
             return builder;
         }
