@@ -37,7 +37,7 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
         /// <summary>
         /// Gets or sets the isolation level of the state machine.
         /// </summary>
-        public IsolationLevel IsolationLevel { get; set; }
+        public IsolationLevel IsolationLevel { get; set; } = IsolationLevel.ReadCommitted;
 
         /// <summary>
         /// Optionally the name of the correlation ID columns to use for pessimistic locks.

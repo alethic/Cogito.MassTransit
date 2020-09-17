@@ -1,22 +1,21 @@
-﻿
-using MassTransit.EntityFrameworkCoreIntegration;
+﻿using MassTransit.EntityFrameworkCoreIntegration;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
+namespace Cogito.MassTransit.EntityFrameworkCore
 {
 
     /// <summary>
     /// Customizes the lock statement to a specific column.
     /// </summary>
-    class ColumnSqlServerLockStatementProvider<TSaga> : SqlLockStatementProvider
+    public class SqlServerExtendedLockStatementProvider<TSaga> : SqlLockStatementProvider, ILockStatementProvider<TSaga>
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="columnName"></param>
-        public ColumnSqlServerLockStatementProvider(string columnName = "CorrelationId") :
+        public SqlServerExtendedLockStatementProvider(string columnName = "CorrelationId") :
             base("dbo", $"SELECT * FROM {{0}}.{{1}} WITH (UPDLOCK, ROWLOCK) WHERE [{columnName}] = @p0", true)
         {
 
