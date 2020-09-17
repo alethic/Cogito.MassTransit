@@ -213,7 +213,7 @@ namespace Cogito.MassTransit.Automatonymous
             Event(propertyExpression, x => x.Completed, x => x.CorrelateBy(completedExpression));
             Event(propertyExpression, x => x.Faulted, x => x.CorrelateBy(faultedExpression));
             Event(propertyExpression, x => x.TimeoutExpired, x => x.CorrelateBy(timeoutExpiredExpression));
-            Event(propertyExpression, x => x.FinishedSignal, x => x.CorrelateBy((c, o) => c.CorrelationId == o.CorrelationId));
+            Event(propertyExpression, x => x.FinishedSignal, x => x.CorrelateById(m => (Guid)m.CorrelationId));
 
             State(propertyExpression, x => x.Pending);
 
