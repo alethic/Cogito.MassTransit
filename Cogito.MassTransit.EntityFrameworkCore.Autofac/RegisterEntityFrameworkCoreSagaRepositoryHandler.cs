@@ -18,6 +18,7 @@ using MassTransit.EntityFrameworkCoreIntegration.Saga.Context;
 using MassTransit.Internals.Extensions;
 using MassTransit.Registration;
 using MassTransit.Saga;
+using MassTransit.Testing.Decorators;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -70,36 +71,41 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
             registrar.RegisterSagaRepository<TSaga, DbContext, SagaConsumeContextFactory<DbContext, TSaga>, EntityFrameworkSagaRepositoryContextFactory<TSaga>>();
         }
 
+        /// <summary>
+        /// Builds the query customizer function from registered customizers.
+        /// </summary>
+        /// <typeparam name="TSaga"></typeparam>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        static Func<IQueryable<TSaga>, IQueryable<TSaga>> GetQueryCustomizer<TSaga>(IComponentContext context)
+            where TSaga : class, SagaStateMachineInstance
+        {
+            var c = context.Resolve<IOrderedEnumerable<IEntityFrameworkCoreQueryCustomizer<TSaga>>>().ToList();
+            if (c.Count > 0)
+            {
+                // start with first customizer
+                Func<IQueryable<TSaga>, IQueryable<TSaga>> f = c[0].Apply;
+
+                // layer on each additional customer
+                for (int i = 1; i < c.Count; i++)
+                {
+                    Func<IQueryable<TSaga>, IQueryable<TSaga>> m = c[i].Apply;
+                    f = q => m(f(q));
+                }
+
+                return f;
+            }
+
+            return null;
+        }
+
         static void RegisterOptimisticSagaRepository<TSaga, TDbContext>(ContainerBuilder builder, IsolationLevel isolationLevel, string correlationIdColumnName)
             where TSaga : class, SagaStateMachineInstance
             where TDbContext : DbContext
         {
-            ILoadQueryProvider<TSaga> QueryProviderFactory(IComponentContext context)
-            {
-                var p = (ILoadQueryProvider<TSaga>)new DefaultSagaLoadQueryProvider<TSaga>();
-                var c = context.Resolve<IOrderedEnumerable<IEntityFrameworkCoreQueryCustomizer<TSaga>>>().ToList();
-                if (c.Count > 0)
-                {
-                    // start with first customizer
-                    Func<IQueryable<TSaga>, IQueryable<TSaga>> f = c[0].Apply;
-
-                    // layer on each additional customer
-                    for (int i = 1; i < c.Count; i++)
-                    {
-                        Func<IQueryable<TSaga>, IQueryable<TSaga>> m = c[i].Apply;
-                        f = q => m(f(q));
-                    }
-
-                    // wrap in custom provider
-                    p = new CustomSagaLoadQueryProvider<TSaga>(p, f);
-                }
-
-                return p;
-            };
-
             // register required types for saga repository
             builder.RegisterType<ContainerSagaDbContextFactory<TDbContext, TSaga>>().As<ISagaDbContextFactory<TSaga>>();
-            builder.Register(QueryProviderFactory).As<ILoadQueryProvider<TSaga>>();
+            builder.Register(context => new CustomSagaLoadQueryProvider<TSaga>(new DefaultSagaLoadQueryProvider<TSaga>(), GetQueryCustomizer<TSaga>(context))).As<ILoadQueryProvider<TSaga>>();
             builder.RegisterType<OptimisticLoadQueryExecutor<TSaga>>().As<ILoadQueryExecutor<TSaga>>();
             builder.RegisterType<OptimisticSagaRepositoryLockStrategy<TSaga>>().WithParameter(TypedParameter.From(isolationLevel)).As<ISagaRepositoryLockStrategy<TSaga>>();
         }
@@ -108,28 +114,6 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
             where TSaga : class, SagaStateMachineInstance
             where TDbContext : DbContext
         {
-            ILoadQueryExecutor<TSaga> QueryExecutorFactory(IComponentContext context)
-            {
-                var l = (ILockStatementProvider)context.ResolveOptional<ILockStatementProvider<TSaga>>() ?? new SqlServerLockStatementProvider();
-                var c = context.Resolve<IOrderedEnumerable<IEntityFrameworkCoreQueryCustomizer<TSaga>>>().ToList();
-                if (c.Count > 0)
-                {
-                    // start with first customizer
-                    Func<IQueryable<TSaga>, IQueryable<TSaga>> f = c[0].Apply;
-
-                    // layer on each additional customer
-                    for (int i = 1; i < c.Count; i++)
-                    {
-                        Func<IQueryable<TSaga>, IQueryable<TSaga>> m = c[i].Apply;
-                        f = q => m(f(q));
-                    }
-
-                    // wrap in custom provider
-                    return new PessimisticLoadQueryExecutor<TSaga>(l, f);
-                }
-
-                return new PessimisticLoadQueryExecutor<TSaga>(l, null);
-            };
             // optionally register a lock statement provider if column name is provided
             if (correlationIdColumnName != null)
                 builder.RegisterType<SqlServerExtendedLockStatementProvider<TSaga>>().WithParameter("columnName", correlationIdColumnName).As<ILockStatementProvider<TSaga>>();
@@ -137,7 +121,7 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
             // register required types for saga repository
             builder.RegisterType<ContainerSagaDbContextFactory<TDbContext, TSaga>>().As<ISagaDbContextFactory<TSaga>>();
             builder.RegisterType<DefaultSagaLoadQueryProvider<TSaga>>().As<ILoadQueryProvider<TSaga>>();
-            builder.Register(QueryExecutorFactory).As<ILoadQueryExecutor<TSaga>>();
+            builder.Register(context => new PessimisticLoadQueryExecutor<TSaga>((ILockStatementProvider)context.ResolveOptional<ILockStatementProvider<TSaga>>() ?? new SqlServerLockStatementProvider(), GetQueryCustomizer<TSaga>(context))).As<ILoadQueryExecutor<TSaga>>();
             builder.RegisterType<PessimisticSagaRepositoryLockStrategy<TSaga>>().WithParameter(TypedParameter.From(isolationLevel)).As<ISagaRepositoryLockStrategy<TSaga>>();
         }
 
