@@ -1,6 +1,4 @@
-﻿using Automatonymous;
-
-using MassTransit;
+﻿using MassTransit;
 
 namespace Cogito.MassTransit.Automatonymous.Events
 {
@@ -11,8 +9,7 @@ namespace Cogito.MassTransit.Automatonymous.Events
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
-    public interface MultiRequestFinishedItem<TInstance, TRequest, TResponse>
-        where TInstance : class, SagaStateMachineInstance
+    public interface MultiRequestFinishedItem<TRequest, TResponse>
         where TRequest : class
         where TResponse : class
     {

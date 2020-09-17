@@ -8,7 +8,7 @@ namespace Cogito.MassTransit.Automatonymous.Events
     /// <summary>
     /// Describes a finished item.
     /// </summary>
-    public struct MultiRequestFinishedItem<TInstance, TState, TRequest, TResponse> : MultiRequestFinishedItem<TInstance, TRequest, TResponse>
+    public struct MultiRequestFinishedItem<TInstance, TState, TRequest, TResponse> : MultiRequestFinishedItem<TRequest, TResponse>
         where TInstance : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class

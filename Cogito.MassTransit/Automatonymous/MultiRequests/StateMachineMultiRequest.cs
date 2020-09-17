@@ -72,12 +72,12 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// <summary>
         /// Signal when all requests have finished. Do not place any triggers on this event.
         /// </summary>
-        public Event<MultiRequestFinishedSignal<TInstance, TRequest, TResponse>> FinishedSignal { get; set; }
+        public Event<MultiRequestFinishedSignal> FinishedSignal { get; set; }
 
         /// <summary>
         /// Raised when all requests have finished.
         /// </summary>
-        public Event<MultiRequestFinished<TInstance, TRequest, TResponse>> Finished { get; set; }
+        public Event<MultiRequestFinished<TRequest, TResponse>> Finished { get; set; }
 
         /// <summary>
         /// Raised when a single request has completed.

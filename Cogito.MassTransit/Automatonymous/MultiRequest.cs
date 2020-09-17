@@ -37,12 +37,12 @@ namespace Cogito.MassTransit.Automatonymous
         /// <summary>
         /// The event that is dispatched back to the state machine to signal all requests complete.
         /// </summary>
-        Event<MultiRequestFinishedSignal<TInstance, TRequest, TResponse>> FinishedSignal { get; set; }
+        Event<MultiRequestFinishedSignal> FinishedSignal { get; set; }
 
         /// <summary>
         /// The event that is raised when all of the requests complete.
         /// </summary>
-        Event<MultiRequestFinished<TInstance, TRequest, TResponse>> Finished { get; set; }
+        Event<MultiRequestFinished<TRequest, TResponse>> Finished { get; set; }
 
         /// <summary>
         /// The event that is raised when a request completes and the response is received.

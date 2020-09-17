@@ -17,7 +17,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class MultiRequestFinishedActivity<TInstance, TState, TRequest, TResponse> : Activity<TInstance, MultiRequestFinishedSignal<TInstance, TRequest, TResponse>>
+    public class MultiRequestFinishedActivity<TInstance, TState, TRequest, TResponse> : Activity<TInstance, MultiRequestFinishedSignal>
         where TInstance : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
@@ -39,7 +39,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             visitor.Visit(this);
         }
 
-        public async Task Execute(BehaviorContext<TInstance, MultiRequestFinishedSignal<TInstance, TRequest, TResponse>> context, Behavior<TInstance, MultiRequestFinishedSignal<TInstance, TRequest, TResponse>> next)
+        public async Task Execute(BehaviorContext<TInstance, MultiRequestFinishedSignal> context, Behavior<TInstance, MultiRequestFinishedSignal> next)
         {
             var evt = MultiRequestFinishedEvent<TInstance, TState, TRequest, TResponse>.Init(context, request);
 
@@ -51,7 +51,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             await next.Execute(context);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, MultiRequestFinishedSignal<TInstance, TRequest, TResponse>, TException> context, Behavior<TInstance, MultiRequestFinishedSignal<TInstance, TRequest, TResponse>> next) where TException : Exception
+        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, MultiRequestFinishedSignal, TException> context, Behavior<TInstance, MultiRequestFinishedSignal> next) where TException : Exception
         {
             return next.Faulted(context);
         }

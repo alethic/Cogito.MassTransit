@@ -43,7 +43,7 @@ namespace Cogito.MassTransit.Tests
         /// <summary>
         /// Represents a single request state item.
         /// </summary>
-        public class TestSagaRequestState : MultiRequestFinishedItem<TestSagaState, TestConsumerRequest, TestConsumerResponse>
+        public class TestSagaRequestState
         {
 
             public Guid RequestId { get; set; }

@@ -47,8 +47,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             {
                 // dispatch signal to ourselves
                 var endpoint = await context.GetSendEndpoint(context.CreateConsumeContext().ReceiveContext.InputAddress);
-                var finished = new MultiRequestFinishedSignal<TInstance, TRequest, TResponse>();
-                await endpoint.Send(finished, s => s.CorrelationId = context.Instance.CorrelationId, context.CancellationToken);
+                await endpoint.Send(new MultiRequestFinishedSignal(), s => s.CorrelationId = context.Instance.CorrelationId, context.CancellationToken);
             }
         }
 
