@@ -85,7 +85,10 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
 
                     // layer on each additional customer
                     for (int i = 1; i < c.Count; i++)
-                        f = q => c[i].Apply(f(q));
+                    {
+                        Func<IQueryable<TSaga>, IQueryable<TSaga>> m = c[i].Apply;
+                        f = q => m(f(q));
+                    }
 
                     // wrap in custom provider
                     p = new CustomSagaLoadQueryProvider<TSaga>(p, f);
@@ -105,6 +108,28 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
             where TSaga : class, SagaStateMachineInstance
             where TDbContext : DbContext
         {
+            ILoadQueryExecutor<TSaga> QueryExecutorFactory(IComponentContext context)
+            {
+                var l = (ILockStatementProvider)context.ResolveOptional<ILockStatementProvider<TSaga>>() ?? new SqlServerLockStatementProvider();
+                var c = context.Resolve<IOrderedEnumerable<IEntityFrameworkCoreQueryCustomizer<TSaga>>>().ToList();
+                if (c.Count > 0)
+                {
+                    // start with first customizer
+                    Func<IQueryable<TSaga>, IQueryable<TSaga>> f = c[0].Apply;
+
+                    // layer on each additional customer
+                    for (int i = 1; i < c.Count; i++)
+                    {
+                        Func<IQueryable<TSaga>, IQueryable<TSaga>> m = c[i].Apply;
+                        f = q => m(f(q));
+                    }
+
+                    // wrap in custom provider
+                    return new PessimisticLoadQueryExecutor<TSaga>(l, f);
+                }
+
+                return new PessimisticLoadQueryExecutor<TSaga>(l, null);
+            };
             // optionally register a lock statement provider if column name is provided
             if (correlationIdColumnName != null)
                 builder.RegisterType<SqlServerExtendedLockStatementProvider<TSaga>>().WithParameter("columnName", correlationIdColumnName).As<ILockStatementProvider<TSaga>>();
@@ -112,7 +137,7 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Autofac
             // register required types for saga repository
             builder.RegisterType<ContainerSagaDbContextFactory<TDbContext, TSaga>>().As<ISagaDbContextFactory<TSaga>>();
             builder.RegisterType<DefaultSagaLoadQueryProvider<TSaga>>().As<ILoadQueryProvider<TSaga>>();
-            builder.Register(ctx => new PessimisticLoadQueryExecutor<TSaga>((ILockStatementProvider)ctx.ResolveOptional<ILockStatementProvider<TSaga>>() ?? new SqlServerLockStatementProvider(), q => ctx.ResolveOptional<IEntityFrameworkCoreQueryCustomizer<TSaga>>()?.Apply(q))).As<ILoadQueryExecutor<TSaga>>();
+            builder.Register(QueryExecutorFactory).As<ILoadQueryExecutor<TSaga>>();
             builder.RegisterType<PessimisticSagaRepositoryLockStrategy<TSaga>>().WithParameter(TypedParameter.From(isolationLevel)).As<ISagaRepositoryLockStrategy<TSaga>>();
         }
 
