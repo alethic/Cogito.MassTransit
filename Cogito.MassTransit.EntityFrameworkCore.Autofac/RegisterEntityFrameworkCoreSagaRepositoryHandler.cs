@@ -18,7 +18,6 @@ using MassTransit.EntityFrameworkCoreIntegration.Saga.Context;
 using MassTransit.Internals.Extensions;
 using MassTransit.Registration;
 using MassTransit.Saga;
-using MassTransit.Testing.Decorators;
 
 using Microsoft.EntityFrameworkCore;
 
