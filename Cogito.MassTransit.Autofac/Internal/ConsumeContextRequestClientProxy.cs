@@ -47,18 +47,34 @@ namespace Cogito.MassTransit.Autofac.Internal
             return impl.GetResponse<T>(values, cancellationToken, timeout);
         }
 
-        public Task<(Task<Response<T1>>, Task<Response<T2>>)> GetResponse<T1, T2>(TRequest message, CancellationToken cancellationToken = default, RequestTimeout timeout = default)
+        public Task<Response<T1, T2>> GetResponse<T1, T2>(TRequest message, CancellationToken cancellationToken = default, RequestTimeout timeout = default)
             where T1 : class
             where T2 : class
         {
             return impl.GetResponse<T1, T2>(message, cancellationToken, timeout);
         }
 
-        public Task<(Task<Response<T1>>, Task<Response<T2>>)> GetResponse<T1, T2>(object values, CancellationToken cancellationToken = default, RequestTimeout timeout = default)
+        public Task<Response<T1, T2>> GetResponse<T1, T2>(object values, CancellationToken cancellationToken = default, RequestTimeout timeout = default)
             where T1 : class
             where T2 : class
         {
             return impl.GetResponse<T1, T2>(values, cancellationToken, timeout);
+        }
+
+        public Task<Response<T1, T2, T3>> GetResponse<T1, T2, T3>(TRequest message, CancellationToken cancellationToken = default, RequestTimeout timeout = default)
+            where T1 : class
+            where T2 : class
+            where T3 : class
+        {
+            return impl.GetResponse<T1, T2, T3>(message, cancellationToken, timeout);
+        }
+
+        public Task<Response<T1, T2, T3>> GetResponse<T1, T2, T3>(object values, CancellationToken cancellationToken = default, RequestTimeout timeout = default)
+            where T1 : class
+            where T2 : class
+            where T3 : class
+        {
+            return impl.GetResponse<T1, T2, T3>(values, cancellationToken, timeout);
         }
 
     }
