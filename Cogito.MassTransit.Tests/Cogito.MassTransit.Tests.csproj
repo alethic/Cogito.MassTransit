@@ -1,30 +1,41 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net47;net5;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="fm.Extensions.Logging.TestContext" Version="6.0.0" />
-    <PackageReference Include="MassTransit.Quartz" Version="7.0.4" />
-    <PackageReference Include="Microsoft.CodeCoverage" Version="16.7.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.9" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="5.10.3" />
+        <PackageReference Include="fm.Extensions.Logging.TestContext" Version="6.0.0" />
+        <PackageReference Include="MassTransit.Quartz" Version="7.1.3" />
+        <PackageReference Include="Microsoft.CodeCoverage" Version="16.8.3" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+        <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+        <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
-    <ProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore.Autofac\Cogito.MassTransit.EntityFrameworkCore.Autofac.csproj" />
-    <ProjectReference Include="..\Cogito.MassTransit.InMemory.Autofac\Cogito.MassTransit.InMemory.Autofac.csproj" />
-    <ProjectReference Include="..\Cogito.MassTransit.InMemory\Cogito.MassTransit.InMemory.csproj" />
-    <ProjectReference Include="..\Cogito.MassTransit.Scheduler.Autofac\Cogito.MassTransit.Scheduler.Autofac.csproj" />
-    <ProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj" />
-    <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
-  </ItemGroup>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.10" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net5' ">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore.Autofac\Cogito.MassTransit.EntityFrameworkCore.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.InMemory.Autofac\Cogito.MassTransit.InMemory.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.InMemory\Cogito.MassTransit.InMemory.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.Scheduler.Autofac\Cogito.MassTransit.Scheduler.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+    </ItemGroup>
 
 </Project>
