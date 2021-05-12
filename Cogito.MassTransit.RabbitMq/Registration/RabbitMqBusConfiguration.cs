@@ -21,7 +21,6 @@ namespace Cogito.MassTransit.RabbitMq.Registration
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="busName"></param>
         /// <param name="options"></param>
         public RabbitMqBusConfiguration(IOptionsSnapshot<RabbitMqBusOptions> options)
         {
