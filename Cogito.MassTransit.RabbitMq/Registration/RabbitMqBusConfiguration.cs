@@ -48,7 +48,7 @@ namespace Cogito.MassTransit.RabbitMq.Registration
                 if (o.UserName != null)
                     s.Username(o.UserName);
                 if (o.Password != null)
-                    s.Password(o.UserName);
+                    s.Password(o.Password);
                 if (o.EnableSsl)
                     s.UseSsl(_ => { });
             });
