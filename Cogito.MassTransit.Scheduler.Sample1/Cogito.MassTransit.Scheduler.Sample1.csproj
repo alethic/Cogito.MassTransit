@@ -11,11 +11,13 @@
         <PackageReference Include="Cogito.Extensions.Options.Configuration.Autofac" Version="2.0.19" />
         <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
         <PackageReference Include="Cogito.Autofac" Version="3.1.0" />
-        <PackageReference Include="Cogito.Quartz.Serilog.Autofac" Version="0.1.9" />
+        <PackageReference Include="Cogito.Quartz.Serilog.Autofac" Version="0.1.11" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit.RabbitMq.Autofac\Cogito.MassTransit.RabbitMq.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.RabbitMq\Cogito.MassTransit.RabbitMq.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Azure.ServiceBus\Cogito.MassTransit.Azure.ServiceBus.csproj" />

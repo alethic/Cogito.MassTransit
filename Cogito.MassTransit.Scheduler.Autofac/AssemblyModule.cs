@@ -16,6 +16,7 @@ namespace Cogito.MassTransit.Scheduler.Autofac
 
         protected override void Register(ContainerBuilder builder)
         {
+            builder.RegisterModule<Cogito.Quartz.Autofac.AssemblyModule>();
             builder.RegisterFromAttributes(typeof(AssemblyModule).Assembly);
             builder.RegisterType<PeriodicScheduler>().As<IHostedService>();
             builder.RegisterType<PeriodicSchedulerJob>().AsSelf();
