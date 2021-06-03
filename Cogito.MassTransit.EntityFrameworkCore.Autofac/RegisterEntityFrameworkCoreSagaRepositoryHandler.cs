@@ -9,7 +9,6 @@ using Autofac;
 using Automatonymous;
 
 using Cogito.Autofac;
-using Cogito.Collections;
 
 using MassTransit.AutofacIntegration.Registration;
 using MassTransit.EntityFrameworkCoreIntegration;
