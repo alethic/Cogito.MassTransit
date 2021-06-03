@@ -82,8 +82,6 @@ namespace Cogito.MassTransit.Autofac
 
             // standard Autofac related services
             builder.RegisterType<BusDepot>().As<IBusDepot>().SingleInstance();
-            builder.Register(context => new BusHealth(nameof(IBus))).As<BusHealth>().As<IBusHealth>().SingleInstance();
-            builder.RegisterType<BusHealthCheckConfiguration>().As<IBusConfiguration>().SingleInstance();
             builder.Register(CreateConsumerScopeProvider).As<IConsumerScopeProvider>().SingleInstance().IfNotRegistered(typeof(IConsumerScopeProvider));
             builder.Register(GetCurrentSendEndpointProvider).As<ISendEndpointProvider>().InstancePerLifetimeScope();
             builder.Register(GetCurrentPublishEndpoint).As<IPublishEndpoint>().InstancePerLifetimeScope();

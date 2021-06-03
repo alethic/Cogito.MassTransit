@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="Cogito.Extensions.Options" Version="2.0.19" />
-        <PackageReference Include="MassTransit" Version="7.1.8" />
+        <PackageReference Include="MassTransit" Version="7.2.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
