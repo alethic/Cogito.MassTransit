@@ -10,7 +10,6 @@ using MassTransit.AutofacIntegration;
 using MassTransit.AutofacIntegration.Registration;
 using MassTransit.AutofacIntegration.ScopeProviders;
 using MassTransit.Context;
-using MassTransit.Monitoring.Health;
 using MassTransit.Registration;
 using MassTransit.Scoping;
 using MassTransit.Transactions;

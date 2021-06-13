@@ -4,7 +4,6 @@ using Autofac.Extensions.DependencyInjection;
 
 using Cogito.Autofac;
 using Cogito.MassTransit.Autofac;
-using Cogito.MassTransit.Azure.ServiceBus.Autofac;
 using Cogito.MassTransit.RabbitMq.Autofac;
 
 using MassTransit;
