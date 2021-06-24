@@ -120,8 +120,12 @@ namespace Cogito.MassTransit.Autofac
             builder.RegisterType<BusRegistrationFactory>().SingleInstance();
             builder.RegisterType<BusProvider>().SingleInstance();
 
+            // generates request clients
+            builder.RegisterGenericRequestClient();
+
             // register default bus instance
             builder.Register(ctx => ctx.Resolve<BusProvider>().GetBus()).SingleInstance().ExternallyOwned().As<IBusControl>().As<IBus>();
+            builder.Register(ctx => ctx.Resolve<IBus>().CreateClientFactory()).SingleInstance();
         }
 
     }
