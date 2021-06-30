@@ -20,11 +20,11 @@ namespace Cogito.MassTransit.Scheduler.Sample1
         public TestService(IRequestClient<TestMessage> client)
         {
             this.client = client;
-            var h = client.Create(new TestMessage());
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
+            var h = await client.GetResponse<TestMessage>(new TestMessage());
             throw new NotImplementedException();
         }
 
