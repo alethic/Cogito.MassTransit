@@ -23,9 +23,7 @@ namespace Cogito.MassTransit.Scheduler
     /// <summary>
     /// Consumes requests to create or alter scheduled messages.
     /// </summary>
-    public class ScheduledMessageConsumer :
-        IConsumer<ScheduleMessage>,
-        IConsumer<DeleteSchedule>
+    public class ScheduledMessageConsumer : IConsumer<ScheduleMessage>, IConsumer<DeleteSchedule>
     {
 
         readonly IScheduler scheduler;
