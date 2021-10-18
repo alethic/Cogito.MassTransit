@@ -1,5 +1,4 @@
-﻿
-using Autofac;
+﻿using Autofac;
 
 using Cogito.Autofac;
 using Cogito.MassTransit.Autofac;

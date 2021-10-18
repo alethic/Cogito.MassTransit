@@ -25,8 +25,7 @@ namespace Cogito.MassTransit.Scheduler
         /// <summary>
         /// Used to store job data inside the scheduler.
         /// </summary>
-        class ScheduleJobData :
-            SerializedMessage
+        class ScheduleJobData : SerializedMessage
         {
 
             public Uri Destination { get; set; }
