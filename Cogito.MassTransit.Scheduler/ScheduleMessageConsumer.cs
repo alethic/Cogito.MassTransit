@@ -23,7 +23,7 @@ namespace Cogito.MassTransit.Scheduler
     /// <summary>
     /// Consumes requests to create or alter scheduled messages.
     /// </summary>
-    public class ScheduledMessageConsumer : IConsumer<ScheduleMessage>, IConsumer<DeleteSchedule>
+    public class ScheduleMessageConsumer : IConsumer<ScheduleMessage>, IConsumer<DeleteSchedule>
     {
 
         readonly IScheduler scheduler;
@@ -33,7 +33,7 @@ namespace Cogito.MassTransit.Scheduler
         /// Initializes a new instance.
         /// </summary>
         /// <param name="scheduler"></param>
-        public ScheduledMessageConsumer(IScheduler scheduler, ILogger logger)
+        public ScheduleMessageConsumer(IScheduler scheduler, ILogger logger)
         {
             this.scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));

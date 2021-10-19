@@ -22,9 +22,10 @@ namespace Cogito.MassTransit.Scheduler.Autofac
             builder.RegisterType<PeriodicSchedulerJob>().AsSelf();
             builder.RegisterType<PeriodicJob>().AsSelf();
             builder.RegisterType<ScheduledMessageJob>().AsSelf();
-            builder.RegisterConsumer<ScheduledMessageConsumer>("scheduler");
-            builder.RegisterConsumer<global::MassTransit.QuartzIntegration.ScheduleMessageConsumer>("scheduler");
-            builder.RegisterConsumer<global::MassTransit.QuartzIntegration.CancelScheduledMessageConsumer>("scheduler");
+            builder.RegisterType<NativeScheduledMessageJob>().AsSelf();
+            builder.RegisterConsumer<ScheduleMessageConsumer>("scheduler");
+            builder.RegisterConsumer<NativeScheduleMessageConsumer>("scheduler");
+            builder.RegisterConsumer<NativeCancelScheduledMessageConsumer>("scheduler");
         }
     }
 
