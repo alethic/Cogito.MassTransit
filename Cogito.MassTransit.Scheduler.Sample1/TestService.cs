@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 using Cogito.Autofac;
@@ -22,15 +21,14 @@ namespace Cogito.MassTransit.Scheduler.Sample1
             this.client = client;
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            var h = await client.GetResponse<TestMessage>(new TestMessage());
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 

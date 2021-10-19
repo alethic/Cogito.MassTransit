@@ -126,7 +126,7 @@
             else
                 throw new InvalidOperationException("Only JSON and XML messages can be scheduled");
 
-            var builder = global::Quartz.JobBuilder.Create<ScheduledMessageJob>()
+            var builder = global::Quartz.JobBuilder.Create<NativeScheduledMessageJob>()
                 .RequestRecovery()
                 .WithIdentity(jobKey)
                 .UsingJobData("Destination", ToString(destination))
