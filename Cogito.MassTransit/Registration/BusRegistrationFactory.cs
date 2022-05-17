@@ -2,6 +2,7 @@
 using System.Linq;
 
 using MassTransit;
+using MassTransit.Context;
 
 namespace Cogito.MassTransit.Registration
 {

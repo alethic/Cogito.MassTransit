@@ -133,7 +133,7 @@ namespace Cogito.MassTransit.Scheduler
                 trigger = TriggerBuilder.Create()
                     .ForJob(JOB_KEY)
                     .WithIdentity(TRIGGER_KEY)
-                    .WithSimpleSchedule(x => x.WithInterval(TimeSpan.FromMinutes(5)).RepeatForever())
+                    .WithSimpleSchedule(x => x.WithInterval(TimeSpan.FromMinutes(5)).RepeatForever().WithMisfireHandlingInstructionIgnoreMisfires())
                     .StartNow()
                     .Build();
 
