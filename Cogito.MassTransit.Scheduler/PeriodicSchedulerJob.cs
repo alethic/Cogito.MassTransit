@@ -117,7 +117,7 @@ namespace Cogito.MassTransit.Scheduler
                 .ForJob(JOB_KEY)
                 .WithIdentity(new TriggerKey(key, TRIGGER_GROUP))
                 .UsingJobData("Interval", interval.ToString())
-                .WithSimpleSchedule(x => x.WithInterval(interval).RepeatForever().WithMisfireHandlingInstructionIgnoreMisfires())
+                .WithSimpleSchedule(x => x.WithInterval(interval).RepeatForever().WithMisfireHandlingInstructionNextWithRemainingCount())
                 .StartAt(new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero))
                 .Build();
         }
