@@ -8,7 +8,8 @@
 
     <ItemGroup>
         <PackageReference Include="Autofac.Extras.AttributeMetadata" Version="6.0.0" />
-        <PackageReference Include="Cogito.Autofac" Version="3.1.7" />
+        <PackageReference Include="Cogito.Autofac" Version="4.0.13" />
+        <PackageReference Include="Cogito.Autofac.DependencyInjection" Version="4.0.13" />
         <PackageReference Include="Cogito.Extensions.Logging.Autofac" Version="2.0.20" />
         <PackageReference Include="Cogito.Extensions.Options.Autofac" Version="2.0.19" />
         <PackageReference Include="MassTransit.Autofac" Version="7.2.3" />
