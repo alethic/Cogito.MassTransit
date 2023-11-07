@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>net472;net6.0</TargetFrameworks>
         <Description>Provides an Autofac module to register the Scheduler components within an application.</Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cogito.Quartz.Autofac" Version="0.1.14" />
+        <PackageReference Include="Cogito.Quartz.Autofac" Version="1.0.1" />
     </ItemGroup>
 
     <ItemGroup>

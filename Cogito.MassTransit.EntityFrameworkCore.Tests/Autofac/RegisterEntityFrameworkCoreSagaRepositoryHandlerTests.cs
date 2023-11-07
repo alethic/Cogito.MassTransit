@@ -7,14 +7,12 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 
 using Automatonymous;
-
 using Cogito.Autofac;
 using Cogito.Autofac.DependencyInjection;
 using Cogito.MassTransit.Autofac;
 using Cogito.MassTransit.EntityFrameworkCore;
 using Cogito.MassTransit.EntityFrameworkCore.Autofac;
 using Cogito.MassTransit.InMemory.Autofac;
-
 using FluentAssertions;
 
 using fm.Extensions.Logging;
@@ -28,7 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Cogito.MassTransit.Tests.EntityFrameworkCore.Autofac
+namespace Cogito.MassTransit.EntityFrameworkCore.Tests.Autofac
 {
 
     [TestClass]

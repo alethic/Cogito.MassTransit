@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>net472;net6.0</TargetFrameworks>
         <Description>Extensions and utilities for working with MassTransit and RabbitMQ.</Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.3" />
+      <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4" />
     </ItemGroup>
 
     <ItemGroup>

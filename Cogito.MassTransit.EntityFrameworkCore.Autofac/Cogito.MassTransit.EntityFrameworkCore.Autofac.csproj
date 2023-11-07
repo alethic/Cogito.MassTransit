@@ -1,10 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>net6.0</TargetFrameworks>
         <Description>Extensions and utilities for working with MassTransit EF Core Integration and Autofac.</Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Cogito.MassTransit.EntityFrameworkCore.Tests" />
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
