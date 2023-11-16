@@ -1,6 +1,7 @@
 ﻿
 using System;
 
+using Cogito.Azure.Identity;
 using Cogito.MassTransit.Registration;
 
 using MassTransit;
@@ -18,15 +19,17 @@ namespace Cogito.MassTransit.Azure.ServiceBus.Registration
     {
 
         readonly IOptionsSnapshot<ServiceBusBusOptions> options;
+        readonly AzureIdentityCredential credential;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="busName"></param>
         /// <param name="options"></param>
-        public ServiceBusBusConfiguration(IOptionsSnapshot<ServiceBusBusOptions> options)
+        public ServiceBusBusConfiguration(IOptionsSnapshot<ServiceBusBusOptions> options, AzureIdentityCredential credential)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.credential = credential ?? throw new ArgumentNullException(nameof(credential));
         }
 
         /// <summary>
@@ -45,8 +48,18 @@ namespace Cogito.MassTransit.Azure.ServiceBus.Registration
                 return;
 
             // apply connection string
-            c.Host(o.ConnectionString);
+            if (o.ConnectionString != null)
+                c.Host(o.ConnectionString, ConfigureServiceBus);
         }
+
+        void ConfigureServiceBus(IServiceBusHostConfigurator configurator)
+        {
+            if (options.Value.UseDefaultCredential)
+            {
+
+            }
+        }
+
     }
 
 }

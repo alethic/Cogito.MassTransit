@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Cogito.Azure.Identity.Autofac" Version="1.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Azure.ServiceBus\Cogito.MassTransit.Azure.ServiceBus.csproj" />
     </ItemGroup>
