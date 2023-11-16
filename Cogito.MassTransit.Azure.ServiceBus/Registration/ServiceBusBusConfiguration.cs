@@ -49,7 +49,17 @@ namespace Cogito.MassTransit.Azure.ServiceBus.Registration
 
             // apply connection string
             if (o.ConnectionString != null)
-                c.Host(o.ConnectionString);
+                c.Host(o.ConnectionString, c => ConfigureServiceBusHost(c, o));
+        }
+
+        /// <summary>
+        /// Applies additional configuration to the service bus.
+        /// </summary>
+        /// <param name="configurator"></param>
+        /// <param name="options"></param>
+        void ConfigureServiceBusHost(IServiceBusHostConfigurator configurator, ServiceBusBusOptions options)
+        {
+
         }
 
     }
