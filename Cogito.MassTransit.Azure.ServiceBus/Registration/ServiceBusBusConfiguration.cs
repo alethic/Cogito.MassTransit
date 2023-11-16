@@ -49,15 +49,7 @@ namespace Cogito.MassTransit.Azure.ServiceBus.Registration
 
             // apply connection string
             if (o.ConnectionString != null)
-                c.Host(o.ConnectionString, ConfigureServiceBus);
-        }
-
-        void ConfigureServiceBus(IServiceBusHostConfigurator configurator)
-        {
-            if (options.Value.UseDefaultCredential)
-            {
-
-            }
+                c.Host(o.ConnectionString);
         }
 
     }
