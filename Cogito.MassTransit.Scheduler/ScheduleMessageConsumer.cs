@@ -84,7 +84,7 @@ namespace Cogito.MassTransit.Scheduler
                 var oldTrigger = await scheduler.GetTrigger(triggerKey);
                 if (Equals(trigger, oldTrigger) == false)
                 {
-                    logger.LogInformation("Rescheduling existing job {JobKey} with new triggers.", job.Key, trigger);
+                    logger.LogInformation("Rescheduling existing job {JobKey} with new triggers.", job.Key);
                     await scheduler.ScheduleJob(job, triggers, true);
                     return;
                 }
