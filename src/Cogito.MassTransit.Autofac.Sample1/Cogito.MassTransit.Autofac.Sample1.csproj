@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="TestConsumer1.cs" />
+      <Compile Remove="TestConsumer2.cs" />
+      <Compile Remove="TestSaga.cs" />
+      <Compile Remove="TestSagaMessage.cs" />
+      <Compile Remove="TestSagaRequest.cs" />
+      <Compile Remove="TestSagaRequestState.cs" />
+      <Compile Remove="TestSagaResponse.cs" />
+      <Compile Remove="TestSagaState.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cogito.Components" Version="2.0.1" />
+        <PackageReference Include="Cogito.Extensions.Configuration.Autofac" Version="4.0.0" />
+        <PackageReference Include="Cogito.Extensions.Logging.Serilog.Autofac" Version="3.0.0" />
+        <PackageReference Include="Cogito.Extensions.Options.Configuration.Autofac" Version="4.0.0" />
+        <PackageReference Include="Cogito.Autofac" Version="6.0.0" />
+        <PackageReference Include="MassTransit" Version="8.3.4" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        
+    </ItemGroup>
+
+</Project>

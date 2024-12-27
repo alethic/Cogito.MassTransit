@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.Build.NoTargets">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj">
+            <PackageTargetPath>.</PackageTargetPath>
+        </PackageProjectReference>
+        <PackageProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj">
+            <PackageTargetPath>.</PackageTargetPath>
+        </PackageProjectReference>
+    </ItemGroup>
+
+</Project>

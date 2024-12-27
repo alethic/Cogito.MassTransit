@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+        <Description>Provides an Autofac module to register the Scheduler components within an application.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cogito.Quartz.Autofac" Version="2.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj" />
+    </ItemGroup>
+
+</Project>

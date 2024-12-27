@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+        <Description>Extensions and utilities for working with MassTransit and RabbitMQ.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+    </ItemGroup>
+
+</Project>

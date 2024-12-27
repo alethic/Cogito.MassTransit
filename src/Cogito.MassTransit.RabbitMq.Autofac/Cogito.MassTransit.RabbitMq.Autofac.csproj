@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+        <Description>Alternative Autofac integration for MassTransit and RabbitMQ.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.RabbitMq\Cogito.MassTransit.RabbitMq.csproj" />
+    </ItemGroup>
+
+</Project>

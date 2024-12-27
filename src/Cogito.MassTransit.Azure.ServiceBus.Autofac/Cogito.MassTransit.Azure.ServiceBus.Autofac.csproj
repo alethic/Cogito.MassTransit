@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+        <Description>Alternative Autofac integration for MassTransit and Azure Service Bus.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cogito.Azure.Identity.Autofac" Version="2.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit.Autofac\Cogito.MassTransit.Autofac.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.Azure.ServiceBus\Cogito.MassTransit.Azure.ServiceBus.csproj" />
+    </ItemGroup>
+
+</Project>

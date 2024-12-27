@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+        <Description>Alternative Autofac integration for MassTransit.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Autofac.Extras.AttributeMetadata" Version="6.0.0" />
+        <PackageReference Include="Cogito.Autofac" Version="6.0.0" />
+        <PackageReference Include="Cogito.Autofac.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Cogito.Extensions.Logging.Autofac" Version="3.0.0" />
+        <PackageReference Include="Cogito.Extensions.Options.Autofac" Version="4.0.0" />
+        <PackageReference Include="MassTransit.Autofac" Version="7.3.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+    </ItemGroup>
+
+</Project>
