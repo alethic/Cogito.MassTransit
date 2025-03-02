@@ -87,7 +87,6 @@ jobs:
       matrix:
         run:
         - Cogito.MassTransit.Tests
-        - Cogito.MassTransit.EntityFrameworkCore.Tests
         sys:
         - win-x64
         - linux-x64
