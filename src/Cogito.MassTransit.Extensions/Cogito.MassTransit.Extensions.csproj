@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+        <Description>Extensions and utilities for working with MassTransit.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Automatonymous\MultiRequests\**" />
+      <EmbeddedResource Remove="Automatonymous\MultiRequests\**" />
+      <None Remove="Automatonymous\MultiRequests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+    </ItemGroup>
+
+</Project>

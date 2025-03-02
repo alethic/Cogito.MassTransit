@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="TestSaga.cs" />
+      <Compile Remove="TestSagaMessage.cs" />
+      <Compile Remove="TestSagaRequest.cs" />
+      <Compile Remove="TestSagaRequestState.cs" />
+      <Compile Remove="TestSagaResponse.cs" />
+      <Compile Remove="TestSagaState.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Cogito.MassTransit.DependencyInjection\Cogito.MassTransit.DependencyInjection.csproj" />
+      <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -29,7 +29,7 @@
     <ItemGroup>
         <PackageReference Include="Cogito.DependencyInjection" Version="1.0.0" />
         <PackageReference Include="Cogito.Extensions.Options" Version="4.0.0" />
-        <PackageReference Include="MassTransit" Version="8.3.4" />
+        <PackageReference Include="MassTransit" Version="8.3.6" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
     </ItemGroup>
