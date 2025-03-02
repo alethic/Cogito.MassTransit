@@ -14,7 +14,7 @@ namespace Cogito.MassTransit.Scheduler
     /// <summary>
     /// Periodically sets up the Periodic jobs.
     /// </summary>
-    [AddTransientService<IJob>()]
+    [AddTransientService<PeriodicSchedulerJob>()]
     public class PeriodicSchedulerJob : IJob
     {
 

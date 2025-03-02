@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dist-nuget", "src\dist-nuge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dist-tests", "src\dist-tests\dist-tests.csproj", "{E0EE625C-AC4D-44EA-A442-630766BE7C92}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogito.MassTransit.Scheduler.Sample1", "src\Cogito.MassTransit.Scheduler.Sample1\Cogito.MassTransit.Scheduler.Sample1.csproj", "{8FBB292C-CFEE-A3BC-49FE-D811E4434653}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{E0EE625C-AC4D-44EA-A442-630766BE7C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0EE625C-AC4D-44EA-A442-630766BE7C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0EE625C-AC4D-44EA-A442-630766BE7C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FBB292C-CFEE-A3BC-49FE-D811E4434653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FBB292C-CFEE-A3BC-49FE-D811E4434653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FBB292C-CFEE-A3BC-49FE-D811E4434653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FBB292C-CFEE-A3BC-49FE-D811E4434653}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

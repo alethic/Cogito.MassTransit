@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 
-using Cogito.MassTransit.DependencyInjection;
 using Cogito.MassTransit.Scheduling.Periodic;
 
 using MassTransit;
@@ -10,7 +9,6 @@ using Microsoft.Extensions.Logging;
 namespace Cogito.MassTransit.Scheduler.Sample1
 {
 
-    [AddConsumer(EndpointName = "periodic")]
     public class PeriodicJobConsumer : IConsumer<PT1M>
     {
 
