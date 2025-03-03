@@ -31,6 +31,8 @@ namespace Cogito.MassTransit.Scheduler.Sample1
                         c.AddPublishMessageScheduler();
                         c.AddQuartzConsumers();
 
+                        c.AddConsumer<PeriodicJobConsumer>();
+
                         c.UsingInMemory((ctx, cfg) =>
                         {
                             cfg.UsePublishMessageScheduler();

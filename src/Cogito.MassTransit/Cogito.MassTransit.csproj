@@ -6,27 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Hosting\**" />
-      <Compile Remove="Registration\**" />
-      <EmbeddedResource Remove="Hosting\**" />
-      <EmbeddedResource Remove="Registration\**" />
-      <None Remove="Hosting\**" />
-      <None Remove="Registration\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="AsyncEventMessageFactory.cs" />
-      <Compile Remove="EventMessageFactory.cs" />
-      <Compile Remove="ExceptionInfoException.cs" />
-      <Compile Remove="Scheduling\DeleteSchedule.cs" />
-      <Compile Remove="Scheduling\Schedule.cs" />
-      <Compile Remove="Scheduling\ScheduledMessage.cs" />
-      <Compile Remove="Scheduling\ScheduleExtensions.cs" />
-      <Compile Remove="Scheduling\ScheduleMessage.cs" />
-      <Compile Remove="Scheduling\ScheduleMisfirePolicy.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Cogito.DependencyInjection" Version="1.0.0" />
         <PackageReference Include="Cogito.Extensions.Options" Version="4.0.0" />
         <PackageReference Include="MassTransit" Version="8.3.6" />
