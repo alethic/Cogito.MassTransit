@@ -43,21 +43,33 @@ namespace Cogito.MassTransit.Extensions.Activities
         public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
             var requestToken = await requestTokenFactory.Invoke(context);
-            if (requestToken is not null)
+            if (requestToken is null)
             {
-                if (requestToken.ResponseAddress is not null)
-                {
-                    var message = await messageFactory.Invoke(context);
-                    var sendEndpoint = await context.GetSendEndpoint(requestToken.ResponseAddress);
+                LogContext.Debug?.Log(
+                    "RespondTo skipped on saga {SagaType} for response {ResponseType}: request token factory returned null (no captured request available).",
+                    typeof(TSaga).Name,
+                    typeof(TResponse).Name);
+            }
+            else if (requestToken.ResponseAddress is null)
+            {
+                LogContext.Debug?.Log(
+                    "RespondTo skipped on saga {SagaType} for response {ResponseType}: captured request token has no ResponseAddress (RequestId={RequestId}).",
+                    typeof(TSaga).Name,
+                    typeof(TResponse).Name,
+                    requestToken.RequestId);
+            }
+            else
+            {
+                var message = await messageFactory.Invoke(context);
+                var sendEndpoint = await context.GetSendEndpoint(requestToken.ResponseAddress);
 
-                    await sendEndpoint.Send(message, ctx =>
-                    {
-                        ctx.CorrelationId = requestToken.CorrelationId;
-                        ctx.ConversationId = requestToken.ConversationId;
-                        ctx.RequestId = requestToken.RequestId;
-                        contextCallback?.Invoke(ctx);
-                    });
-                }
+                await sendEndpoint.Send(message, ctx =>
+                {
+                    ctx.CorrelationId = requestToken.CorrelationId;
+                    ctx.ConversationId = requestToken.ConversationId;
+                    ctx.RequestId = requestToken.RequestId;
+                    contextCallback?.Invoke(ctx);
+                });
             }
 
             await next.Execute(context).ConfigureAwait(false);

@@ -45,6 +45,11 @@ namespace Cogito.MassTransit.Extensions
             } 
             else
             {
+                LogContext.Debug?.Log(
+                    "CaptureRequestToken skipped on saga {SagaType} for message {MessageType}: incoming context has no RequestId (the message is not a request).",
+                    typeof(TSaga).Name,
+                    typeof(TMessage).Name);
+
                 return default;
             }
         }
@@ -69,6 +74,13 @@ namespace Cogito.MassTransit.Extensions
                 token.CorrelationId = context.CorrelationId;
                 token.FaultAddress = context.FaultAddress;
                 token.ResponseAddress = context.ResponseAddress;
+            }
+            else
+            {
+                LogContext.Debug?.Log(
+                    "CaptureRequestToken skipped on saga {SagaType} for message {MessageType}: incoming context has no RequestId (the message is not a request).",
+                    typeof(TSaga).Name,
+                    typeof(TMessage).Name);
             }
         }
 

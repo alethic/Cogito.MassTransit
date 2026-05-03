@@ -43,10 +43,25 @@ namespace Cogito.MassTransit.Extensions.Activities
         public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
             var requestToken = await requestTokenFactory.Invoke(context);
-            if (requestToken is not null)
+            if (requestToken is null)
+            {
+                LogContext.Debug?.Log(
+                    "FaultedTo skipped on saga {SagaType} for request {RequestType}: request token factory returned null (no captured request available).",
+                    typeof(TSaga).Name,
+                    typeof(TRequest).Name);
+            }
+            else
             {
                 var address = requestToken.FaultAddress ?? requestToken.ResponseAddress;
-                if (address is not null)
+                if (address is null)
+                {
+                    LogContext.Debug?.Log(
+                        "FaultedTo skipped on saga {SagaType} for request {RequestType}: captured request token has neither FaultAddress nor ResponseAddress (RequestId={RequestId}).",
+                        typeof(TSaga).Name,
+                        typeof(TRequest).Name,
+                        requestToken.RequestId);
+                }
+                else
                 {
                     var sendEndpoint = await context.GetSendEndpoint(address);
                     var exception = await exceptionFactory.Invoke(context);
