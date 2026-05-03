@@ -74,7 +74,32 @@ namespace Cogito.MassTransit
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
         {
-            return source.Then(context => captured(context, context.CaptureRequestToken()));
+            if (captured == null)
+                throw new ArgumentNullException(nameof(captured));
+
+            return source.Add(new CaptureRequestActivity<TSaga, TMessage, RequestToken<TMessage>>((context, token) =>
+            {
+                captured(context, token);
+                return Task.CompletedTask;
+            }));
+        }
+
+        /// <summary>
+        /// Captures the incoming request into a <see cref="RequestToken{TRequest}"/>, awaiting the supplied callback.
+        /// </summary>
+        /// <typeparam name="TSaga"></typeparam>
+        /// <typeparam name="TMessage"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="captured"></param>
+        /// <returns></returns>
+        public static EventActivityBinder<TSaga, TMessage> CaptureRequestAsync<TSaga, TMessage>(this EventActivityBinder<TSaga, TMessage> source, Func<BehaviorContext<TSaga, TMessage>, RequestToken<TMessage>, Task> captured)
+            where TSaga : class, SagaStateMachineInstance
+            where TMessage : class
+        {
+            if (captured == null)
+                throw new ArgumentNullException(nameof(captured));
+
+            return source.Add(new CaptureRequestActivity<TSaga, TMessage, RequestToken<TMessage>>(captured));
         }
 
         /// <summary>

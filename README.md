@@ -273,12 +273,22 @@ var custom = context.CaptureRequestToken<MySaga, SubmitOrder, MyToken>();
 // 3. Capture into an existing IRequestTokenSetter<TMessage> (e.g. the saga itself):
 context.CaptureRequestToken(saga.PendingRequest);
 
-// 4. Fluent capture inside an EventActivityBinder:
+// 4. Fluent capture inside an EventActivityBinder (sync callback):
 Initially(
     When(SubmitOrder)
         .CaptureRequest((ctx, token) => ctx.Saga.PendingRequest = token)
         .TransitionTo(Processing));
+
+// 5. Fluent capture with an awaited callback (e.g. persisting the token to an external store):
+Initially(
+    When(SubmitOrder)
+        .CaptureRequestAsync(async (ctx, token) => await tokenStore.SaveAsync(token))
+        .TransitionTo(Processing));
 ```
+
+The fluent `CaptureRequest` / `CaptureRequestAsync` overloads are
+implemented as a `CaptureRequestActivity<...>` and show up in saga
+probes / visualizations under the scope name `"captureRequestToken"`.
 
 ### `RespondTo` — sending the success response
 
