@@ -15,7 +15,7 @@ namespace Cogito.MassTransit.Extensions.Activities
 
         readonly AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory;
         readonly AsyncEventMessageFactory<TSaga, TMessage, TResponse> messageFactory;
-        readonly Action<SendContext<TResponse>> contextCallback;
+        readonly Action<SendContext<TResponse>>? contextCallback;
 
         /// <summary>
         /// Initializes a new instance.
@@ -23,7 +23,7 @@ namespace Cogito.MassTransit.Extensions.Activities
         /// <param name="requestTokenFactory"></param>
         /// <param name="messageFactory"></param>
         /// <param name="contextCallback"></param>
-        public RespondToActivity(AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, AsyncEventMessageFactory<TSaga, TMessage, TResponse> messageFactory, Action<SendContext<TResponse>> contextCallback)
+        public RespondToActivity(AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, AsyncEventMessageFactory<TSaga, TMessage, TResponse> messageFactory, Action<SendContext<TResponse>>? contextCallback)
         {
             this.requestTokenFactory = requestTokenFactory ?? throw new ArgumentNullException(nameof(requestTokenFactory));
             this.messageFactory = messageFactory ?? throw new ArgumentNullException(nameof(messageFactory));
@@ -42,19 +42,23 @@ namespace Cogito.MassTransit.Extensions.Activities
 
         public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
-            var requestToken = await requestTokenFactory?.Invoke(context);
-
-            var message = await messageFactory?.Invoke(context);
-
-            var sendEndpoint = await context.GetSendEndpoint(requestToken.ResponseAddress);
-
-            await sendEndpoint.Send(message, ctx =>
+            var requestToken = await requestTokenFactory.Invoke(context);
+            if (requestToken is not null)
             {
-                ctx.CorrelationId = requestToken.CorrelationId;
-                ctx.ConversationId = requestToken.ConversationId;
-                ctx.RequestId = requestToken.RequestId;
-                contextCallback?.Invoke(ctx);
-            });
+                if (requestToken.ResponseAddress is not null)
+                {
+                    var message = await messageFactory.Invoke(context);
+                    var sendEndpoint = await context.GetSendEndpoint(requestToken.ResponseAddress);
+
+                    await sendEndpoint.Send(message, ctx =>
+                    {
+                        ctx.CorrelationId = requestToken.CorrelationId;
+                        ctx.ConversationId = requestToken.ConversationId;
+                        ctx.RequestId = requestToken.RequestId;
+                        contextCallback?.Invoke(ctx);
+                    });
+                }
+            }
 
             await next.Execute(context).ConfigureAwait(false);
         }

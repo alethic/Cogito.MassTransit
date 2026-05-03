@@ -13,17 +13,17 @@ namespace Cogito.MassTransit
         /// <summary>
         /// Gets the request.
         /// </summary>
-        TRequest Request { set; }
+        TRequest? Request { set; }
 
         /// <summary>
         /// Gets the message ID of the request.
         /// </summary>
-        Guid MessageId { set; }
+        Guid? MessageId { set; }
 
         /// <summary>
         /// Gets the request ID of the request.
         /// </summary>
-        Guid RequestId { set; }
+        Guid? RequestId { set; }
 
         /// <summary>
         /// Gets the correlation ID of the request.
@@ -38,12 +38,12 @@ namespace Cogito.MassTransit
         /// <summary>
         /// Gets the destination address of the request.
         /// </summary>
-        Uri ResponseAddress { set; }
+        Uri? ResponseAddress { set; }
 
         /// <summary>
         /// Gets the fault address of the request. 
         /// </summary>
-        Uri FaultAddress { set; }
+        Uri? FaultAddress { set; }
 
     }
 

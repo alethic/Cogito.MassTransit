@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using Cogito.MassTransit.Events;
 using Cogito.MassTransit.Extensions.Activities;
 using Cogito.MassTransit.Extensions.Internal;
 
@@ -96,7 +95,7 @@ namespace Cogito.MassTransit
             Expression<Func<TSaga, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor,
-            Action<IMultiRequestConfigurator> configureRequest = null)
+            Action<IMultiRequestConfigurator>? configureRequest = null)
             where TRequest : class
             where TResponse : class
         {
@@ -121,7 +120,7 @@ namespace Cogito.MassTransit
             Expression<Func<TSaga, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
             IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor,
-            MultiRequestSettings settings = null)
+            MultiRequestSettings? settings = null)
             where TRequest : class
             where TResponse : class
         {

@@ -6,6 +6,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="yclc2trv.mji~" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
     </ItemGroup>
 

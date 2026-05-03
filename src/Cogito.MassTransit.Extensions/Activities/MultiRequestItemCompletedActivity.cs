@@ -42,7 +42,7 @@ namespace Cogito.MassTransit.Extensions.Activities
 
         public Task Execute(BehaviorContext<TSaga, TResponse> context, IBehavior<TSaga, TResponse> next)
         {
-            request.Accessor.SetCompleted(context, request.GetItem(context, context.RequestId.Value), context.Message);
+            request.Accessor.SetCompleted(context, request.GetItem(context, (Guid)context.RequestId), context.Message);
             return next.Execute(context);
         }
 

@@ -28,7 +28,7 @@ namespace Cogito.MassTransit.Events
                 request.GetItems(context)
                     .Select(i => new { RequestId = request.GetRequestId(context, i), State = i })
                     .Where(i => i.RequestId != null)
-                    .ToDictionary(i => i.RequestId.Value, i => (MultiRequestFinishedItem<TRequest, TResponse>)new MultiRequestFinishedItem<TSaga, TState, TRequest, TResponse>(context, request.Accessor, i.State)));
+                    .ToDictionary(i => (Guid)i.RequestId!, i => (MultiRequestFinishedItem<TRequest, TResponse>)new MultiRequestFinishedItem<TSaga, TState, TRequest, TResponse>(context, request.Accessor, i.State)));
         }
 
         /// <summary>

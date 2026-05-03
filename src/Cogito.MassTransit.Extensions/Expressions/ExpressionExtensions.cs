@@ -43,7 +43,7 @@ namespace Cogito.MassTransit
                 this.target = target ?? throw new ArgumentNullException(nameof(target));
             }
 
-            public override Expression Visit(Expression node)
+            public override Expression? Visit(Expression? node)
             {
                 return node == source ? target : base.Visit(node);
             }

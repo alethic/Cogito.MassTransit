@@ -23,8 +23,8 @@ namespace Cogito.MassTransit.Extensions.Activities
         where TResponse : class
     {
 
-        readonly EventMultiMessageFactory<TSaga, TMessage, TRequest> messageFactory;
-        readonly AsyncEventMultiMessageFactory<TSaga, TMessage, TRequest> asyncMessageFactory;
+        readonly EventMultiMessageFactory<TSaga, TMessage, TRequest>? messageFactory;
+        readonly AsyncEventMultiMessageFactory<TSaga, TMessage, TRequest>? asyncMessageFactory;
         readonly ServiceAddressProvider<TSaga, TMessage> serviceAddressProvider;
 
         /// <summary>

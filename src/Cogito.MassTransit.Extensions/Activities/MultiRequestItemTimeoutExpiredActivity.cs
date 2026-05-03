@@ -42,7 +42,7 @@ namespace Cogito.MassTransit.Extensions.Activities
 
         public Task Execute(BehaviorContext<TSaga, RequestTimeoutExpired<TRequest>> context, IBehavior<TSaga, RequestTimeoutExpired<TRequest>> next)
         {
-            request.Accessor.SetTimeoutExpired(context, request.GetItem(context, context.RequestId.Value), context.Message);
+            request.Accessor.SetTimeoutExpired(context, request.GetItem(context, (Guid)context.RequestId), context.Message);
             return next.Execute(context);
         }
 

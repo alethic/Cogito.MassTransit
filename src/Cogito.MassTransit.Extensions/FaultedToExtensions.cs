@@ -23,7 +23,7 @@ namespace Cogito.MassTransit
         /// <param name="exceptionFactory"></param>
         /// <param name="contextCallback"></param>
         /// <returns></returns>
-        public static EventActivityBinder<TSaga, TMessage> FaultedToAsync<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, AsyncExceptionFactory<TSaga, TMessage, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
+        public static EventActivityBinder<TSaga, TMessage> FaultedToAsync<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, AsyncExceptionFactory<TSaga, TMessage, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
             where TRequest : class
@@ -42,7 +42,7 @@ namespace Cogito.MassTransit
         /// <param name="exception"></param>
         /// <param name="contextCallback"></param>
         /// <returns></returns>
-        public static EventActivityBinder<TSaga, TMessage> FaultedToAsync<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, Exception exception, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
+        public static EventActivityBinder<TSaga, TMessage> FaultedToAsync<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, Exception exception, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
             where TRequest : class
@@ -61,7 +61,7 @@ namespace Cogito.MassTransit
         /// <param name="exceptionFactory"></param>
         /// <param name="contextCallback"></param>
         /// <returns></returns>
-        public static EventActivityBinder<TSaga, TMessage> FaultedTo<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, RequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, ExceptionFactory<TSaga, TMessage, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
+        public static EventActivityBinder<TSaga, TMessage> FaultedTo<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, RequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, ExceptionFactory<TSaga, TMessage, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
             where TRequest : class
@@ -80,7 +80,7 @@ namespace Cogito.MassTransit
         /// <param name="exception"></param>
         /// <param name="contextCallback"></param>
         /// <returns></returns>
-        public static EventActivityBinder<TSaga, TMessage> FaultedTo<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, RequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, Exception exception, Action<SendContext<FaultEvent<TRequest>>> contextCallback = null)
+        public static EventActivityBinder<TSaga, TMessage> FaultedTo<TSaga, TMessage, TRequest>(this EventActivityBinder<TSaga, TMessage> source, RequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, Exception exception, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
             where TRequest : class

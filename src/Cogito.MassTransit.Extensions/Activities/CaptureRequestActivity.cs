@@ -30,7 +30,7 @@ namespace Cogito.MassTransit.Extensions.Activities
 
         public void Probe(ProbeContext context)
         {
-            context.CreateScope("captureRequestToken");
+            context.CreateScope("captureRequest");
         }
 
         public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
