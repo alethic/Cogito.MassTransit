@@ -1,18 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>net472;net8.0</TargetFrameworks>
         <Description>Extensions and utilities for working with MassTransit.</Description>
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Automatonymous\MultiRequests\**" />
-      <EmbeddedResource Remove="Automatonymous\MultiRequests\**" />
-      <None Remove="Automatonymous\MultiRequests\**" />
+        <Compile Remove="Automatonymous\Events\**" />
+        <Compile Remove="Automatonymous\MultiRequests\**" />
+        <Compile Remove="Automatonymous\SagaConfigurators\**" />
+        <EmbeddedResource Remove="Automatonymous\Events\**" />
+        <EmbeddedResource Remove="Automatonymous\MultiRequests\**" />
+        <EmbeddedResource Remove="Automatonymous\SagaConfigurators\**" />
+        <None Remove="Automatonymous\Events\**" />
+        <None Remove="Automatonymous\MultiRequests\**" />
+        <None Remove="Automatonymous\SagaConfigurators\**" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+      <Compile Remove="AsyncEventMessageFactory.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestActivity.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestActivityImpl.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestCancelItemTimeoutActivity.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestFinishedActivity.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestItemCompletedActivity.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestItemFaultedActivity.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestItemFinishedActivity.cs" />
+      <Compile Remove="Automatonymous\Activities\MultiRequestItemTimeoutExpiredActivity.cs" />
+      <Compile Remove="Automatonymous\AsyncEventMultiMessageFactory.cs" />
+      <Compile Remove="Automatonymous\EventMultiMessageFactory.cs" />
+      <Compile Remove="Automatonymous\IMultiRequestConfigurator.cs" />
+      <Compile Remove="Automatonymous\IMultiRequestStateAccessor.cs" />
+      <Compile Remove="Automatonymous\MassTransitStateMachine.cs" />
+      <Compile Remove="Automatonymous\MultiRequest.cs" />
+      <Compile Remove="Automatonymous\MultiRequestExtensions.cs" />
+      <Compile Remove="Automatonymous\MultiRequestSettings.cs" />
+      <Compile Remove="EventMessageFactory.cs" />
+      <Compile Remove="ExceptionInfoException.cs" />
+      <Compile Remove="Expressions\ExpressionExtensions.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Expressions\" />
     </ItemGroup>
 
 </Project>

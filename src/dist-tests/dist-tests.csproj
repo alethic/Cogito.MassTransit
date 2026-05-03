@@ -7,7 +7,6 @@
 
     <ItemGroup>
         <TestTarget Include="Cogito.MassTransit.Tests|net481" ProjectName="Cogito.MassTransit.Tests" TargetFramework="net481" />
-        <TestTarget Include="Cogito.MassTransit.Tests|net6.0" ProjectName="Cogito.MassTransit.Tests" TargetFramework="net6.0" />
         <TestTarget Include="Cogito.MassTransit.Tests|net8.0" ProjectName="Cogito.MassTransit.Tests" TargetFramework="net8.0" />
     </ItemGroup>
 

@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 
 using Automatonymous;
 
-using GreenPipes;
-
 using MassTransit;
 using MassTransit.Events;
 using MassTransit.Metadata;
@@ -12,7 +10,7 @@ using MassTransit.Metadata;
 namespace Cogito.MassTransit.Automatonymous
 {
 
-    class FaultedToActivity<TInstance, TData, TRequest> : Activity<TInstance, TData>
+    class FaultedToActivity<TInstance, TData, TRequest> : IStateMachineActivity<TInstance, TData>
         where TInstance : class, SagaStateMachineInstance
         where TData : class
     {
@@ -34,7 +32,7 @@ namespace Cogito.MassTransit.Automatonymous
             this.contextCallback = contextCallback;
         }
 
-        void Visitable.Accept(StateMachineVisitor visitor)
+        void IVisitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
         }
@@ -44,15 +42,13 @@ namespace Cogito.MassTransit.Automatonymous
             context.CreateScope("faultedRespondTo");
         }
 
-        public async Task Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
+        public async Task Execute(BehaviorContext<TInstance, TData> context, IBehavior<TInstance, TData> next)
         {
-            var consumeContext = context.CreateConsumeContext();
+            var requestToken = await requestTokenFactory?.Invoke(context);
 
-            var requestToken = await requestTokenFactory?.Invoke(consumeContext);
+            var exception = await exceptionFactory?.Invoke(context);
 
-            var exception = await exceptionFactory?.Invoke(consumeContext);
-
-            var sendEndpoint = await consumeContext.GetSendEndpoint(requestToken.FaultAddress ?? requestToken.ResponseAddress);
+            var sendEndpoint = await context.GetSendEndpoint(requestToken.FaultAddress ?? requestToken.ResponseAddress);
 
             var fault = new FaultEvent<TRequest>(requestToken.Request, requestToken.MessageId, HostMetadataCache.Host, exception, new string[0]);
 
@@ -67,7 +63,7 @@ namespace Cogito.MassTransit.Automatonymous
             await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next) where TException : Exception
+        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, IBehavior<TInstance, TData> next) where TException : Exception
         {
             return next.Faulted(context);
         }

@@ -6,11 +6,11 @@ namespace Cogito.MassTransit.Automatonymous
     /// <summary>
     /// Describes a serialized form of a request.
     /// </summary>
-    /// <typeparam name="TRequest"></typeparam>
-    public class RequestToken<TRequest> : IRequestToken<TRequest>, IRequestTokenSetter<TRequest>
+    /// <typeparam name="TMessage"></typeparam>
+    public class RequestToken<TMessage> : IRequestToken<TMessage>, IRequestTokenSetter<TMessage>
     {
 
-        public TRequest Request { get; set; }
+        public TMessage Request { get; set; }
 
         public Guid MessageId { get; set; }
 

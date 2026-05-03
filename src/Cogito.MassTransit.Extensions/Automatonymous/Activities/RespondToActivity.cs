@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Automatonymous;
-
-using GreenPipes;
-
 using MassTransit;
-using MassTransit.Context;
 
 namespace Cogito.MassTransit.Automatonymous.Activities
 {
 
-    class RespondToActivity<TInstance, TData, TRequest, TResponse> : Activity<TInstance, TData>
+    class RespondToActivity<TInstance, TData, TRequest, TResponse> : IStateMachineActivity<TInstance, TData>
         where TInstance : class, SagaStateMachineInstance
         where TData : class
         where TRequest : class
@@ -35,7 +30,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             this.contextCallback = contextCallback;
         }
 
-        void Visitable.Accept(StateMachineVisitor visitor)
+        void IVisitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
         }
@@ -45,7 +40,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             context.CreateScope("respondTo");
         }
 
-        public async Task Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
+        public async Task Execute(BehaviorContext<TInstance, TData> context, IBehavior<TInstance, TData> next)
         {
             var requestToken = await requestTokenFactory?.Invoke(context);
 
@@ -64,7 +59,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next) where TException : Exception
+        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, IBehavior<TInstance, TData> next) where TException : Exception
         {
             return next.Faulted(context);
         }

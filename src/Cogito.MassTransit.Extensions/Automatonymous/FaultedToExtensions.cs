@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Automatonymous;
-using Automatonymous.Binders;
-
 using MassTransit;
 using MassTransit.Events;
 
