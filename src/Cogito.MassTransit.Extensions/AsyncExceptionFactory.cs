@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     public delegate Task<Exception> AsyncExceptionFactory<in TSaga, in TMessage, TRequest>(SagaConsumeContext<TSaga, TMessage> context)

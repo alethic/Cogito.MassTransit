@@ -1,10 +1,8 @@
 ﻿using System;
 
-using Automatonymous;
-
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     public delegate Exception ExceptionFactory<in TSaga, in TMessage, TRequest>(SagaConsumeContext<TSaga, TMessage> context)

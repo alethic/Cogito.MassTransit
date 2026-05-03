@@ -1,8 +1,6 @@
-﻿using Automatonymous;
+﻿using MassTransit;
 
-using MassTransit;
-
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     public delegate IRequestToken<TRequest> RequestTokenFactory<in TSaga, in TMessage, TRequest>(SagaConsumeContext<TSaga, TMessage> context)

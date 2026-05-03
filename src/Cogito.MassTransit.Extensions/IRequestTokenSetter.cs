@@ -1,49 +1,50 @@
 ﻿using System;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     /// <summary>
     /// Encapsulates information about a request.
     /// </summary>
     /// <typeparam name="TRequest"></typeparam>
-    public interface IRequestToken<TRequest>
+    public interface IRequestTokenSetter<TRequest>
     {
 
         /// <summary>
-        /// Gets the  request.
+        /// Gets the request.
         /// </summary>
-        TRequest Request { get; }
+        TRequest Request { set; }
 
         /// <summary>
         /// Gets the message ID of the request.
         /// </summary>
-        Guid MessageId { get; }
+        Guid MessageId { set; }
 
         /// <summary>
         /// Gets the request ID of the request.
         /// </summary>
-        Guid RequestId { get; }
+        Guid RequestId { set; }
 
         /// <summary>
         /// Gets the correlation ID of the request.
         /// </summary>
-        Guid? CorrelationId { get; }
+        Guid? CorrelationId { set; }
 
         /// <summary>
         /// Gets the conversation ID of the request.
         /// </summary>
-        Guid? ConversationId { get; }
+        Guid? ConversationId { set; }
 
         /// <summary>
         /// Gets the destination address of the request.
         /// </summary>
-        Uri ResponseAddress { get; }
+        Uri ResponseAddress { set; }
 
         /// <summary>
         /// Gets the fault address of the request. 
         /// </summary>
-        Uri FaultAddress { get; }
+        Uri FaultAddress { set; }
+
     }
 
 }

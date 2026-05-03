@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Cogito.MassTransit.Automatonymous.Activities;
+using Cogito.MassTransit.Extensions.Activities;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     public static class RespondToExtensions

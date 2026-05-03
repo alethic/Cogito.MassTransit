@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.Activities
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
     class RespondToActivity<TInstance, TData, TRequest, TResponse> : IStateMachineActivity<TInstance, TData>

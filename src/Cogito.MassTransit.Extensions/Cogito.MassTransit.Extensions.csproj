@@ -19,14 +19,14 @@
 
     <ItemGroup>
       <Compile Remove="AsyncEventMessageFactory.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestActivity.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestActivityImpl.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestCancelItemTimeoutActivity.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestFinishedActivity.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestItemCompletedActivity.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestItemFaultedActivity.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestItemFinishedActivity.cs" />
-      <Compile Remove="Automatonymous\Activities\MultiRequestItemTimeoutExpiredActivity.cs" />
+      <Compile Remove="Activities\MultiRequestActivity.cs" />
+      <Compile Remove="Activities\MultiRequestActivityImpl.cs" />
+      <Compile Remove="Activities\MultiRequestCancelItemTimeoutActivity.cs" />
+      <Compile Remove="Activities\MultiRequestFinishedActivity.cs" />
+      <Compile Remove="Activities\MultiRequestItemCompletedActivity.cs" />
+      <Compile Remove="Activities\MultiRequestItemFaultedActivity.cs" />
+      <Compile Remove="Activities\MultiRequestItemFinishedActivity.cs" />
+      <Compile Remove="Activities\MultiRequestItemTimeoutExpiredActivity.cs" />
       <Compile Remove="Automatonymous\AsyncEventMultiMessageFactory.cs" />
       <Compile Remove="Automatonymous\EventMultiMessageFactory.cs" />
       <Compile Remove="Automatonymous\IMultiRequestConfigurator.cs" />
@@ -45,6 +45,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Automatonymous\" />
       <Folder Include="Expressions\" />
     </ItemGroup>
 

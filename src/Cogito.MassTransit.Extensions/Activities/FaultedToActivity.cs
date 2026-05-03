@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Automatonymous;
-
 using MassTransit;
 using MassTransit.Events;
 using MassTransit.Metadata;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
     class FaultedToActivity<TInstance, TData, TRequest> : IStateMachineActivity<TInstance, TData>

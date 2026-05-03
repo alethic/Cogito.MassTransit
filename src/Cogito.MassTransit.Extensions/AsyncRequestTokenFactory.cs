@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-using Automatonymous;
-
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     public delegate Task<IRequestToken<TRequest>> AsyncRequestTokenFactory<in TSaga, in TMessage, TRequest>(SagaConsumeContext<TSaga, TMessage> context)
