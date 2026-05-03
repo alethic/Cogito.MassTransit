@@ -1,40 +1,37 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-
-using Automatonymous;
-
-using GreenPipes;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.Activities
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
     /// <summary>
-    /// Executed when an item from a multi-request is completed.
+    /// Cancels the previously scheduled timeout for a multi-request item once it has resolved
+    /// (completed, faulted, or timed out).
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse> : Activity<TInstance>
-        where TInstance : class, SagaStateMachineInstance
+    class MultiRequestCancelItemTimeoutActivity<TSaga, TState, TRequest, TResponse> : IStateMachineActivity<TSaga>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
 
-        readonly MultiRequest<TInstance, TState, TRequest, TResponse> request;
+        readonly MultiRequest<TSaga, TState, TRequest, TResponse> request;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="request"></param>
-        public MultiRequestCancelItemTimeoutActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request)
+        public MultiRequestCancelItemTimeoutActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request)
         {
             this.request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
-        public void Accept(StateMachineVisitor visitor)
+        void IVisitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
         }
@@ -44,27 +41,13 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             context.CreateScope("multiRequestCancelItemTimeout");
         }
 
-        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        Task ExecuteCore(SagaConsumeContext<TSaga> context)
         {
-            await Execute(context).ConfigureAwait(false);
-            await next.Execute(context).ConfigureAwait(false);
-        }
-
-        public async Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
-        {
-            await Execute(context).ConfigureAwait(false);
-            await next.Execute(context).ConfigureAwait(false);
-        }
-
-        Task Execute(BehaviorContext<TInstance> context)
-        {
-            var consumeContext = context.CreateConsumeContext();
-
-            var requestId = consumeContext.RequestId;
+            var requestId = context.RequestId;
             if (requestId.HasValue && request.Settings.Timeout > TimeSpan.Zero)
             {
-                if (consumeContext.TryGetPayload<MessageSchedulerContext>(out var schedulerContext))
-                    return schedulerContext.CancelScheduledSend(consumeContext.ReceiveContext.InputAddress, requestId.Value);
+                if (context.TryGetPayload<MessageSchedulerContext>(out var schedulerContext))
+                    return schedulerContext.CancelScheduledSend(context.ReceiveContext.InputAddress, requestId.Value);
 
                 throw new ConfigurationException("A scheduler was not available to cancel the scheduled request timeout");
             }
@@ -72,12 +55,28 @@ namespace Cogito.MassTransit.Automatonymous.Activities
             return Task.CompletedTask;
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next) where TException : Exception
+        public async Task Execute(BehaviorContext<TSaga> context, IBehavior<TSaga> next)
+        {
+            await ExecuteCore(context).ConfigureAwait(false);
+            await next.Execute(context).ConfigureAwait(false);
+        }
+
+        public async Task Execute<T>(BehaviorContext<TSaga, T> context, IBehavior<TSaga, T> next)
+            where T : class
+        {
+            await ExecuteCore(context).ConfigureAwait(false);
+            await next.Execute(context).ConfigureAwait(false);
+        }
+
+        public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TException> context, IBehavior<TSaga> next)
+            where TException : Exception
         {
             return next.Faulted(context);
         }
 
-        public Task Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next) where TException : Exception
+        public Task Faulted<T, TException>(BehaviorExceptionContext<TSaga, T, TException> context, IBehavior<TSaga, T> next)
+            where T : class
+            where TException : Exception
         {
             return next.Faulted(context);
         }

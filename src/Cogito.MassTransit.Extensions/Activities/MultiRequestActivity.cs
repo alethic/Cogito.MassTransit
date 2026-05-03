@@ -1,33 +1,42 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
-using Automatonymous;
+using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.Activities
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
-    public class MultiRequestActivity<TInstance, TState, TRequest, TResponse> :
-        MultiRequestActivityImpl<TInstance, TState, TRequest, TResponse>,
-        Activity<TInstance>
-        where TInstance : class, SagaStateMachineInstance
+    /// <summary>
+    /// Sends an enumerable of request messages and registers tracking state for each.
+    /// </summary>
+    /// <typeparam name="TSaga"></typeparam>
+    /// <typeparam name="TMessage"></typeparam>
+    /// <typeparam name="TState"></typeparam>
+    /// <typeparam name="TRequest"></typeparam>
+    /// <typeparam name="TResponse"></typeparam>
+    class MultiRequestActivity<TSaga, TMessage, TState, TRequest, TResponse> :
+        MultiRequestActivityImpl<TSaga, TState, TRequest, TResponse>,
+        IStateMachineActivity<TSaga, TMessage>
+        where TSaga : class, SagaStateMachineInstance
+        where TMessage : class
         where TRequest : class
         where TResponse : class
     {
 
-        readonly EventMultiMessageFactory<TInstance, TRequest> messageFactory;
-        readonly AsyncEventMultiMessageFactory<TInstance, TRequest> asyncMessageFactory;
-        readonly ServiceAddressProvider<TInstance> serviceAddressProvider;
+        readonly EventMultiMessageFactory<TSaga, TMessage, TRequest> messageFactory;
+        readonly AsyncEventMultiMessageFactory<TSaga, TMessage, TRequest> asyncMessageFactory;
+        readonly ServiceAddressProvider<TSaga, TMessage> serviceAddressProvider;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="messageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, EventMultiMessageFactory<TInstance, TRequest> messageFactory) :
+        public MultiRequestActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request, EventMultiMessageFactory<TSaga, TMessage, TRequest> messageFactory) :
             base(request)
         {
-            this.messageFactory = messageFactory;
-            serviceAddressProvider = context => request.Settings.ServiceAddress;
+            this.messageFactory = messageFactory ?? throw new ArgumentNullException(nameof(messageFactory));
+            this.serviceAddressProvider = context => request.Settings.ServiceAddress;
         }
 
         /// <summary>
@@ -36,11 +45,12 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// <param name="request"></param>
         /// <param name="serviceAddressProvider"></param>
         /// <param name="messageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance> serviceAddressProvider, EventMultiMessageFactory<TInstance, TRequest> messageFactory) :
+        public MultiRequestActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request, ServiceAddressProvider<TSaga, TMessage> serviceAddressProvider, EventMultiMessageFactory<TSaga, TMessage, TRequest> messageFactory) :
             base(request)
         {
-            this.messageFactory = messageFactory;
-            serviceAddressProvider = context => serviceAddressProvider(context) ?? request.Settings.ServiceAddress;
+            if (serviceAddressProvider == null) throw new ArgumentNullException(nameof(serviceAddressProvider));
+            this.messageFactory = messageFactory ?? throw new ArgumentNullException(nameof(messageFactory));
+            this.serviceAddressProvider = context => serviceAddressProvider(context) ?? request.Settings.ServiceAddress;
         }
 
         /// <summary>
@@ -48,11 +58,11 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// </summary>
         /// <param name="request"></param>
         /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, AsyncEventMultiMessageFactory<TInstance, TRequest> asyncMessageFactory) :
+        public MultiRequestActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request, AsyncEventMultiMessageFactory<TSaga, TMessage, TRequest> asyncMessageFactory) :
             base(request)
         {
-            this.asyncMessageFactory = asyncMessageFactory;
-            serviceAddressProvider = context => request.Settings.ServiceAddress;
+            this.asyncMessageFactory = asyncMessageFactory ?? throw new ArgumentNullException(nameof(asyncMessageFactory));
+            this.serviceAddressProvider = context => request.Settings.ServiceAddress;
         }
 
         /// <summary>
@@ -61,141 +71,33 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// <param name="request"></param>
         /// <param name="serviceAddressProvider"></param>
         /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance> serviceAddressProvider, AsyncEventMultiMessageFactory<TInstance, TRequest> asyncMessageFactory) :
+        public MultiRequestActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request, ServiceAddressProvider<TSaga, TMessage> serviceAddressProvider, AsyncEventMultiMessageFactory<TSaga, TMessage, TRequest> asyncMessageFactory) :
             base(request)
         {
-            this.asyncMessageFactory = asyncMessageFactory;
-            serviceAddressProvider = context => serviceAddressProvider(context) ?? request.Settings.ServiceAddress;
+            if (serviceAddressProvider == null) throw new ArgumentNullException(nameof(serviceAddressProvider));
+            this.asyncMessageFactory = asyncMessageFactory ?? throw new ArgumentNullException(nameof(asyncMessageFactory));
+            this.serviceAddressProvider = context => serviceAddressProvider(context) ?? request.Settings.ServiceAddress;
         }
 
-        public void Accept(StateMachineVisitor visitor)
+        void IVisitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
         }
 
-        async Task Execute(BehaviorContext<TInstance> context)
+        public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
-            var consumeContext = context.CreateConsumeContext();
-
             if (messageFactory != null)
-                foreach (var message in messageFactory(consumeContext))
-                    await SendRequest(context, consumeContext, message, serviceAddressProvider(consumeContext)).ConfigureAwait(false);
+                foreach (var message in messageFactory(context))
+                    await SendRequest(context, message, serviceAddressProvider(context)).ConfigureAwait(false);
 
             if (asyncMessageFactory != null)
-                await foreach (var message in asyncMessageFactory(consumeContext))
-                    await SendRequest(context, consumeContext, message, serviceAddressProvider(consumeContext)).ConfigureAwait(false);
-        }
-
-        async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
-        {
-            await Execute(context);
-            await next.Execute(context).ConfigureAwait(false);
-        }
-
-        async Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
-        {
-            await Execute(context);
-            await next.Execute(context).ConfigureAwait(false);
-        }
-
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
-            where TException : Exception
-        {
-            return next.Faulted(context);
-        }
-
-        public Task Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
-            where TException : Exception
-        {
-            return next.Faulted(context);
-        }
-
-    }
-
-    public class MultiRequestActivity<TInstance, TData, TState, TRequest, TResponse> :
-        MultiRequestActivityImpl<TInstance, TState, TRequest, TResponse>,
-        Activity<TInstance, TData>
-        where TInstance : class, SagaStateMachineInstance
-        where TData : class
-        where TRequest : class
-        where TResponse : class
-    {
-
-        readonly EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory;
-        readonly AsyncEventMultiMessageFactory<TInstance, TData, TRequest> asyncMessageFactory;
-        readonly ServiceAddressProvider<TInstance, TData> serviceAddressProvider;
-
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="messageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory) :
-            base(request)
-        {
-            this.messageFactory = messageFactory;
-            serviceAddressProvider = context => request.Settings.ServiceAddress;
-        }
-
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="serviceAddressProvider"></param>
-        /// <param name="messageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance, TData> serviceAddressProvider, EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory) :
-            base(request)
-        {
-            this.messageFactory = messageFactory;
-            serviceAddressProvider = context => serviceAddressProvider(context) ?? request.Settings.ServiceAddress;
-        }
-
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, AsyncEventMultiMessageFactory<TInstance, TData, TRequest> asyncMessageFactory) :
-            base(request)
-        {
-            this.asyncMessageFactory = asyncMessageFactory;
-            serviceAddressProvider = context => request.Settings.ServiceAddress;
-        }
-
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="serviceAddressProvider"></param>
-        /// <param name="asyncMessageFactory"></param>
-        public MultiRequestActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request, ServiceAddressProvider<TInstance, TData> serviceAddressProvider, AsyncEventMultiMessageFactory<TInstance, TData, TRequest> asyncMessageFactory) :
-            base(request)
-        {
-            this.asyncMessageFactory = asyncMessageFactory;
-            serviceAddressProvider = context => serviceAddressProvider(context) ?? request.Settings.ServiceAddress;
-        }
-
-        public void Accept(StateMachineVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-        public async Task Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
-        {
-            var consumeContext = context.CreateConsumeContext();
-
-            if (messageFactory != null)
-                foreach (var message in messageFactory(consumeContext))
-                    await SendRequest(context, consumeContext, message, serviceAddressProvider(consumeContext)).ConfigureAwait(false);
-
-            if (asyncMessageFactory != null)
-                await foreach (var message in asyncMessageFactory(consumeContext))
-                    await SendRequest(context, consumeContext, message, serviceAddressProvider(consumeContext)).ConfigureAwait(false);
+                await foreach (var message in asyncMessageFactory(context).ConfigureAwait(false))
+                    await SendRequest(context, message, serviceAddressProvider(context)).ConfigureAwait(false);
 
             await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
+        public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TMessage, TException> context, IBehavior<TSaga, TMessage> next)
             where TException : Exception
         {
             return next.Faulted(context);

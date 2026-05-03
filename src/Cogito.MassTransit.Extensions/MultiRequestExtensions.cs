@@ -1,12 +1,9 @@
-﻿using Automatonymous;
-using Automatonymous.Binders;
-using Automatonymous.Events;
+using Cogito.MassTransit.Extensions.Activities;
 
-using Cogito.MassTransit.Automatonymous.Activities;
+using MassTransit;
+using MassTransit.Scheduling;
 
-using MassTransit.Context;
-
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     public static class MultiRequestExtensions
@@ -15,50 +12,50 @@ namespace Cogito.MassTransit.Automatonymous
         /// <summary>
         /// Send requests to the configured service endpoint, and setup the state machine to accept the responses.
         /// </summary>
-        /// <typeparam name="TInstance">The state instance type</typeparam>
-        /// <typeparam name="TData">The event data type</typeparam>
+        /// <typeparam name="TSaga">The state instance type</typeparam>
+        /// <typeparam name="TMessage">The event data type</typeparam>
         /// <typeparam name="TRequest">The request message type</typeparam>
         /// <typeparam name="TResponse">The response message type</typeparam>
         /// <param name="binder">The event binder</param>
         /// <param name="request">The configured request to use</param>
         /// <param name="messageFactory">The request message factory</param>
         /// <returns></returns>
-        public static EventActivityBinder<TInstance, TData> MultiRequest<TInstance, TData, TState, TRequest, TResponse>(
-            this EventActivityBinder<TInstance, TData> binder,
-            MultiRequest<TInstance, TState, TRequest, TResponse> request,
-            EventMultiMessageFactory<TInstance, TData, TRequest> messageFactory)
-            where TInstance : class, SagaStateMachineInstance
-            where TData : class
+        public static EventActivityBinder<TSaga, TMessage> MultiRequest<TSaga, TMessage, TState, TRequest, TResponse>(
+            this EventActivityBinder<TSaga, TMessage> binder,
+            MultiRequest<TSaga, TState, TRequest, TResponse> request,
+            EventMultiMessageFactory<TSaga, TMessage, TRequest> messageFactory)
+            where TSaga : class, SagaStateMachineInstance
+            where TMessage : class
             where TRequest : class
             where TResponse : class
         {
             ScheduleTokenId.UseTokenId<RequestTimeoutExpired<TRequest>>(x => x.RequestId);
-            var activity = new MultiRequestActivity<TInstance, TData, TState, TRequest, TResponse>(request, messageFactory);
+            var activity = new MultiRequestActivity<TSaga, TMessage, TState, TRequest, TResponse>(request, messageFactory);
             return binder.Add(activity);
         }
 
         /// <summary>
         /// Send requests to the configured service endpoint, and setup the state machine to accept the responses.
         /// </summary>
-        /// <typeparam name="TInstance">The state instance type</typeparam>
-        /// <typeparam name="TData">The event data type</typeparam>
+        /// <typeparam name="TSaga">The state instance type</typeparam>
+        /// <typeparam name="TMessage">The event data type</typeparam>
         /// <typeparam name="TRequest">The request message type</typeparam>
         /// <typeparam name="TResponse">The response message type</typeparam>
         /// <param name="binder">The event binder</param>
         /// <param name="request">The configured request to use</param>
         /// <param name="messageFactory">The request message factory</param>
         /// <returns></returns>
-        public static EventActivityBinder<TInstance, TData> MultiRequest<TInstance, TData, TState, TRequest, TResponse>(
-            this EventActivityBinder<TInstance, TData> binder,
-            MultiRequest<TInstance, TState, TRequest, TResponse> request,
-            AsyncEventMultiMessageFactory<TInstance, TData, TRequest> messageFactory)
-            where TInstance : class, SagaStateMachineInstance
-            where TData : class
+        public static EventActivityBinder<TSaga, TMessage> MultiRequest<TSaga, TMessage, TState, TRequest, TResponse>(
+            this EventActivityBinder<TSaga, TMessage> binder,
+            MultiRequest<TSaga, TState, TRequest, TResponse> request,
+            AsyncEventMultiMessageFactory<TSaga, TMessage, TRequest> messageFactory)
+            where TSaga : class, SagaStateMachineInstance
+            where TMessage : class
             where TRequest : class
             where TResponse : class
         {
             ScheduleTokenId.UseTokenId<RequestTimeoutExpired<TRequest>>(x => x.RequestId);
-            var activity = new MultiRequestActivity<TInstance, TData, TState, TRequest, TResponse>(request, messageFactory);
+            var activity = new MultiRequestActivity<TSaga, TMessage, TState, TRequest, TResponse>(request, messageFactory);
             return binder.Add(activity);
         }
 

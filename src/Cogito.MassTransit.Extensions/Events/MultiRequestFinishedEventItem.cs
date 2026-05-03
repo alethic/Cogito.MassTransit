@@ -1,15 +1,13 @@
-﻿using Automatonymous;
-
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.Events
+namespace Cogito.MassTransit.Events
 {
 
     /// <summary>
     /// Describes a finished item.
     /// </summary>
-    public struct MultiRequestFinishedItem<TInstance, TState, TRequest, TResponse> : MultiRequestFinishedItem<TRequest, TResponse>
-        where TInstance : class, SagaStateMachineInstance
+    public struct MultiRequestFinishedItem<TSaga, TState, TRequest, TResponse> : MultiRequestFinishedItem<TRequest, TResponse>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
@@ -20,7 +18,7 @@ namespace Cogito.MassTransit.Automatonymous.Events
         /// <param name="context"></param>
         /// <param name="accessor"></param>
         /// <param name="state"></param>
-        public MultiRequestFinishedItem(InstanceContext<TInstance> context, IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor, TState state)
+        public MultiRequestFinishedItem(SagaConsumeContext<TSaga> context, IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor, TState state)
         {
             Status = accessor.GetStatus(context, state);
             Response = accessor.GetResponse(context, state);

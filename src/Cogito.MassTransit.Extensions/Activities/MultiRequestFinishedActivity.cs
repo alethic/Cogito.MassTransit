@@ -1,64 +1,63 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
-using Automatonymous;
+using Cogito.MassTransit.Events;
 
-using Cogito.MassTransit.Automatonymous.Events;
+using MassTransit;
 
-using GreenPipes;
-
-namespace Cogito.MassTransit.Automatonymous.Activities
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
     /// <summary>
     /// Executed when a multi-request is finished.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class MultiRequestFinishedActivity<TInstance, TState, TRequest, TResponse> : Activity<TInstance, MultiRequestFinishedSignal>
-        where TInstance : class, SagaStateMachineInstance
+    class MultiRequestFinishedActivity<TSaga, TState, TRequest, TResponse> : IStateMachineActivity<TSaga, MultiRequestFinishedSignal>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
 
-        readonly MultiRequest<TInstance, TState, TRequest, TResponse> request;
+        readonly MultiRequest<TSaga, TState, TRequest, TResponse> request;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="request"></param>
-        public MultiRequestFinishedActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request)
+        public MultiRequestFinishedActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request)
         {
             this.request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
-        public void Accept(StateMachineVisitor visitor)
+        void IVisitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
         }
 
-        public async Task Execute(BehaviorContext<TInstance, MultiRequestFinishedSignal> context, Behavior<TInstance, MultiRequestFinishedSignal> next)
+        public void Probe(ProbeContext context)
         {
-            var evt = MultiRequestFinishedEvent<TInstance, TState, TRequest, TResponse>.Init(context, request);
+            context.CreateScope("multiRequestFinished");
+        }
+
+        public async Task Execute(BehaviorContext<TSaga, MultiRequestFinishedSignal> context, IBehavior<TSaga, MultiRequestFinishedSignal> next)
+        {
+            var evt = MultiRequestFinishedEvent<TSaga, TState, TRequest, TResponse>.Init(context, request);
 
             // settings indicate we should clear the state
             if (request.Settings.ClearOnFinish)
-                await request.Accessor.Clear(context);
+                await request.Accessor.Clear(context).ConfigureAwait(false);
 
-            await context.Raise(request.Finished, evt);
-            await next.Execute(context);
+            await context.Raise(request.Finished, evt).ConfigureAwait(false);
+            await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, MultiRequestFinishedSignal, TException> context, Behavior<TInstance, MultiRequestFinishedSignal> next) where TException : Exception
+        public Task Faulted<TException>(BehaviorExceptionContext<TSaga, MultiRequestFinishedSignal, TException> context, IBehavior<TSaga, MultiRequestFinishedSignal> next)
+            where TException : Exception
         {
             return next.Faulted(context);
-        }
-
-        public void Probe(ProbeContext context)
-        {
-            context.CreateScope("multiRequestItemFinishedActivity");
         }
 
     }

@@ -1,25 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
-using Automatonymous;
-using Automatonymous.Events;
-
-using Cogito.MassTransit.Automatonymous.Events;
+using Cogito.MassTransit.Events;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     /// <summary>
     /// Describes a multi-request on a state machine.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public interface MultiRequest<TInstance, TState, TRequest, TResponse>
-        where TInstance : class, SagaStateMachineInstance
+    public interface MultiRequest<TSaga, TState, TRequest, TResponse>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
@@ -67,7 +64,7 @@ namespace Cogito.MassTransit.Automatonymous
         /// <summary>
         /// Gets the adaptor used to manipulate the state items.
         /// </summary>
-        IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> Accessor { get; }
+        IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> Accessor { get; }
 
         /// <summary>
         /// Gets the request ID stored on the state object.
@@ -75,7 +72,7 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="context"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        Guid? GetRequestId(InstanceContext<TInstance> context, TState state);
+        Guid? GetRequestId(SagaConsumeContext<TSaga> context, TState state);
 
         /// <summary>
         /// Gets all of the request items.
@@ -83,21 +80,21 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="context"></param>
         /// <param name="requestId"></param>
         /// <returns></returns>
-        TState GetItem(InstanceContext<TInstance> context, Guid requestId);
+        TState GetItem(SagaConsumeContext<TSaga> context, Guid requestId);
 
         /// <summary>
         /// Gets all of the request items.
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        IEnumerable<TState> GetItems(InstanceContext<TInstance> context);
+        IEnumerable<TState> GetItems(SagaConsumeContext<TSaga> context);
 
         /// <summary>
         /// Returns <c>true</c> if all of the requests are finished.
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        bool IsFinished(InstanceContext<TInstance> context);
+        bool IsFinished(SagaConsumeContext<TSaga> context);
 
     }
 

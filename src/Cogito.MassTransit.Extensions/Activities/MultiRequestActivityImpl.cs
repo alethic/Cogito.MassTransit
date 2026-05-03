@@ -1,37 +1,32 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-
-using Automatonymous;
-using Automatonymous.Events;
-
-using GreenPipes;
 
 using MassTransit;
 using MassTransit.Metadata;
 
-namespace Cogito.MassTransit.Automatonymous.Activities
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
     /// <summary>
     /// Provides the base implementation of a MultiRequest activity.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public abstract class MultiRequestActivityImpl<TInstance, TState, TRequest, TResponse>
-        where TInstance : class, SagaStateMachineInstance
+    abstract class MultiRequestActivityImpl<TSaga, TState, TRequest, TResponse>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
 
-        readonly MultiRequest<TInstance, TState, TRequest, TResponse> request;
+        readonly MultiRequest<TSaga, TState, TRequest, TResponse> request;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="request"></param>
-        protected MultiRequestActivityImpl(MultiRequest<TInstance, TState, TRequest, TResponse> request)
+        protected MultiRequestActivityImpl(MultiRequest<TSaga, TState, TRequest, TResponse> request)
         {
             this.request = request ?? throw new ArgumentNullException(nameof(request));
         }
@@ -40,24 +35,23 @@ namespace Cogito.MassTransit.Automatonymous.Activities
         /// Sends an individual request to the specified service address and records the results.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="consumeContext"></param>
         /// <param name="requestMessage"></param>
         /// <param name="serviceAddress"></param>
         /// <returns></returns>
-        protected async Task SendRequest(BehaviorContext<TInstance> context, ConsumeContext consumeContext, TRequest requestMessage, Uri serviceAddress)
+        protected async Task SendRequest(SagaConsumeContext<TSaga> context, TRequest requestMessage, Uri serviceAddress)
         {
-            var pipe = new SendRequestPipe(consumeContext.ReceiveContext.InputAddress);
+            var pipe = new SendRequestPipe(context.ReceiveContext.InputAddress);
 
             if (serviceAddress != null)
             {
                 // specific service address specfied, send
-                var endpoint = await consumeContext.GetSendEndpoint(serviceAddress).ConfigureAwait(false);
+                var endpoint = await context.GetSendEndpoint(serviceAddress).ConfigureAwait(false);
                 await endpoint.Send(requestMessage, pipe).ConfigureAwait(false);
             }
             else
             {
                 // no service address specified, publish
-                await consumeContext.Publish(requestMessage, pipe).ConfigureAwait(false);
+                await context.Publish(requestMessage, pipe).ConfigureAwait(false);
             }
 
             // add new state item
@@ -69,9 +63,9 @@ namespace Cogito.MassTransit.Automatonymous.Activities
                 var now = DateTime.UtcNow;
                 var expirationTime = now + request.Settings.Timeout;
 
-                var message = new TimeoutExpired<TRequest>(now, expirationTime, context.Instance.CorrelationId, pipe.RequestId);
+                var message = new TimeoutExpired<TRequest>(now, expirationTime, context.Saga.CorrelationId, pipe.RequestId);
 
-                if (consumeContext.TryGetPayload<MessageSchedulerContext>(out var schedulerContext))
+                if (context.TryGetPayload<MessageSchedulerContext>(out var schedulerContext))
                     await schedulerContext.ScheduleSend(expirationTime, message).ConfigureAwait(false);
                 else
                     throw new ConfigurationException("A request timeout was specified but no message scheduler was specified or available.");
@@ -80,7 +74,7 @@ namespace Cogito.MassTransit.Automatonymous.Activities
 
         public virtual void Probe(ProbeContext context)
         {
-            var scope = context.CreateScope("request");
+            var scope = context.CreateScope("multiRequest");
             scope.Add("requestType", TypeMetadataCache<TRequest>.ShortName);
             scope.Add("responseType", TypeMetadataCache<TResponse>.ShortName);
             scope.Set(request.Settings);

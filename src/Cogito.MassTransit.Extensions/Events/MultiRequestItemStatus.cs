@@ -1,4 +1,4 @@
-﻿namespace Cogito.MassTransit.Automatonymous.Events
+﻿namespace Cogito.MassTransit.Events
 {
 
     /// <summary>

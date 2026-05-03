@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
-namespace Cogito.MassTransit.Automatonymous.Events
+namespace Cogito.MassTransit.Events
 {
 
     /// <summary>
-    /// Describes a finished <see cref="MultiRequest{TInstance, TState, TRequest, TResponse}"/>.
+    /// Describes a finished <see cref="MultiRequest{TSaga, TState, TRequest, TResponse}"/>.
     /// </summary>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>

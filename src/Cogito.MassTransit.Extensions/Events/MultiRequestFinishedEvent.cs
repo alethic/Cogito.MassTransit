@@ -1,34 +1,34 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Automatonymous;
+using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.Events
+namespace Cogito.MassTransit.Events
 {
 
     /// <summary>
     /// Event which is raised when all items have been finished.
     /// </summary>
-    public class MultiRequestFinishedEvent<TInstance, TState, TRequest, TResponse> : MultiRequestFinished<TRequest, TResponse>
-        where TInstance : class, SagaStateMachineInstance
+    public class MultiRequestFinishedEvent<TSaga, TState, TRequest, TResponse> : MultiRequestFinished<TRequest, TResponse>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
 
         /// <summary>
-        /// Initializes a new <see cref="MultiRequestFinishedEvent{TInstance, TState, TRequest, TResponse}"/> from the given context and request.
+        /// Initializes a new <see cref="MultiRequestFinishedEvent{TSaga, TState, TRequest, TResponse}"/> from the given context and request.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public static MultiRequestFinishedEvent<TInstance, TState, TRequest, TResponse> Init(InstanceContext<TInstance> context, MultiRequest<TInstance, TState, TRequest, TResponse> request)
+        public static MultiRequestFinishedEvent<TSaga, TState, TRequest, TResponse> Init(SagaConsumeContext<TSaga> context, MultiRequest<TSaga, TState, TRequest, TResponse> request)
         {
-            return new MultiRequestFinishedEvent<TInstance, TState, TRequest, TResponse>(
+            return new MultiRequestFinishedEvent<TSaga, TState, TRequest, TResponse>(
                 request.GetItems(context)
                     .Select(i => new { RequestId = request.GetRequestId(context, i), State = i })
                     .Where(i => i.RequestId != null)
-                    .ToDictionary(i => i.RequestId.Value, i => (MultiRequestFinishedItem<TRequest, TResponse>)new MultiRequestFinishedItem<TInstance, TState, TRequest, TResponse>(context, request.Accessor, i.State)));
+                    .ToDictionary(i => i.RequestId.Value, i => (MultiRequestFinishedItem<TRequest, TResponse>)new MultiRequestFinishedItem<TSaga, TState, TRequest, TResponse>(context, request.Accessor, i.State)));
         }
 
         /// <summary>

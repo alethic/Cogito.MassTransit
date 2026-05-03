@@ -1,55 +1,53 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
-using Automatonymous;
-using Automatonymous.Events;
+using MassTransit;
 
-using GreenPipes;
-
-namespace Cogito.MassTransit.Automatonymous.Activities
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
     /// <summary>
-    /// Executed when an item from a multi-request is completed.
+    /// Executed when an item from a multi-request times out.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class MultiRequestItemTimeoutExpiredActivity<TInstance, TState, TRequest, TResponse> : Activity<TInstance, RequestTimeoutExpired<TRequest>>
-        where TInstance : class, SagaStateMachineInstance
+    class MultiRequestItemTimeoutExpiredActivity<TSaga, TState, TRequest, TResponse> : IStateMachineActivity<TSaga, RequestTimeoutExpired<TRequest>>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
 
-        readonly MultiRequest<TInstance, TState, TRequest, TResponse> request;
+        readonly MultiRequest<TSaga, TState, TRequest, TResponse> request;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="request"></param>
-        public MultiRequestItemTimeoutExpiredActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request)
+        public MultiRequestItemTimeoutExpiredActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request)
         {
             this.request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
-        public void Accept(StateMachineVisitor visitor)
+        void IVisitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
         }
 
         public void Probe(ProbeContext context)
         {
-            context.CreateScope("multiRequestItemTimeoutExpiredActivity");
+            context.CreateScope("multiRequestItemTimeoutExpired");
         }
 
-        public Task Execute(BehaviorContext<TInstance, RequestTimeoutExpired<TRequest>> context, Behavior<TInstance, RequestTimeoutExpired<TRequest>> next)
+        public Task Execute(BehaviorContext<TSaga, RequestTimeoutExpired<TRequest>> context, IBehavior<TSaga, RequestTimeoutExpired<TRequest>> next)
         {
-            request.Accessor.SetTimeoutExpired(context, request.GetItem(context, context.CreateConsumeContext().RequestId.Value), context.Data);
+            request.Accessor.SetTimeoutExpired(context, request.GetItem(context, context.RequestId.Value), context.Message);
             return next.Execute(context);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, RequestTimeoutExpired<TRequest>, TException> context, Behavior<TInstance, RequestTimeoutExpired<TRequest>> next) where TException : Exception
+        public Task Faulted<TException>(BehaviorExceptionContext<TSaga, RequestTimeoutExpired<TRequest>, TException> context, IBehavior<TSaga, RequestTimeoutExpired<TRequest>> next)
+            where TException : Exception
         {
             return next.Faulted(context);
         }

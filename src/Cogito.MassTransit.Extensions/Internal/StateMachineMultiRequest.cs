@@ -1,37 +1,34 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-using Automatonymous;
-using Automatonymous.Events;
-
-using Cogito.MassTransit.Automatonymous.Events;
+using Cogito.MassTransit.Events;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.MultiRequests
+namespace Cogito.MassTransit.Extensions.Internal
 {
 
     /// <summary>
-    /// Implementation of the <see cref="MultiRequest{TInstance, TKey, TRequest, TResponse}"/> for a state machine.
+    /// Implementation of the <see cref="MultiRequest{TSaga, TKey, TRequest, TResponse}"/> for a state machine.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    partial class StateMachineMultiRequest<TInstance, TState, TRequest, TResponse> :
-        MultiRequest<TInstance, TState, TRequest, TResponse>
-        where TInstance : class, SagaStateMachineInstance
+    partial class StateMachineMultiRequest<TSaga, TState, TRequest, TResponse> :
+        MultiRequest<TSaga, TState, TRequest, TResponse>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
 
         readonly string name;
-        readonly Func<TInstance, Guid, bool> filterFunc;
-        readonly Func<TInstance, IEnumerable<TState>> itemsFunc;
+        readonly Func<TSaga, Guid, bool> filterFunc;
+        readonly Func<TSaga, IEnumerable<TState>> itemsFunc;
         readonly Func<TState, Guid?> requestIdFunc;
-        readonly IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor;
+        readonly IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor;
         readonly MultiRequestSettings settings;
 
         /// <summary>
@@ -45,10 +42,10 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// <param name="settings"></param>
         public StateMachineMultiRequest(
             string name,
-            Expression<Func<TInstance, Guid, bool>> filterExpression,
-            Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
+            Expression<Func<TSaga, Guid, bool>> filterExpression,
+            Expression<Func<TSaga, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
-            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor,
+            IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor,
             MultiRequestSettings settings)
         {
             this.name = name ?? throw new ArgumentNullException(nameof(name));
@@ -103,7 +100,7 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// Gets the state adaptor for the specified instance.
         /// </summary>
         /// <returns></returns>
-        public IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> Accessor => accessor;
+        public IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> Accessor => accessor;
 
         /// <summary>
         /// Gets the request ID for the given state object.
@@ -111,14 +108,14 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// <param name="context"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        public Guid? GetRequestId(InstanceContext<TInstance> context, TState state) => requestIdFunc(state);
+        public Guid? GetRequestId(SagaConsumeContext<TSaga> context, TState state) => requestIdFunc(state);
 
         /// <summary>
-        /// Returns <c>true</c> if all of the 
+        /// Returns <c>true</c> if all of the requests are finished.
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public bool IsFinished(InstanceContext<TInstance> context)
+        public bool IsFinished(SagaConsumeContext<TSaga> context)
         {
             return GetItems(context).All(i => accessor.GetStatus(context, i) != MultiRequestItemStatus.Pending);
         }
@@ -129,7 +126,7 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// <param name="context"></param>
         /// <param name="requestId"></param>
         /// <returns></returns>
-        public TState GetItem(InstanceContext<TInstance> context, Guid requestId)
+        public TState GetItem(SagaConsumeContext<TSaga> context, Guid requestId)
         {
             return GetItems(context).FirstOrDefault(i => requestIdFunc(i) == requestId);
         }
@@ -139,9 +136,9 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public IEnumerable<TState> GetItems(InstanceContext<TInstance> context)
+        public IEnumerable<TState> GetItems(SagaConsumeContext<TSaga> context)
         {
-            return itemsFunc(context.Instance) ?? Enumerable.Empty<TState>();
+            return itemsFunc(context.Saga) ?? Enumerable.Empty<TState>();
         }
 
         /// <summary>
@@ -149,10 +146,10 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public bool CompletedEventFilter(EventContext<TInstance, TResponse> context)
+        public bool CompletedEventFilter(BehaviorContext<TSaga, TResponse> context)
         {
-            if (context.TryGetPayload<ConsumeContext<TResponse>>(out var consumeContext) && consumeContext.RequestId is Guid requestId)
-                return filterFunc(context.Instance, requestId);
+            if (context.RequestId is Guid requestId)
+                return filterFunc(context.Saga, requestId);
             else
                 return false;
         }
@@ -162,10 +159,10 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public bool FaultedEventFilter(EventContext<TInstance, Fault<TRequest>> context)
+        public bool FaultedEventFilter(BehaviorContext<TSaga, Fault<TRequest>> context)
         {
-            if (context.TryGetPayload<ConsumeContext<Fault<TRequest>>>(out var consumeContext) && consumeContext.RequestId is Guid requestId)
-                return filterFunc(context.Instance, requestId);
+            if (context.RequestId is Guid requestId)
+                return filterFunc(context.Saga, requestId);
             else
                 return false;
         }
@@ -175,10 +172,10 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public bool RequestTimeoutExpiredEventFilter(EventContext<TInstance, RequestTimeoutExpired<TRequest>> context)
+        public bool RequestTimeoutExpiredEventFilter(BehaviorContext<TSaga, RequestTimeoutExpired<TRequest>> context)
         {
-            if (context.TryGetPayload<ConsumeContext<RequestTimeoutExpired<TRequest>>>(out var consumeContext) && consumeContext.RequestId is Guid requestId)
-                return filterFunc(context.Instance, requestId);
+            if (context.RequestId is Guid requestId)
+                return filterFunc(context.Saga, requestId);
             else
                 return false;
         }
@@ -188,7 +185,7 @@ namespace Cogito.MassTransit.Automatonymous.MultiRequests
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public bool FinishedSignalEventFilter(EventContext<TInstance> context)
+        public bool FinishedSignalEventFilter(BehaviorContext<TSaga, MultiRequestFinishedSignal> context)
         {
             return true;
         }

@@ -6,47 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Automatonymous\Events\**" />
-        <Compile Remove="Automatonymous\MultiRequests\**" />
-        <Compile Remove="Automatonymous\SagaConfigurators\**" />
-        <EmbeddedResource Remove="Automatonymous\Events\**" />
-        <EmbeddedResource Remove="Automatonymous\MultiRequests\**" />
-        <EmbeddedResource Remove="Automatonymous\SagaConfigurators\**" />
-        <None Remove="Automatonymous\Events\**" />
-        <None Remove="Automatonymous\MultiRequests\**" />
-        <None Remove="Automatonymous\SagaConfigurators\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="AsyncEventMessageFactory.cs" />
-      <Compile Remove="Activities\MultiRequestActivity.cs" />
-      <Compile Remove="Activities\MultiRequestActivityImpl.cs" />
-      <Compile Remove="Activities\MultiRequestCancelItemTimeoutActivity.cs" />
-      <Compile Remove="Activities\MultiRequestFinishedActivity.cs" />
-      <Compile Remove="Activities\MultiRequestItemCompletedActivity.cs" />
-      <Compile Remove="Activities\MultiRequestItemFaultedActivity.cs" />
-      <Compile Remove="Activities\MultiRequestItemFinishedActivity.cs" />
-      <Compile Remove="Activities\MultiRequestItemTimeoutExpiredActivity.cs" />
-      <Compile Remove="Automatonymous\AsyncEventMultiMessageFactory.cs" />
-      <Compile Remove="Automatonymous\EventMultiMessageFactory.cs" />
-      <Compile Remove="Automatonymous\IMultiRequestConfigurator.cs" />
-      <Compile Remove="Automatonymous\IMultiRequestStateAccessor.cs" />
-      <Compile Remove="Automatonymous\MassTransitStateMachine.cs" />
-      <Compile Remove="Automatonymous\MultiRequest.cs" />
-      <Compile Remove="Automatonymous\MultiRequestExtensions.cs" />
-      <Compile Remove="Automatonymous\MultiRequestSettings.cs" />
-      <Compile Remove="EventMessageFactory.cs" />
-      <Compile Remove="ExceptionInfoException.cs" />
-      <Compile Remove="Expressions\ExpressionExtensions.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Automatonymous\" />
-      <Folder Include="Expressions\" />
     </ItemGroup>
 
 </Project>

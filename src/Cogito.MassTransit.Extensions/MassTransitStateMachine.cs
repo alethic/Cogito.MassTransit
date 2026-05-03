@@ -1,35 +1,30 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using Automatonymous;
-using Automatonymous.Events;
-
-using Cogito.MassTransit.Automatonymous.Activities;
-using Cogito.MassTransit.Automatonymous.Events;
-using Cogito.MassTransit.Automatonymous.MultiRequests;
-using Cogito.MassTransit.Automatonymous.SagaConfigurators;
+using Cogito.MassTransit.Events;
+using Cogito.MassTransit.Extensions.Activities;
+using Cogito.MassTransit.Extensions.Internal;
 
 using MassTransit;
-using MassTransit.Internals.Extensions;
 
-namespace Cogito.MassTransit.Automatonymous
+namespace Cogito.MassTransit
 {
 
     /// <summary>
-    /// A MassTransit state machine adds functionality on top of Automatonymous supporting things like request/response,
-    /// and correlating events to the state machine, as well as retry and policy configuration.
+    /// A MassTransit state machine that adds support for declaring multi-requests on top of the
+    /// stock MassTransit state machine.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
-    public abstract class MassTransitStateMachine<TInstance> :
-        global::Automatonymous.MassTransitStateMachine<TInstance>
-        where TInstance : class, SagaStateMachineInstance
+    /// <typeparam name="TSaga"></typeparam>
+    public abstract class MassTransitStateMachine<TSaga> :
+        global::MassTransit.MassTransitStateMachine<TSaga>
+        where TSaga : class, SagaStateMachineInstance
     {
 
         /// <summary>
-        /// Sets the <see cref="MultiRequest{TInstance, TKey, TRequest, TResponse}"/> property.
+        /// Sets the <see cref="MultiRequest{TSaga, TKey, TRequest, TResponse}"/> property on the state machine.
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TRequest"></typeparam>
@@ -38,24 +33,34 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="property"></param>
         /// <param name="request"></param>
         static void InitializeMultiRequest<TKey, TRequest, TResponse>(
-            AutomatonymousStateMachine<TInstance> stateMachine,
+            global::MassTransit.MassTransitStateMachine<TSaga> stateMachine,
             PropertyInfo property,
-            MultiRequest<TInstance, TKey, TRequest, TResponse> request)
+            MultiRequest<TSaga, TKey, TRequest, TResponse> request)
             where TRequest : class
             where TResponse : class
         {
             if (property.CanWrite)
                 property.SetValue(stateMachine, request);
-            else if (ConfigurationHelpers.TryGetBackingField(stateMachine.GetType().GetTypeInfo(), property, out var backingField))
+            else if (TryGetBackingField(property, out var backingField))
                 backingField.SetValue(stateMachine, request);
             else
                 throw new ArgumentException($"The multi-request property is not writable: {property.Name}");
         }
 
         /// <summary>
-        /// Declares a request that is sent by the state machine to a service, and the associated response, fault, and
-        /// timeout handling. The property is initialized with the fully built Request. The request must be declared
-        /// before it is used in the state/event declaration statements.
+        /// Attempts to locate the compiler-generated backing field for the given auto-property.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="backingField"></param>
+        /// <returns></returns>
+        static bool TryGetBackingField(PropertyInfo property, out FieldInfo backingField)
+        {
+            backingField = property.DeclaringType?.GetField($"<{property.Name}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            return backingField != null;
+        }
+
+        /// <summary>
+        /// Declares a multi-request on the state machine, using the default settings.
         /// </summary>
         /// <typeparam name="TState"></typeparam>
         /// <typeparam name="TRequest"></typeparam>
@@ -64,12 +69,11 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="itemsExpression"></param>
         /// <param name="requestIdExpression"></param>
         /// <param name="accessor"></param>
-        /// <param name="configureRequest"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
-            Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
-            Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
+            Expression<Func<MultiRequest<TSaga, TState, TRequest, TResponse>>> propertyExpression,
+            Expression<Func<TSaga, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
-            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor)
+            IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor)
             where TRequest : class
             where TResponse : class
         {
@@ -77,9 +81,7 @@ namespace Cogito.MassTransit.Automatonymous
         }
 
         /// <summary>
-        /// Declares a request that is sent by the state machine to a service, and the associated response, fault, and
-        /// timeout handling. The property is initialized with the fully built Request. The request must be declared
-        /// before it is used in the state/event declaration statements.
+        /// Declares a multi-request on the state machine, allowing inline configuration.
         /// </summary>
         /// <typeparam name="TState"></typeparam>
         /// <typeparam name="TRequest"></typeparam>
@@ -90,10 +92,10 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="accessor"></param>
         /// <param name="configureRequest"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
-            Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
-            Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
+            Expression<Func<MultiRequest<TSaga, TState, TRequest, TResponse>>> propertyExpression,
+            Expression<Func<TSaga, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
-            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor,
+            IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor,
             Action<IMultiRequestConfigurator> configureRequest = null)
             where TRequest : class
             where TResponse : class
@@ -104,9 +106,7 @@ namespace Cogito.MassTransit.Automatonymous
         }
 
         /// <summary>
-        /// Declares a request that is sent by the state machine to a service, and the associated response, fault, and
-        /// timeout handling. The property is initialized with the fully built Request. The request must be declared
-        /// before it is used in the state/event declaration statements.
+        /// Declares a multi-request on the state machine, with the specified settings.
         /// </summary>
         /// <typeparam name="TState"></typeparam>
         /// <typeparam name="TRequest"></typeparam>
@@ -117,10 +117,10 @@ namespace Cogito.MassTransit.Automatonymous
         /// <param name="accessor"></param>
         /// <param name="settings"></param>
         protected void MultiRequest<TState, TRequest, TResponse>(
-            Expression<Func<MultiRequest<TInstance, TState, TRequest, TResponse>>> propertyExpression,
-            Expression<Func<TInstance, IEnumerable<TState>>> itemsExpression,
+            Expression<Func<MultiRequest<TSaga, TState, TRequest, TResponse>>> propertyExpression,
+            Expression<Func<TSaga, IEnumerable<TState>>> itemsExpression,
             Expression<Func<TState, Guid?>> requestIdExpression,
-            IMultiRequestStateAccessor<TInstance, TState, TRequest, TResponse> accessor,
+            IMultiRequestStateAccessor<TSaga, TState, TRequest, TResponse> accessor,
             MultiRequestSettings settings = null)
             where TRequest : class
             where TResponse : class
@@ -129,15 +129,15 @@ namespace Cogito.MassTransit.Automatonymous
             if (settings == null)
                 settings = new StateMachineMultiRequestConfigurator<TRequest>();
 
-            var property = propertyExpression.GetPropertyInfo();
+            var property = GetPropertyInfo(propertyExpression);
 
             // parameters reused within expressions
-            var instanceParameter = Expression.Parameter(typeof(TInstance), "instance");
+            var instanceParameter = Expression.Parameter(typeof(TSaga), "instance");
             var itemParameter = Expression.Parameter(typeof(TState), "item");
             var requestIdParameter = Expression.Parameter(typeof(Guid), "requestId");
 
             // filters an instance to that which contains the request
-            var filterExpression = Expression.Lambda<Func<TInstance, Guid, bool>>(
+            var filterExpression = Expression.Lambda<Func<TSaga, Guid, bool>>(
                 Expression.Call(
                     typeof(Enumerable),
                     nameof(Enumerable.Any),
@@ -151,7 +151,7 @@ namespace Cogito.MassTransit.Automatonymous
                 instanceParameter,
                 requestIdParameter);
 
-            var request = new StateMachineMultiRequest<TInstance, TState, TRequest, TResponse>(property.Name, filterExpression, itemsExpression, requestIdExpression, accessor, settings);
+            var request = new StateMachineMultiRequest<TSaga, TState, TRequest, TResponse>(property.Name, filterExpression, itemsExpression, requestIdExpression, accessor, settings);
 
             InitializeMultiRequest(this, property, request);
 
@@ -159,7 +159,7 @@ namespace Cogito.MassTransit.Automatonymous
 
             // filters instances for the Completed event
             var completedContextParameter = Expression.Parameter(typeof(ConsumeContext<TResponse>), "context");
-            var completedExpression = Expression.Lambda<Func<TInstance, ConsumeContext<TResponse>, bool>>(
+            var completedExpression = Expression.Lambda<Func<TSaga, ConsumeContext<TResponse>, bool>>(
                 Expression.Call(
                     typeof(Enumerable),
                     nameof(Enumerable.Any),
@@ -175,7 +175,7 @@ namespace Cogito.MassTransit.Automatonymous
 
             // filters instances for the Faulted event
             var faultedContextParameter = Expression.Parameter(typeof(ConsumeContext<Fault<TRequest>>), "context");
-            var faultedExpression = Expression.Lambda<Func<TInstance, ConsumeContext<Fault<TRequest>>, bool>>(
+            var faultedExpression = Expression.Lambda<Func<TSaga, ConsumeContext<Fault<TRequest>>, bool>>(
                 Expression.Call(
                     typeof(Enumerable),
                     nameof(Enumerable.Any),
@@ -191,7 +191,7 @@ namespace Cogito.MassTransit.Automatonymous
 
             // filters instances for the TimeoutExpired event
             var timeoutExpiredContextParameter = Expression.Parameter(typeof(ConsumeContext<RequestTimeoutExpired<TRequest>>), "context");
-            var timeoutExpiredExpression = Expression.Lambda<Func<TInstance, ConsumeContext<RequestTimeoutExpired<TRequest>>, bool>>(
+            var timeoutExpiredExpression = Expression.Lambda<Func<TSaga, ConsumeContext<RequestTimeoutExpired<TRequest>>, bool>>(
                 Expression.Call(
                     typeof(Enumerable),
                     nameof(Enumerable.Any),
@@ -219,20 +219,39 @@ namespace Cogito.MassTransit.Automatonymous
 
             DuringAny(
                 When(request.Completed, request.CompletedEventFilter)
-                    .Add(new MultiRequestItemCompletedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)),
+                    .Add(new MultiRequestItemCompletedActivity<TSaga, TState, TRequest, TResponse>(request))
+                    .Add(new MultiRequestItemFinishedActivity<TSaga, TState, TRequest, TResponse>(request))
+                    .Add(new MultiRequestCancelItemTimeoutActivity<TSaga, TState, TRequest, TResponse>(request)),
                 When(request.Faulted, request.FaultedEventFilter)
-                    .Add(new MultiRequestItemFaultedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)),
+                    .Add(new MultiRequestItemFaultedActivity<TSaga, TState, TRequest, TResponse>(request))
+                    .Add(new MultiRequestItemFinishedActivity<TSaga, TState, TRequest, TResponse>(request))
+                    .Add(new MultiRequestCancelItemTimeoutActivity<TSaga, TState, TRequest, TResponse>(request)),
                 When(request.TimeoutExpired, request.RequestTimeoutExpiredEventFilter)
-                    .Add(new MultiRequestItemTimeoutExpiredActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TInstance, TState, TRequest, TResponse>(request)),
+                    .Add(new MultiRequestItemTimeoutExpiredActivity<TSaga, TState, TRequest, TResponse>(request))
+                    .Add(new MultiRequestItemFinishedActivity<TSaga, TState, TRequest, TResponse>(request))
+                    .Add(new MultiRequestCancelItemTimeoutActivity<TSaga, TState, TRequest, TResponse>(request)),
                 When(request.FinishedSignal, request.FinishedSignalEventFilter)
-                    .Add(new MultiRequestFinishedActivity<TInstance, TState, TRequest, TResponse>(request)));
+                    .Add(new MultiRequestFinishedActivity<TSaga, TState, TRequest, TResponse>(request)));
         }
+
+        /// <summary>
+        /// Resolves the <see cref="PropertyInfo"/> referenced by a property-access lambda.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        static PropertyInfo GetPropertyInfo<T>(Expression<Func<T>> expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            var body = expression.Body as MemberExpression;
+            if (body?.Member is PropertyInfo property)
+                return property;
+
+            throw new ArgumentException("Expression must reference a property.", nameof(expression));
+        }
+
     }
 
 }

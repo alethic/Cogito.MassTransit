@@ -1,12 +1,12 @@
-﻿using MassTransit;
+using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.Events
+namespace Cogito.MassTransit.Events
 {
 
     /// <summary>
-    /// Describes a finished <see cref="MultiRequest{TInstance, TItem, TRequest, TResponse}"/>.
+    /// Describes a finished <see cref="MultiRequest{TSaga, TItem, TRequest, TResponse}"/>.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     public interface MultiRequestFinishedItem<TRequest, TResponse>

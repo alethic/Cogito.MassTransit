@@ -1,81 +1,82 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
-using Automatonymous;
-
-using Cogito.MassTransit.Automatonymous.Events;
-
-using GreenPipes;
+using Cogito.MassTransit.Events;
 
 using MassTransit;
 
-namespace Cogito.MassTransit.Automatonymous.Activities
+namespace Cogito.MassTransit.Extensions.Activities
 {
 
     /// <summary>
-    /// Executed when an item from a multi-request is completed.
+    /// Executed after each item event to check whether all items in the multi-request have completed,
+    /// and if so, dispatches a <see cref="MultiRequestFinishedSignal"/> back to the state machine.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TState"></typeparam>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class MultiRequestItemFinishedActivity<TInstance, TState, TRequest, TResponse> : Activity<TInstance>
-        where TInstance : class, SagaStateMachineInstance
+    class MultiRequestItemFinishedActivity<TSaga, TState, TRequest, TResponse> : IStateMachineActivity<TSaga>
+        where TSaga : class, SagaStateMachineInstance
         where TRequest : class
         where TResponse : class
     {
 
-        readonly MultiRequest<TInstance, TState, TRequest, TResponse> request;
+        readonly MultiRequest<TSaga, TState, TRequest, TResponse> request;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="request"></param>
-        public MultiRequestItemFinishedActivity(MultiRequest<TInstance, TState, TRequest, TResponse> request)
+        public MultiRequestItemFinishedActivity(MultiRequest<TSaga, TState, TRequest, TResponse> request)
         {
             this.request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
-        public void Accept(StateMachineVisitor visitor)
+        void IVisitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
         }
 
-        async Task Execute(BehaviorContext<TInstance> context)
+        public void Probe(ProbeContext context)
+        {
+            context.CreateScope("multiRequestItemFinished");
+        }
+
+        async Task ExecuteCore(SagaConsumeContext<TSaga> context)
         {
             if (request.IsFinished(context))
             {
                 // dispatch signal to ourselves
-                var endpoint = await context.GetSendEndpoint(context.CreateConsumeContext().ReceiveContext.InputAddress);
-                await endpoint.Send(new MultiRequestFinishedSignal(), s => s.CorrelationId = context.Instance.CorrelationId, context.CancellationToken);
+                var endpoint = await context.GetSendEndpoint(context.ReceiveContext.InputAddress).ConfigureAwait(false);
+                await endpoint.Send(new MultiRequestFinishedSignal(), s => s.CorrelationId = context.Saga.CorrelationId, context.CancellationToken).ConfigureAwait(false);
             }
         }
 
-        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        public async Task Execute(BehaviorContext<TSaga> context, IBehavior<TSaga> next)
         {
-            await Execute(context);
-            await next.Execute(context);
+            await ExecuteCore(context).ConfigureAwait(false);
+            await next.Execute(context).ConfigureAwait(false);
         }
 
-        public async Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
+        public async Task Execute<T>(BehaviorContext<TSaga, T> context, IBehavior<TSaga, T> next)
+            where T : class
         {
-            await Execute(context);
-            await next.Execute(context);
+            await ExecuteCore(context).ConfigureAwait(false);
+            await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next) where TException : Exception
+        public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TException> context, IBehavior<TSaga> next)
+            where TException : Exception
         {
             return next.Faulted(context);
         }
 
-        public Task Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next) where TException : Exception
+        public Task Faulted<T, TException>(BehaviorExceptionContext<TSaga, T, TException> context, IBehavior<TSaga, T> next)
+            where T : class
+            where TException : Exception
         {
             return next.Faulted(context);
-        }
-
-        public void Probe(ProbeContext context)
-        {
-            context.CreateScope("multiRequestItemFinishedActivity");
         }
 
     }
