@@ -8,7 +8,7 @@ helpers on top of MassTransit 8.5.x:
 | Package                              | Description                                                                                          | Targets            |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------ |
 | **Cogito.MassTransit**               | Core utilities — `IBus` extensions and a typed periodic-pulse message hierarchy (`P`, `PT1M`, …).    | `net472`, `net8.0` |
-| **Cogito.MassTransit.Extensions**    | Automatonymous saga helpers — capture an incoming request and `RespondTo` / `FaultedTo` it later.    | `net472`, `net8.0` |
+| **Cogito.MassTransit.Extensions**    | Saga state-machine helpers — capture an incoming request and `RespondTo` / `FaultedTo` it later.     | `net472`, `net8.0` |
 | **Cogito.MassTransit.Scheduler**     | A Quartz-backed hosted service that publishes the periodic pulse messages on a fixed cadence.        | `net472`, `net8.0` |
 
 A runnable sample (`Cogito.MassTransit.Scheduler.Sample1`) and a test project
@@ -26,7 +26,7 @@ global.json
 .github/workflows/Cogito.MassTransit.yml
 src/
   Cogito.MassTransit/                   # Core: IBus extensions + Pulse messages
-  Cogito.MassTransit.Extensions/        # Automatonymous: RespondTo / FaultedTo
+  Cogito.MassTransit.Extensions/        # Saga state-machine: RespondTo / FaultedTo
   Cogito.MassTransit.Scheduler/         # Quartz-driven periodic publisher
   Cogito.MassTransit.Scheduler.Sample1/ # Runnable sample host
   Cogito.MassTransit.Tests/             # Unit tests
@@ -219,8 +219,9 @@ dotnet run --project src\Cogito.MassTransit.Scheduler.Sample1
 
 ## Cogito.MassTransit.Extensions
 
-Helpers built on top of MassTransit's Automatonymous (`SagaStateMachine`)
-support. The package exposes two complementary feature sets:
+Helpers built on top of MassTransit's saga state-machine
+(`MassTransitStateMachine<T>`) support. The package exposes two
+complementary feature sets:
 
 1. **Request tokens** — capture everything needed to reply to an inbound
    request (`MessageId`, `RequestId`, `CorrelationId`, `ConversationId`,
@@ -230,7 +231,7 @@ support. The package exposes two complementary feature sets:
    send a normal response or a `FaultEvent<TRequest>` to the captured
    addresses with the correct correlation headers.
 
-Namespace: `Cogito.MassTransit.Automatonymous`
+Namespace: `Cogito.MassTransit`
 
 ### Request tokens
 
@@ -247,7 +248,7 @@ public interface IRequestToken<TRequest>
 }
 
 // Default implementation that's both readable and writable; safe to store on a saga.
-public class RequestToken<TMessage> : IRequestToken<TMessage>, IRequestTokenSetter<TMessage> { ... }
+public record RequestToken<TMessage> : IRequestToken<TMessage>, IRequestTokenSetter<TMessage> { ... }
 ```
 
 `IRequestTokenSetter<TRequest>` is the write-side companion used by the
@@ -260,7 +261,7 @@ on whatever property you persist on your saga state.
 request from inside a state machine:
 
 ```csharp
-using Cogito.MassTransit.Automatonymous;
+using Cogito.MassTransit;
 
 // 1. Capture into a brand-new RequestToken<TMessage>:
 var token = context.CaptureRequestToken();
