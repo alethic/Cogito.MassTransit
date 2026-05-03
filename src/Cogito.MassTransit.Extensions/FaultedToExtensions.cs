@@ -100,13 +100,13 @@ namespace Cogito.MassTransit
         /// <param name="exceptionFactory"></param>
         /// <param name="contextCallback"></param>
         /// <returns></returns>
-        public static ExceptionActivityBinder<TSaga, TMessage, TException> FaultedToAsync<TSaga, TMessage, TException, TRequest>(this ExceptionActivityBinder<TSaga, TMessage, TException> source, AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, AsyncExceptionFactory<TSaga, TMessage, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
+        public static ExceptionActivityBinder<TSaga, TMessage, TException> FaultedToAsync<TSaga, TMessage, TException, TRequest>(this ExceptionActivityBinder<TSaga, TMessage, TException> source, AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, AsyncCatchExceptionFactory<TSaga, TMessage, TException, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
             where TException : Exception
             where TRequest : class
         {
-            return source.Add(new FaultedToActivity<TSaga, TMessage, TRequest>(requestTokenFactory, exceptionFactory, contextCallback));
+            return source.Add(new FaultedToExceptionActivity<TSaga, TMessage, TException, TRequest>(requestTokenFactory, exceptionFactory, contextCallback));
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Cogito.MassTransit
             where TException : Exception
             where TRequest : class
         {
-            return source.Add(new FaultedToActivity<TSaga, TMessage, TRequest>(requestTokenFactory, context => Task.FromResult((Exception)((BehaviorExceptionContext<TSaga, TMessage, TException>)context).Exception), contextCallback));
+            return source.Add(new FaultedToExceptionActivity<TSaga, TMessage, TException, TRequest>(requestTokenFactory, context => Task.FromResult((Exception)context.Exception), contextCallback));
         }
 
         /// <summary>
@@ -141,13 +141,13 @@ namespace Cogito.MassTransit
         /// <param name="exceptionFactory"></param>
         /// <param name="contextCallback"></param>
         /// <returns></returns>
-        public static ExceptionActivityBinder<TSaga, TMessage, TException> FaultedTo<TSaga, TMessage, TException, TRequest>(this ExceptionActivityBinder<TSaga, TMessage, TException> source, RequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, ExceptionFactory<TSaga, TMessage, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
+        public static ExceptionActivityBinder<TSaga, TMessage, TException> FaultedTo<TSaga, TMessage, TException, TRequest>(this ExceptionActivityBinder<TSaga, TMessage, TException> source, RequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, CatchExceptionFactory<TSaga, TMessage, TException, TRequest> exceptionFactory, Action<SendContext<FaultEvent<TRequest>>>? contextCallback = null)
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
             where TException : Exception
             where TRequest : class
         {
-            return source.Add(new FaultedToActivity<TSaga, TMessage, TRequest>(context => Task.FromResult(requestTokenFactory(context)), context => Task.FromResult(exceptionFactory(context)), contextCallback));
+            return source.Add(new FaultedToExceptionActivity<TSaga, TMessage, TException, TRequest>(context => Task.FromResult(requestTokenFactory(context)), context => Task.FromResult(exceptionFactory(context)), contextCallback));
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Cogito.MassTransit
             where TException : Exception
             where TRequest : class
         {
-            return source.Add(new FaultedToActivity<TSaga, TMessage, TRequest>(context => Task.FromResult(requestTokenFactory(context)), context => Task.FromResult((Exception)((BehaviorExceptionContext<TSaga, TMessage, TException>)context).Exception), contextCallback));
+            return source.Add(new FaultedToExceptionActivity<TSaga, TMessage, TException, TRequest>(context => Task.FromResult(requestTokenFactory(context)), context => Task.FromResult((Exception)context.Exception), contextCallback));
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Cogito.MassTransit
             where TException : Exception
             where TRequest : class
         {
-            return source.Add(new FaultedToActivity<TSaga, TMessage, TRequest>(context => Task.FromResult(requestTokenFactory(context)), context => Task.FromResult(exception), contextCallback));
+            return source.Add(new FaultedToExceptionActivity<TSaga, TMessage, TException, TRequest>(context => Task.FromResult(requestTokenFactory(context)), context => Task.FromResult(exception), contextCallback));
         }
 
     }
