@@ -20,15 +20,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 6.0.x
     - name: Setup .NET 8.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.x
     - name: Install GitVersion
@@ -65,12 +65,12 @@ jobs:
           Cogito.MassTransit.dist.msbuildproj
     - name: Upload MSBuild Log
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: msbuild.binlog
         path: msbuild.binlog
     - name: Upload NuGet Packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: nuget
         path: dist/nuget
@@ -78,7 +78,7 @@ jobs:
       run: tar czvf tests.tar.gz tests
       working-directory: dist
     - name: Upload Tests
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: tests
         path: dist/tests.tar.gz
@@ -109,11 +109,11 @@ jobs:
     runs-on: ${{ fromJSON('{"win-x64":["windows-2025"],"linux-x64":["ubuntu-24.04"],"osx-x64":["macos-26-intel"],"osx-arm64":["macos-26"]}')[matrix.sys] }}
     steps:
     - name: Setup .NET 8.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.x
     - name: Download Tests
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: tests
     - name: Restore Tests
@@ -167,7 +167,7 @@ jobs:
       working-directory: ${{ env.WORKPATH }}
     - name: Upload Test Results
       if: always() && startsWith(env.RET, 'TestResults--')
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ env.RET }}
         path: TestResults.tar.gz
@@ -179,7 +179,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - name: Install GitVersion
@@ -192,7 +192,7 @@ jobs:
       with:
         useConfigFile: true
     - name: Download NuGet Packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: nuget
         path: dist/nuget
