@@ -6,19 +6,19 @@ using MassTransit;
 namespace Cogito.MassTransit.Extensions.Activities
 {
 
-    class CaptureRequestActivity<TInstance, TData, TToken> : IStateMachineActivity<TInstance, TData>
-        where TInstance : class, SagaStateMachineInstance
-        where TData : class
-        where TToken : IRequestTokenSetter<TData>, new()
+    class CaptureRequestActivity<TSaga, TMessage, TToken> : IStateMachineActivity<TSaga, TMessage>
+        where TSaga : class, SagaStateMachineInstance
+        where TMessage : class
+        where TToken : IRequestTokenSetter<TMessage>, new()
     {
 
-        readonly Func<BehaviorContext<TInstance, TData>, TToken, Task> captured;
+        readonly Func<BehaviorContext<TSaga, TMessage>, TToken, Task> captured;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="captured"></param>
-        public CaptureRequestActivity(Func<BehaviorContext<TInstance, TData>, TToken, Task> captured)
+        public CaptureRequestActivity(Func<BehaviorContext<TSaga, TMessage>, TToken, Task> captured)
         {
             this.captured = captured ?? throw new ArgumentNullException(nameof(captured));
         }
@@ -33,7 +33,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             context.CreateScope("captureRequestToken");
         }
 
-        public async Task Execute(BehaviorContext<TInstance, TData> context, IBehavior<TInstance, TData> next)
+        public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
             var token = new TToken();
             context.CaptureRequestToken(token);
@@ -43,7 +43,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, IBehavior<TInstance, TData> next)
+        public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TMessage, TException> context, IBehavior<TSaga, TMessage> next)
             where TException : Exception
         {
             return next.Faulted(context);

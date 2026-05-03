@@ -6,15 +6,15 @@ using MassTransit;
 namespace Cogito.MassTransit.Extensions.Activities
 {
 
-    class RespondToActivity<TInstance, TData, TRequest, TResponse> : IStateMachineActivity<TInstance, TData>
-        where TInstance : class, SagaStateMachineInstance
-        where TData : class
+    class RespondToActivity<TSaga, TMessage, TRequest, TResponse> : IStateMachineActivity<TSaga, TMessage>
+        where TSaga : class, SagaStateMachineInstance
+        where TMessage : class
         where TRequest : class
         where TResponse : class
     {
 
-        readonly AsyncRequestTokenFactory<TInstance, TData, TRequest> requestTokenFactory;
-        readonly AsyncEventMessageFactory<TInstance, TData, TResponse> messageFactory;
+        readonly AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory;
+        readonly AsyncEventMessageFactory<TSaga, TMessage, TResponse> messageFactory;
         readonly Action<SendContext<TResponse>> contextCallback;
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Cogito.MassTransit.Extensions.Activities
         /// <param name="requestTokenFactory"></param>
         /// <param name="messageFactory"></param>
         /// <param name="contextCallback"></param>
-        public RespondToActivity(AsyncRequestTokenFactory<TInstance, TData, TRequest> requestTokenFactory, AsyncEventMessageFactory<TInstance, TData, TResponse> messageFactory, Action<SendContext<TResponse>> contextCallback)
+        public RespondToActivity(AsyncRequestTokenFactory<TSaga, TMessage, TRequest> requestTokenFactory, AsyncEventMessageFactory<TSaga, TMessage, TResponse> messageFactory, Action<SendContext<TResponse>> contextCallback)
         {
             this.requestTokenFactory = requestTokenFactory ?? throw new ArgumentNullException(nameof(requestTokenFactory));
             this.messageFactory = messageFactory ?? throw new ArgumentNullException(nameof(messageFactory));
@@ -40,7 +40,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             context.CreateScope("respondTo");
         }
 
-        public async Task Execute(BehaviorContext<TInstance, TData> context, IBehavior<TInstance, TData> next)
+        public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
             var requestToken = await requestTokenFactory?.Invoke(context);
 
@@ -59,7 +59,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
-        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, IBehavior<TInstance, TData> next) where TException : Exception
+        public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TMessage, TException> context, IBehavior<TSaga, TMessage> next) where TException : Exception
         {
             return next.Faulted(context);
         }
