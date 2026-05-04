@@ -36,11 +36,16 @@ namespace Cogito.MassTransit.Extensions.Activities
             visitor.Visit(this);
         }
 
+        /// <inheritdoc/>
         public void Probe(ProbeContext context)
         {
             context.CreateScope("multiRequestCancelItemTimeout");
         }
 
+        /// <summary>
+        /// Cancels the scheduled timeout message for the request currently being handled, if any.
+        /// </summary>
+        /// <param name="context"></param>
         Task ExecuteCore(SagaConsumeContext<TSaga> context)
         {
             var requestId = context.RequestId;
@@ -55,12 +60,14 @@ namespace Cogito.MassTransit.Extensions.Activities
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc/>
         public async Task Execute(BehaviorContext<TSaga> context, IBehavior<TSaga> next)
         {
             await ExecuteCore(context).ConfigureAwait(false);
             await next.Execute(context).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public async Task Execute<T>(BehaviorContext<TSaga, T> context, IBehavior<TSaga, T> next)
             where T : class
         {
@@ -68,12 +75,14 @@ namespace Cogito.MassTransit.Extensions.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TException> context, IBehavior<TSaga> next)
             where TException : Exception
         {
             return next.Faulted(context);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<T, TException>(BehaviorExceptionContext<TSaga, T, TException> context, IBehavior<TSaga, T> next)
             where T : class
             where TException : Exception

@@ -28,11 +28,13 @@ namespace Cogito.MassTransit.Extensions.Activities
             visitor.Visit(this);
         }
 
+        /// <inheritdoc/>
         public void Probe(ProbeContext context)
         {
             context.CreateScope("captureRequest");
         }
 
+        /// <inheritdoc/>
         public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
             var token = new TToken();
@@ -43,6 +45,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TMessage, TException> context, IBehavior<TSaga, TMessage> next)
             where TException : Exception
         {

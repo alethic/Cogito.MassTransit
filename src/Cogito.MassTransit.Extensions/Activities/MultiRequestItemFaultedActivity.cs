@@ -35,17 +35,20 @@ namespace Cogito.MassTransit.Extensions.Activities
             visitor.Visit(this);
         }
 
+        /// <inheritdoc/>
         public void Probe(ProbeContext context)
         {
             context.CreateScope("multiRequestItemFaulted");
         }
 
+        /// <inheritdoc/>
         public Task Execute(BehaviorContext<TSaga, Fault<TRequest>> context, IBehavior<TSaga, Fault<TRequest>> next)
         {
             request.Accessor.SetFaulted(context, request.GetItem(context, (Guid)context.RequestId), context.Message);
             return next.Execute(context);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<TException>(BehaviorExceptionContext<TSaga, Fault<TRequest>, TException> context, IBehavior<TSaga, Fault<TRequest>> next)
             where TException : Exception
         {

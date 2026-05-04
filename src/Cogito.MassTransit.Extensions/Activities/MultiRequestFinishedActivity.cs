@@ -37,11 +37,13 @@ namespace Cogito.MassTransit.Extensions.Activities
             visitor.Visit(this);
         }
 
+        /// <inheritdoc/>
         public void Probe(ProbeContext context)
         {
             context.CreateScope("multiRequestFinished");
         }
 
+        /// <inheritdoc/>
         public async Task Execute(BehaviorContext<TSaga, MultiRequestFinishedSignal> context, IBehavior<TSaga, MultiRequestFinishedSignal> next)
         {
             var evt = MultiRequestFinishedEvent<TSaga, TState, TRequest, TResponse>.Init(context, request);
@@ -54,6 +56,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<TException>(BehaviorExceptionContext<TSaga, MultiRequestFinishedSignal, TException> context, IBehavior<TSaga, MultiRequestFinishedSignal> next)
             where TException : Exception
         {

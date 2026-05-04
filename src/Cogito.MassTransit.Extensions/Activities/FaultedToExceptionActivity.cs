@@ -44,11 +44,13 @@ namespace Cogito.MassTransit.Extensions.Activities
             visitor.Visit(this);
         }
 
+        /// <inheritdoc/>
         public void Probe(ProbeContext context)
         {
             context.CreateScope("faultedTo");
         }
 
+        /// <inheritdoc/>
         public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
             // ExceptionActivityBinder dispatches a BehaviorExceptionContext to the registered IStateMachineActivity<TSaga, TMessage>;
@@ -103,6 +105,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<TOtherException>(BehaviorExceptionContext<TSaga, TMessage, TOtherException> context, IBehavior<TSaga, TMessage> next) where TOtherException : Exception
         {
             return next.Faulted(context);

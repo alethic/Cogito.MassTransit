@@ -9,6 +9,10 @@ using MassTransit.Events;
 namespace Cogito.MassTransit
 {
 
+    /// <summary>
+    /// Provides extension methods for sending a fault back to a previously captured request token from inside a saga
+    /// state machine event activity or <c>Catch</c> handler.
+    /// </summary>
     public static class FaultedToExtensions
     {
 

@@ -35,17 +35,20 @@ namespace Cogito.MassTransit.Extensions.Activities
             visitor.Visit(this);
         }
 
+        /// <inheritdoc/>
         public void Probe(ProbeContext context)
         {
             context.CreateScope("multiRequestItemTimeoutExpired");
         }
 
+        /// <inheritdoc/>
         public Task Execute(BehaviorContext<TSaga, RequestTimeoutExpired<TRequest>> context, IBehavior<TSaga, RequestTimeoutExpired<TRequest>> next)
         {
             request.Accessor.SetTimeoutExpired(context, request.GetItem(context, (Guid)context.RequestId), context.Message);
             return next.Execute(context);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<TException>(BehaviorExceptionContext<TSaga, RequestTimeoutExpired<TRequest>, TException> context, IBehavior<TSaga, RequestTimeoutExpired<TRequest>> next)
             where TException : Exception
         {

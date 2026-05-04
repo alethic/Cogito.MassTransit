@@ -6,6 +6,10 @@ using MassTransit.Scheduling;
 namespace Cogito.MassTransit
 {
 
+    /// <summary>
+    /// Provides extension methods for dispatching a configured <see cref="MultiRequest{TSaga, TState, TRequest, TResponse}"/>
+    /// from a saga state machine event activity.
+    /// </summary>
     public static class MultiRequestExtensions
     {
 

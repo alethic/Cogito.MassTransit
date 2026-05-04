@@ -84,6 +84,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             visitor.Visit(this);
         }
 
+        /// <inheritdoc/>
         public async Task Execute(BehaviorContext<TSaga, TMessage> context, IBehavior<TSaga, TMessage> next)
         {
             if (messageFactory != null)
@@ -97,6 +98,7 @@ namespace Cogito.MassTransit.Extensions.Activities
             await next.Execute(context).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public Task Faulted<TException>(BehaviorExceptionContext<TSaga, TMessage, TException> context, IBehavior<TSaga, TMessage> next)
             where TException : Exception
         {

@@ -72,6 +72,10 @@ namespace Cogito.MassTransit.Extensions.Activities
             }
         }
 
+        /// <summary>
+        /// Probes the activity, exposing the request and response types and the configured settings.
+        /// </summary>
+        /// <param name="context"></param>
         public virtual void Probe(ProbeContext context)
         {
             var scope = context.CreateScope("multiRequest");
@@ -98,6 +102,9 @@ namespace Cogito.MassTransit.Extensions.Activities
                 RequestId = NewId.NextGuid();
             }
 
+            /// <summary>
+            /// Gets the unique request identifier assigned to the outgoing request.
+            /// </summary>
             public Guid RequestId { get; }
 
             void IProbeSite.Probe(ProbeContext context)
@@ -137,12 +144,16 @@ namespace Cogito.MassTransit.Extensions.Activities
                 RequestId = requestId;
             }
 
+            /// <inheritdoc cref="RequestTimeoutExpired{TRequest}.Timestamp"/>
             public DateTime Timestamp { get; }
 
+            /// <inheritdoc cref="RequestTimeoutExpired{TRequest}.ExpirationTime"/>
             public DateTime ExpirationTime { get; }
 
+            /// <inheritdoc cref="RequestTimeoutExpired{TRequest}.CorrelationId"/>
             public Guid CorrelationId { get; }
 
+            /// <inheritdoc cref="RequestTimeoutExpired{TRequest}.RequestId"/>
             public Guid RequestId { get; }
 
         }

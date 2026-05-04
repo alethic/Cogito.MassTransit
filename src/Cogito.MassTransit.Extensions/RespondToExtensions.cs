@@ -8,6 +8,10 @@ using MassTransit;
 namespace Cogito.MassTransit
 {
 
+    /// <summary>
+    /// Provides extension methods for responding to a previously captured request token from inside a saga state
+    /// machine event activity.
+    /// </summary>
     public static class RespondToExtensions
     {
 

@@ -8,6 +8,10 @@ using MassTransit;
 namespace Cogito.MassTransit.Extensions
 {
 
+    /// <summary>
+    /// Provides extension methods for capturing the incoming request from a state machine event into a
+    /// <see cref="RequestToken{TRequest}"/> that can be persisted on the saga and later used to respond or fault.
+    /// </summary>
     public static class CaptureRequestExtensions
     {
 
@@ -55,12 +59,12 @@ namespace Cogito.MassTransit.Extensions
         }
 
         /// <summary>
-        /// Captures a <see cref="RequestToken{TRequest}"/> instance from the current context.
+        /// Populates the supplied <paramref name="token"/> with the request information from the current context.
         /// </summary>
         /// <typeparam name="TSaga"></typeparam>
         /// <typeparam name="TMessage"></typeparam>
         /// <param name="context"></param>
-        /// <returns></returns>
+        /// <param name="token"></param>
         public static void CaptureRequestToken<TSaga, TMessage>(this BehaviorContext<TSaga, TMessage> context, IRequestTokenSetter<TMessage> token)
             where TSaga : class, SagaStateMachineInstance
             where TMessage : class
