@@ -8,6 +8,8 @@
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.4" />
         <PackageReference Include="MassTransit" Version="8.5.9" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageReference Include="NSubstitute" Version="5.3.0" />
         <PackageReference Include="xunit" Version="2.9.3" />
@@ -22,8 +24,6 @@
         <ProjectReference Include="..\Cogito.MassTransit.Extensions\Cogito.MassTransit.Extensions.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
-        <ProjectReference Include="..\Sweep.Components\Sweep.Components.csproj" />
-        <ProjectReference Include="..\Sweep.Kube.Server\Sweep.Kube.Server.csproj" />
     </ItemGroup>
 
 </Project>

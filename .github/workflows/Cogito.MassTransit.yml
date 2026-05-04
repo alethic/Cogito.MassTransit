@@ -31,6 +31,10 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.x
+    - name: Setup .NET 10.0
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v4
       with:
@@ -95,6 +99,7 @@ jobs:
         tfm:
         - net481
         - net8.0
+        - net10.0
         exclude:
         - tfm: net481
           sys: linux-x64
@@ -112,6 +117,10 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.x
+    - name: Setup .NET 10.0
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
     - name: Download Tests
       uses: actions/download-artifact@v8
       with:
