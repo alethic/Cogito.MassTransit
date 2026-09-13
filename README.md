@@ -1,5 +1,7 @@
 # Cogito.MassTransit
 
+[![Build](https://github.com/alethic/Cogito.MassTransit/actions/workflows/Cogito.MassTransit.yml/badge.svg)](https://github.com/alethic/Cogito.MassTransit/actions/workflows/Cogito.MassTransit.yml)
+
 Extensions and utilities for working with [MassTransit](https://masstransit.io/).
 
 This repository ships a small family of NuGet packages that layer additional
@@ -375,3 +377,11 @@ dotnet test    Cogito.MassTransit.sln -c Release
 ## License
 
 See [`LICENSE`](LICENSE).
+
+## Packages
+
+| Package | Version |
+| --- | --- |
+| [Cogito.MassTransit](https://www.nuget.org/packages/Cogito.MassTransit) | [![NuGet](https://img.shields.io/nuget/v/Cogito.MassTransit.svg)](https://www.nuget.org/packages/Cogito.MassTransit) |
+| [Cogito.MassTransit.Extensions](https://www.nuget.org/packages/Cogito.MassTransit.Extensions) | [![NuGet](https://img.shields.io/nuget/v/Cogito.MassTransit.Extensions.svg)](https://www.nuget.org/packages/Cogito.MassTransit.Extensions) |
+| [Cogito.MassTransit.Scheduler](https://www.nuget.org/packages/Cogito.MassTransit.Scheduler) | [![NuGet](https://img.shields.io/nuget/v/Cogito.MassTransit.Scheduler.svg)](https://www.nuget.org/packages/Cogito.MassTransit.Scheduler) |
