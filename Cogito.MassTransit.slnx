@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/dist/">
+    <Project Path="src/dist-nuget/dist-nuget.csproj" />
+    <Project Path="src/dist-tests/dist-tests.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitattributes" />
+    <File Path=".github/workflows/Cogito.MassTransit.yml" />
+    <File Path=".gitignore" />
+    <File Path="Cogito.MassTransit.dist.msbuildproj" />
+    <File Path="Directory.Build.props" />
+    <File Path="GitVersion.yml" />
+    <File Path="global.json" />
+    <File Path="icon.png" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Cogito.MassTransit.Extensions/Cogito.MassTransit.Extensions.csproj" />
+    <Project Path="src/Cogito.MassTransit.Scheduler/Cogito.MassTransit.Scheduler.csproj" />
+    <Project Path="src/Cogito.MassTransit.Tests/Cogito.MassTransit.Tests.csproj" />
+    <Project Path="src/Cogito.MassTransit/Cogito.MassTransit.csproj" />
+  </Folder>
+  <Project Path="src/Cogito.MassTransit.Scheduler.Sample1/Cogito.MassTransit.Scheduler.Sample1.csproj" />
+</Solution>
