@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cogito.Quartz.Autofac" Version="2.0.0" />
+        <PackageReference Include="Cogito.Quartz.Autofac" Version="2.1.3" />
     </ItemGroup>
 
     <ItemGroup>
