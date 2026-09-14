@@ -9,7 +9,7 @@ Publishes 3 packages: `Cogito.MassTransit`, `Cogito.MassTransit.Extensions`, `Co
 ## Build and test
 
 ```shell
-dotnet restore Cogito.MassTransit.sln
+dotnet restore Cogito.MassTransit.slnx
 dotnet msbuild -p:Configuration=Release Cogito.MassTransit.dist.msbuildproj
 ```
 

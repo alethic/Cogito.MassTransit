@@ -17,7 +17,7 @@ Each package carries its own README with the detail; the links above go to nuget
 ## Building
 
 ```shell
-dotnet restore Cogito.MassTransit.sln
+dotnet restore Cogito.MassTransit.slnx
 dotnet msbuild -p:Configuration=Release Cogito.MassTransit.dist.msbuildproj
 ```
 
