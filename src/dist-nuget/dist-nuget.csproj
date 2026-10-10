@@ -15,6 +15,12 @@
         <PackageProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj">
             <PackageTargetPath>.</PackageTargetPath>
         </PackageProjectReference>
+        <PackageProjectReference Include="..\Cogito.MassTransit.Scheduler.Quartz\Cogito.MassTransit.Scheduler.Quartz.csproj">
+            <PackageTargetPath>.</PackageTargetPath>
+        </PackageProjectReference>
+        <PackageProjectReference Include="..\Cogito.MassTransit.Scheduler.Hangfire\Cogito.MassTransit.Scheduler.Hangfire.csproj">
+            <PackageTargetPath>.</PackageTargetPath>
+        </PackageProjectReference>
     </ItemGroup>
 
 </Project>

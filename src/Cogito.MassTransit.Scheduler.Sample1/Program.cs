@@ -25,7 +25,7 @@ namespace Cogito.MassTransit.Scheduler.Sample1
                     s.AddQuartz(c => c.UseInMemoryStore());
                     s.AddQuartzHostedService();
 
-                    s.AddPeriodicJobScheduler();
+                    s.AddPeriodicJobScheduler(c => c.UseQuartz());
                     s.AddMassTransit(c =>
                     {
                         c.AddPublishMessageScheduler();

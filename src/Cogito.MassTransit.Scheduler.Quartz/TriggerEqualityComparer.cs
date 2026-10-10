@@ -4,7 +4,7 @@ using System.Linq;
 
 using Quartz;
 
-namespace Cogito.MassTransit.Scheduler.Util
+namespace Cogito.MassTransit.Scheduler.QuartzIntegration
 {
 
     public class TriggerEqualityComparer :

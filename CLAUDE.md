@@ -4,7 +4,8 @@
 
 Cogito.MassTransit — Extensions and utilities for working with MassTransit.
 
-Publishes 3 packages: `Cogito.MassTransit`, `Cogito.MassTransit.Extensions`, `Cogito.MassTransit.Scheduler`.
+Publishes 5 packages: `Cogito.MassTransit`, `Cogito.MassTransit.Extensions`, `Cogito.MassTransit.Scheduler`,
+`Cogito.MassTransit.Scheduler.Quartz`, `Cogito.MassTransit.Scheduler.Hangfire`.
 
 ## Build and test
 
