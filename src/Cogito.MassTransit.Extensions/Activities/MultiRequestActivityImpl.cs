@@ -65,8 +65,10 @@ namespace Cogito.MassTransit.Extensions.Activities
 
                 var message = new TimeoutExpired<TRequest>(now, expirationTime, context.Saga.CorrelationId, pipe.RequestId);
 
+                // schedule as the interface type, against which the schedule token ID is registered, so the
+                // token ID is the request ID and the timeout can be cancelled once the request resolves
                 if (context.TryGetPayload<MessageSchedulerContext>(out var schedulerContext))
-                    await schedulerContext.ScheduleSend(expirationTime, message).ConfigureAwait(false);
+                    await schedulerContext.ScheduleSend<RequestTimeoutExpired<TRequest>>(expirationTime, message).ConfigureAwait(false);
                 else
                     throw new ConfigurationException("A request timeout was specified but no message scheduler was specified or available.");
             }

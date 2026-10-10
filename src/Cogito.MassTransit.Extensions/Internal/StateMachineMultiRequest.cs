@@ -149,7 +149,7 @@ namespace Cogito.MassTransit.Extensions.Internal
         public bool CompletedEventFilter(BehaviorContext<TSaga, TResponse> context)
         {
             if (context.RequestId is Guid requestId)
-                return filterFunc(context.Saga, requestId);
+                return IsPending(context, requestId);
             else
                 return false;
         }
@@ -162,7 +162,7 @@ namespace Cogito.MassTransit.Extensions.Internal
         public bool FaultedEventFilter(BehaviorContext<TSaga, Fault<TRequest>> context)
         {
             if (context.RequestId is Guid requestId)
-                return filterFunc(context.Saga, requestId);
+                return IsPending(context, requestId);
             else
                 return false;
         }
@@ -174,10 +174,21 @@ namespace Cogito.MassTransit.Extensions.Internal
         /// <returns></returns>
         public bool RequestTimeoutExpiredEventFilter(BehaviorContext<TSaga, RequestTimeoutExpired<TRequest>> context)
         {
-            if (context.RequestId is Guid requestId)
-                return filterFunc(context.Saga, requestId);
-            else
-                return false;
+            // the timeout is scheduled rather than sent as a request, so the request ID travels in the message body
+            return IsPending(context, context.Message.RequestId);
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> if the request ID matches a known item that has not yet finished. A response,
+        /// fault or timeout arriving for an item that has already finished is ignored, so that it can neither
+        /// overwrite the recorded outcome nor signal the multi-request as finished a second time.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="requestId"></param>
+        /// <returns></returns>
+        bool IsPending(SagaConsumeContext<TSaga> context, Guid requestId)
+        {
+            return filterFunc(context.Saga, requestId) && accessor.GetStatus(context, GetItem(context, requestId)) == MultiRequestItemStatus.Pending;
         }
 
         /// <summary>
