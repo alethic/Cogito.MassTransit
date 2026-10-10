@@ -16,22 +16,62 @@ dotnet add package Cogito.MassTransit.Extensions
 
 ## Use
 
-Configure a multi-request on a saga state machine:
+A multi-request keeps one state item per outstanding request on the saga, and reaches it through an
+`IMultiRequestStateAccessor` that you implement. Declare it on a state machine derived from
+`Cogito.MassTransit.MassTransitStateMachine<TSaga>`, send it from an event, and continue on `Finished`
+once every request has completed, faulted or timed out:
 
 ```csharp
-public class OrderStateMachine : MassTransitStateMachine<OrderState>
+public class OrderStateMachine : Cogito.MassTransit.MassTransitStateMachine<OrderState>
 {
-    public MultiRequest<OrderState, CheckStock, StockChecked> CheckStock { get; set; }
+    public OrderStateMachine()
+    {
+        InstanceState(x => x.CurrentState);
+        Event(() => Submitted, x => x.CorrelateById(m => m.Message.OrderId));
+
+        MultiRequest(() => CheckStock, saga => saga.Lines, line => line.RequestId, new LineAccessor(), c =>
+        {
+            c.ServiceAddress = new Uri("queue:check-stock");
+            c.Timeout = TimeSpan.FromSeconds(30);
+        });
+
+        Initially(
+            When(Submitted)
+                .MultiRequest(CheckStock, ctx => ctx.Message.Lines.Select(l => new CheckStock(l.Sku)))
+                .TransitionTo(CheckStock.Pending));
+
+        During(CheckStock.Pending,
+            When(CheckStock.Finished)
+                .Then(ctx => ...));
+    }
+
+    public Event<SubmitOrder> Submitted { get; private set; }
+
+    public MultiRequest<OrderState, LineState, CheckStock, StockChecked> CheckStock { get; private set; }
 }
 ```
 
-Send it, and the machine continues when every reply is in:
+A state machine built without a class, through MassTransit's `MassTransitStateMachine<TSaga>.New`,
+declares it on the modifier instead, and receives the multi-request as an `out` parameter:
 
 ```csharp
-During(Checking,
-    When(CheckStock.Completed)
-        .Then(context => ...));
+var machine = MassTransitStateMachine<OrderState>.New(cfg => cfg
+    .InstanceState(x => x.CurrentState)
+    .Event("Submitted", x => x.CorrelateById(m => m.Message.OrderId), out Event<SubmitOrder> submitted)
+    .MultiRequest("CheckStock", saga => saga.Lines, line => line.RequestId, new LineAccessor(),
+        c => c.ServiceAddress = new Uri("queue:check-stock"), out var checkStock)
+    .Initially()
+        .When(submitted, b => b
+            .MultiRequest(checkStock, ctx => ctx.Message.Lines.Select(l => new CheckStock(l.Sku)))
+            .TransitionTo(checkStock.Pending))
+        .CommitActivities()
+    .During(checkStock.Pending)
+        .When(checkStock.Finished, b => b.Then(ctx => ...))
+        .CommitActivities());
 ```
+
+Either way, the multi-request's events and pending state are named after it: `CheckStock.Finished`,
+`CheckStock.Pending` and so on. A timeout needs a message scheduler configured on the bus.
 
 Each item's outcome is reported as a `MultiRequestFinishedItem` with a `MultiRequestItemStatus`, so a
 partial failure is visible rather than indistinguishable from success. `MultiRequestSettings` covers
