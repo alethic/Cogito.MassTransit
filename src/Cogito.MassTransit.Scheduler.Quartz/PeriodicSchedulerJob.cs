@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Cogito.DependencyInjection;
-using Cogito.MassTransit.Scheduler.Util;
-
 using Quartz;
 
-namespace Cogito.MassTransit.Scheduler
+namespace Cogito.MassTransit.Scheduler.QuartzIntegration
 {
 
     /// <summary>
     /// Periodically sets up the Periodic jobs.
     /// </summary>
-    [AddScopedService<PeriodicSchedulerJob>()]
     public class PeriodicSchedulerJob : IJob
     {
 
@@ -49,26 +45,22 @@ namespace Cogito.MassTransit.Scheduler
         /// <returns></returns>
         async Task InitializeSchedules(IJobExecutionContext context)
         {
-            // find or create job
-            var job = await context.Scheduler.GetJobDetail(JOB_KEY) ??
-                JobBuilder.Create<PeriodicJob>()
-                    .WithIdentity(JOB_KEY)
-                    .UsingJobData("Version", VERSION.ToString())
-                    .StoreDurably(true)
-                    .Build();
+            var job = JobBuilder.Create<PeriodicJob>()
+                .WithIdentity(JOB_KEY)
+                .UsingJobData("Version", VERSION.ToString())
+                .StoreDurably(true)
+                .Build();
 
-            // ensure job is added
-            if (await context.Scheduler.CheckExists(JOB_KEY) == false)
-                await context.Scheduler.AddJob(job, false);
+            var existing = await QuartzJobs.TryGetJobDetail(context.Scheduler, JOB_KEY, context.CancellationToken);
 
-            // if the job version is unknown, simply ignore
-            // downstream scheduler versions ignore
-            if (int.Parse((string)job.JobDataMap["Version"] ?? "0") > VERSION)
+            // a newer version of the scheduler owns the job, so leave it alone
+            if (existing != null && GetVersion(existing) > VERSION)
                 return;
 
-            // replace existing job if upgrading
-            if (int.Parse((string)job.JobDataMap["Version"] ?? "0") < VERSION)
-                await context.Scheduler.AddJob(job, true);
+            // add the job, or replace one of an earlier version or of another type, such as one stored by an earlier
+            // version of this package, in which the job type lived in the Cogito.MassTransit.Scheduler assembly
+            if (existing == null || existing.JobType != typeof(PeriodicJob) || GetVersion(existing) < VERSION)
+                await context.Scheduler.AddJob(job, true, context.CancellationToken);
 
             // schedule job only if triggers do not match
             var n = GetTriggers().OrderBy(i => i.Key).ToList();
@@ -92,17 +84,14 @@ namespace Cogito.MassTransit.Scheduler
         /// Gets the various pulse triggers to be scheduled.
         /// </summary>
         /// <returns></returns>
+        static int GetVersion(IJobDetail job)
+        {
+            return job.JobDataMap.TryGetValue("Version", out var value) && int.TryParse(value as string, out var version) ? version : 0;
+        }
+
         IEnumerable<ITrigger> GetTriggers()
         {
-            yield return CreateTrigger("PT1M", TimeSpan.FromMinutes(1));
-            yield return CreateTrigger("PT5M", TimeSpan.FromMinutes(5));
-            yield return CreateTrigger("PT15M", TimeSpan.FromMinutes(15));
-            yield return CreateTrigger("PT30M", TimeSpan.FromMinutes(30));
-            yield return CreateTrigger("PT1H", TimeSpan.FromHours(1));
-            yield return CreateTrigger("PT2H", TimeSpan.FromHours(2));
-            yield return CreateTrigger("PT6H", TimeSpan.FromHours(6));
-            yield return CreateTrigger("PT12H", TimeSpan.FromHours(12));
-            yield return CreateTrigger("P1D", TimeSpan.FromDays(1));
+            return PeriodicInterval.All.Select(i => CreateTrigger(i.Name, i.Interval));
         }
 
         /// <summary>
@@ -118,7 +107,7 @@ namespace Cogito.MassTransit.Scheduler
             return TriggerBuilder.Create()
                 .ForJob(JOB_KEY)
                 .WithIdentity(new TriggerKey(key, TRIGGER_GROUP))
-                .UsingJobData("Interval", interval.ToString())
+                .UsingJobData(PeriodicJob.IntervalKey, interval.ToString())
                 .WithSimpleSchedule(x => x.WithInterval(interval).RepeatForever().WithMisfireHandlingInstructionNextWithRemainingCount())
                 .StartAt(new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero))
                 .Build();

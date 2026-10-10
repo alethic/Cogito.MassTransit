@@ -3,20 +3,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Cogito.DependencyInjection;
-
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Quartz;
 
-namespace Cogito.MassTransit.Scheduler
+namespace Cogito.MassTransit.Scheduler.QuartzIntegration
 {
 
     /// <summary>
     /// Schedules a set of periodic Pulse messages on the bus.
     /// </summary>
-    [AddSingletonService<IHostedService>()]
     public class PeriodicScheduler : IHostedService
     {
 
@@ -31,8 +28,8 @@ namespace Cogito.MassTransit.Scheduler
         readonly ISchedulerFactory _schedulerFactory;
         readonly ILogger _logger;
 
-        Task _runTask;
-        CancellationTokenSource _runCancel;
+        Task? _runTask;
+        CancellationTokenSource? _runCancel;
 
         /// <summary>
         /// Initializes a new instance.
@@ -68,10 +65,13 @@ namespace Cogito.MassTransit.Scheduler
         /// <returns></returns>
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            if (_runCancel != null)
+            // stopping is idempotent: a host may stop the service more than once
+            if (_runCancel != null && _runTask != null)
             {
                 _runCancel.Cancel();
                 await _runTask;
+                _runCancel.Dispose();
+                _runCancel = null;
                 _runTask = null;
             }
         }
@@ -109,16 +109,17 @@ namespace Cogito.MassTransit.Scheduler
         {
             var scheduler = await _schedulerFactory.GetScheduler(cancellationToken);
 
-            // find or create job
-            var job = await scheduler.GetJobDetail(JOB_KEY) ??
-                JobBuilder.Create<PeriodicSchedulerJob>()
-                    .WithIdentity(JOB_KEY)
-                    .StoreDurably(true)
-                    .Build();
-
-            // ensure job is added
-            if (await scheduler.CheckExists(JOB_KEY) == false)
-                await scheduler.AddJob(job, false);
+            // add the job, or replace a stored job of another type, such as one stored by an earlier version of
+            // this package, in which the job type lived in the Cogito.MassTransit.Scheduler assembly
+            var existing = await QuartzJobs.TryGetJobDetail(scheduler, JOB_KEY, cancellationToken);
+            if (existing == null || existing.JobType != typeof(PeriodicSchedulerJob))
+                await scheduler.AddJob(
+                    JobBuilder.Create<PeriodicSchedulerJob>()
+                        .WithIdentity(JOB_KEY)
+                        .StoreDurably(true)
+                        .Build(),
+                    true,
+                    cancellationToken);
 
             // all currently registered triggers
             var triggers = await scheduler.GetTriggersOfJob(JOB_KEY);

@@ -18,6 +18,8 @@
   <Folder Name="/src/">
     <Project Path="src/Cogito.MassTransit.Extensions/Cogito.MassTransit.Extensions.csproj" />
     <Project Path="src/Cogito.MassTransit.Scheduler/Cogito.MassTransit.Scheduler.csproj" />
+    <Project Path="src/Cogito.MassTransit.Scheduler.Hangfire/Cogito.MassTransit.Scheduler.Hangfire.csproj" />
+    <Project Path="src/Cogito.MassTransit.Scheduler.Quartz/Cogito.MassTransit.Scheduler.Quartz.csproj" />
     <Project Path="src/Cogito.MassTransit.Tests/Cogito.MassTransit.Tests.csproj" />
     <Project Path="src/Cogito.MassTransit/Cogito.MassTransit.csproj" />
   </Folder>
