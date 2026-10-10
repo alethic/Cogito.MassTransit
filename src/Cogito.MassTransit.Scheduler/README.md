@@ -10,21 +10,55 @@ competing consumers handle it once, and it retries, logs and scales like everyth
 
 ## Install
 
+This package holds the schedule and the messages. Install it with the package for the scheduler that
+keeps the schedule:
+
 ```shell
-dotnet add package Cogito.MassTransit.Scheduler
+dotnet add package Cogito.MassTransit.Scheduler.Quartz
+```
+
+or
+
+```shell
+dotnet add package Cogito.MassTransit.Scheduler.Hangfire
 ```
 
 ## Use
 
+Select the scheduler when adding the periodic job scheduler:
+
 ```csharp
-services.AddPeriodicJobScheduler();
+services.AddPeriodicJobScheduler(c => c.UseQuartz());
 ```
 
-Declare a job against one of the named intervals from `Cogito.MassTransit` — `PT5M`, `PT1H`, `P1D`
-and so on — and a message is published on that period for a consumer to pick up.
+or
 
-Built on Quartz for the triggering; `PeriodicScheduler` and `PeriodicSchedulerJob` are the pieces if
-you need to drive it directly.
+```csharp
+services.AddPeriodicJobScheduler(c => c.UseHangfire());
+```
+
+A message is then published on each of the intervals in `PeriodicInterval`: `PT1M`, `PT5M`,
+`PT15M`, `PT30M`, `PT1H`, `PT2H`, `PT6H`, `PT12H` and `P1D`, aligned to midnight UTC. Consume the
+message type for the interval you need:
+
+```csharp
+public class Cleanup : IConsumer<PT15M>
+{
+    public Task Consume(ConsumeContext<PT15M> context) => ...;
+}
+```
+
+Each message carries its interval and its fire times. It is published non-durably, and expires after
+its interval, by when the next is due.
+
+The periodic messages are published directly, not through MassTransit's recurring message scheduling.
+That fixes a message's time to live when the schedule is created rather than each time it fires, and
+cannot carry the fire times in the message.
+
+## Upgrading from 2.x
+
+The scheduler no longer defaults to Quartz. Add `Cogito.MassTransit.Scheduler.Quartz`, and replace
+`AddPeriodicJobScheduler()` with `AddPeriodicJobScheduler(c => c.UseQuartz())`.
 
 ## License
 

@@ -12,6 +12,10 @@ Extensions for MassTransit: fan a request out to many handlers from a saga, and 
 
 **[Cogito.MassTransit.Scheduler](https://www.nuget.org/packages/Cogito.MassTransit.Scheduler)** — Publishes a message on a fixed period, so recurring work is a message rather than a timer.
 
+**[Cogito.MassTransit.Scheduler.Quartz](https://www.nuget.org/packages/Cogito.MassTransit.Scheduler.Quartz)** — Keeps the periodic schedule in Quartz.
+
+**[Cogito.MassTransit.Scheduler.Hangfire](https://www.nuget.org/packages/Cogito.MassTransit.Scheduler.Hangfire)** — Keeps the periodic schedule as Hangfire recurring jobs.
+
 Each package carries its own README with the detail; the links above go to nuget.org.
 
 ## Building

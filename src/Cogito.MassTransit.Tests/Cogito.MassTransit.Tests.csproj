@@ -14,6 +14,8 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Hangfire.InMemory" Version="1.0.0" />
+        <PackageReference Include="Hangfire.NetCore" Version="1.8.25" />
         <PackageReference Include="MassTransit" Version="8.5.10" />
         <PackageReference Include="MassTransit.Quartz" Version="8.5.10" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
@@ -39,6 +41,8 @@
         <ProjectReference Include="..\Cogito.MassTransit.Extensions\Cogito.MassTransit.Extensions.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.Scheduler.Quartz\Cogito.MassTransit.Scheduler.Quartz.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.Scheduler.Hangfire\Cogito.MassTransit.Scheduler.Hangfire.csproj" />
     </ItemGroup>
 
 </Project>

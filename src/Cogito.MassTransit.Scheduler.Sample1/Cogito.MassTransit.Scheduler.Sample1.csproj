@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit.Quartz" Version="8.5.10" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.12" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
@@ -14,6 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.Scheduler.Quartz\Cogito.MassTransit.Scheduler.Quartz.csproj" />
     </ItemGroup>
 
 </Project>

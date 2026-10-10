@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net8.0</TargetFrameworks>
+        <Description>Publishes MassTransit periodic messages on a schedule kept by Quartz.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit.Scheduler\Cogito.MassTransit.Scheduler.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
+      <PackageReference Include="Quartz" Version="3.18.1" />
+    </ItemGroup>
+
+</Project>
