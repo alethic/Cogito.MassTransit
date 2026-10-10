@@ -20,7 +20,11 @@ A .NET Framework suite builds as an `.exe`, not a `.dll`.
 ## Conventions
 
 - Packaging is the dist project's job. No project sets `GeneratePackageOnBuild`.
-- Versions come from GitVersion. Release by creating a GitHub release; that tag publishes to nuget.org.
+- Versions come from GitVersion; `+semver: major` (or `minor`, `patch`) in a commit message bumps the version.
+- Release by creating a GitHub release; that tag publishes to nuget.org. To publish a prerelease, run the
+  workflow by hand with `publish` checked: it tags the commit, creates the GitHub release (marked as a
+  prerelease when the version has a label) and pushes to nuget.org. Every other build of `main` or
+  `develop` pushes to GitHub Packages only.
 - Add package references with `dotnet add package`, no version, so the version resolved is one the project's target frameworks support. Don't hand-edit the csproj.
 - Add target frameworks, never silently substitute one. Dropping a target framework is a breaking change.
 - Every package carries its own `README.md`; the repository `README.md` is for GitHub.
