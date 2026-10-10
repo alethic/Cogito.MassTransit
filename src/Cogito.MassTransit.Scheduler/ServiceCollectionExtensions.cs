@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -33,19 +32,6 @@ namespace Cogito.MassTransit.Scheduler
                 throw new InvalidOperationException("No periodic job scheduler was selected. Select one, for instance AddPeriodicJobScheduler(c => c.UseQuartz()).");
 
             return services;
-        }
-
-        /// <summary>
-        /// The periodic job scheduler no longer defaults to Quartz. Select a scheduler instead, for instance
-        /// <c>AddPeriodicJobScheduler(c => c.UseQuartz())</c> from the Cogito.MassTransit.Scheduler.Quartz package.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        [Obsolete("Select a scheduler: AddPeriodicJobScheduler(c => c.UseQuartz()) from Cogito.MassTransit.Scheduler.Quartz, or c => c.UseHangfire() from Cogito.MassTransit.Scheduler.Hangfire.", true)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static IServiceCollection AddPeriodicJobScheduler(this IServiceCollection services)
-        {
-            throw new NotSupportedException("Select a scheduler: AddPeriodicJobScheduler(c => c.UseQuartz()) or AddPeriodicJobScheduler(c => c.UseHangfire()).");
         }
 
         class PeriodicJobSchedulerConfigurator : IPeriodicJobSchedulerConfigurator
