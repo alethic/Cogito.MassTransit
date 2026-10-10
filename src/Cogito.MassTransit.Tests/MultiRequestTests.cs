@@ -190,6 +190,46 @@ namespace Cogito.MassTransit.Tests
 
         }
 
+        /// <summary>
+        /// Builds the same state machine as <see cref="WorkStateMachine"/>, without a state machine class, through
+        /// <see cref="global::MassTransit.MassTransitStateMachine{TInstance}.New"/>.
+        /// </summary>
+        /// <returns></returns>
+        public static global::MassTransit.MassTransitStateMachine<WorkSaga> BuildWorkStateMachine()
+        {
+            return global::MassTransit.MassTransitStateMachine<WorkSaga>.New(cfg => cfg
+                .InstanceState(x => x.CurrentState)
+                .Event("Started", x => x.CorrelateById(m => m.Message.CorrelationId), out Event<StartWork> started)
+                .MultiRequest("Items", saga => saga.InProgress, item => item.RequestId, new ItemStateAccessor(), c =>
+                {
+                    // no timeout, so the multi-request does not require a message scheduler
+                    c.Timeout = TimeSpan.Zero;
+                    c.ServiceAddress = new Uri("loopback://localhost/do-item");
+                    c.ClearOnFinish = true;
+                }, out var items)
+                .Initially()
+                    .When(started, b => b
+                        .CaptureRequest((ctx, token) => ctx.Saga.Token = token)
+                        .MultiRequest(items, ctx => ctx.Message.Values.Select((v, i) => new DoItem() { Value = v, Fail = i < ctx.Message.FailFirst }))
+                        .TransitionTo(items.Pending))
+                    .CommitActivities()
+                .During(items.Pending)
+                    .When(items.Finished, b => b
+                        .RespondTo<WorkSaga, MultiRequestFinished<DoItem, ItemDone>, StartWork, WorkFinished>(
+                            ctx => ctx.Saga.Token!,
+                            ctx => new WorkFinished()
+                            {
+                                Completed = ctx.Message.Items.Values
+                                    .Where(i => i.Status == MultiRequestItemStatus.Completed)
+                                    .Select(i => i.Response.Value)
+                                    .ToArray(),
+                                FaultedCount = ctx.Message.Items.Values
+                                    .Count(i => i.Status == MultiRequestItemStatus.Faulted),
+                            })
+                        .Finalize())
+                    .CommitActivities());
+        }
+
         public class DoItemConsumer : IConsumer<DoItem>
         {
 
@@ -203,24 +243,65 @@ namespace Cogito.MassTransit.Tests
 
         }
 
-        static async Task<ServiceProvider> StartHarnessAsync()
+        /// <summary>
+        /// The ways of declaring the state machine under test.
+        /// </summary>
+        public enum StateMachineStyle
         {
-            var provider = new ServiceCollection()
+
+            /// <summary>
+            /// A class derived from <see cref="MassTransitStateMachine{TSaga}"/>.
+            /// </summary>
+            Class,
+
+            /// <summary>
+            /// A state machine built with <see cref="global::MassTransit.MassTransitStateMachine{TInstance}.New"/>.
+            /// </summary>
+            Builder,
+
+        }
+
+        static async Task<ServiceProvider> StartHarnessAsync(StateMachineStyle style)
+        {
+            var services = new ServiceCollection()
                 .AddMassTransitTestHarness(cfg =>
                 {
-                    cfg.AddSagaStateMachine<WorkStateMachine, WorkSaga>().InMemoryRepository();
+                    if (style == StateMachineStyle.Builder)
+                        cfg.AddSagaStateMachine<global::MassTransit.MassTransitStateMachine<WorkSaga>, WorkSaga>().InMemoryRepository();
+                    else
+                        cfg.AddSagaStateMachine<WorkStateMachine, WorkSaga>().InMemoryRepository();
+
                     cfg.AddConsumer<DoItemConsumer>().Endpoint(e => e.Name = "do-item");
-                })
-                .BuildServiceProvider(true);
+                });
+
+            // a built state machine has no class of its own to construct, so supply the instance, registered after
+            // MassTransit's own registration of the type so that it takes precedence
+            if (style == StateMachineStyle.Builder)
+                services.AddSingleton(BuildWorkStateMachine());
+
+            var provider = services.BuildServiceProvider(true);
 
             await provider.GetRequiredService<ITestHarness>().Start();
             return provider;
         }
 
         [Fact]
-        public async Task MultiRequest_completes_every_item_and_responds_once_all_finish()
+        public void Both_styles_declare_the_same_events_and_states()
         {
-            await using var provider = await StartHarnessAsync();
+            var declared = new WorkStateMachine();
+            var built = BuildWorkStateMachine();
+
+            Assert.Equal(declared.Events.Select(e => e.Name).OrderBy(n => n), built.Events.Select(e => e.Name).OrderBy(n => n));
+            Assert.Equal(declared.States.Select(s => s.Name).OrderBy(n => n), built.States.Select(s => s.Name).OrderBy(n => n));
+            Assert.Contains("Items.Pending", built.States.Select(s => s.Name));
+        }
+
+        [Theory]
+        [InlineData(StateMachineStyle.Class)]
+        [InlineData(StateMachineStyle.Builder)]
+        public async Task MultiRequest_completes_every_item_and_responds_once_all_finish(StateMachineStyle style)
+        {
+            await using var provider = await StartHarnessAsync(style);
             var harness = provider.GetRequiredService<ITestHarness>();
 
             var values = Enumerable.Range(0, 16).Select(_ => Guid.NewGuid()).ToArray();
@@ -234,10 +315,12 @@ namespace Cogito.MassTransit.Tests
             Assert.Equal(values.OrderBy(v => v), response.Message.Completed.OrderBy(v => v));
         }
 
-        [Fact]
-        public async Task MultiRequest_with_a_single_item_responds()
+        [Theory]
+        [InlineData(StateMachineStyle.Class)]
+        [InlineData(StateMachineStyle.Builder)]
+        public async Task MultiRequest_with_a_single_item_responds(StateMachineStyle style)
         {
-            await using var provider = await StartHarnessAsync();
+            await using var provider = await StartHarnessAsync(style);
             var harness = provider.GetRequiredService<ITestHarness>();
 
             var value = Guid.NewGuid();
@@ -249,10 +332,12 @@ namespace Cogito.MassTransit.Tests
             Assert.Equal(new[] { value }, response.Message.Completed);
         }
 
-        [Fact]
-        public async Task MultiRequest_records_faulted_items_and_still_finishes()
+        [Theory]
+        [InlineData(StateMachineStyle.Class)]
+        [InlineData(StateMachineStyle.Builder)]
+        public async Task MultiRequest_records_faulted_items_and_still_finishes(StateMachineStyle style)
         {
-            await using var provider = await StartHarnessAsync();
+            await using var provider = await StartHarnessAsync(style);
             var harness = provider.GetRequiredService<ITestHarness>();
 
             var values = Enumerable.Range(0, 4).Select(_ => Guid.NewGuid()).ToArray();

@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using Cogito.MassTransit.Extensions.Activities;
 using Cogito.MassTransit.Extensions.Internal;
 
 using MassTransit;
@@ -129,108 +127,8 @@ namespace Cogito.MassTransit
                 settings = new StateMachineMultiRequestConfigurator<TRequest>();
 
             var property = GetPropertyInfo(propertyExpression);
-
-            // parameters reused within expressions
-            var instanceParameter = Expression.Parameter(typeof(TSaga), "instance");
-            var itemParameter = Expression.Parameter(typeof(TState), "item");
-            var requestIdParameter = Expression.Parameter(typeof(Guid), "requestId");
-
-            // filters an instance to that which contains the request
-            var filterExpression = Expression.Lambda<Func<TSaga, Guid, bool>>(
-                Expression.Call(
-                    typeof(Enumerable),
-                    nameof(Enumerable.Any),
-                    new[] { typeof(TState) },
-                    itemsExpression.Body.Replace(itemsExpression.Parameters[0], instanceParameter),
-                    Expression.Lambda<Func<TState, bool>>(
-                        Expression.Equal(
-                            Expression.Convert(requestIdExpression.Body.Replace(requestIdExpression.Parameters[0], itemParameter), typeof(Guid?)),
-                            Expression.Convert(requestIdParameter, typeof(Guid?))),
-                        itemParameter)),
-                instanceParameter,
-                requestIdParameter);
-
-            var request = new StateMachineMultiRequest<TSaga, TState, TRequest, TResponse>(property.Name, filterExpression, itemsExpression, requestIdExpression, accessor, settings);
-
+            var request = MultiRequestDeclaration.Declare(new Declarer(this), property.Name, itemsExpression, requestIdExpression, accessor, settings);
             InitializeMultiRequest(this, property, request);
-
-            Event(propertyExpression, x => x.Finished);
-
-            // filters instances for the Completed event
-            var completedContextParameter = Expression.Parameter(typeof(ConsumeContext<TResponse>), "context");
-            var completedExpression = Expression.Lambda<Func<TSaga, ConsumeContext<TResponse>, bool>>(
-                Expression.Call(
-                    typeof(Enumerable),
-                    nameof(Enumerable.Any),
-                    new[] { typeof(TState) },
-                    itemsExpression.Body.Replace(itemsExpression.Parameters[0], instanceParameter),
-                    Expression.Lambda<Func<TState, bool>>(
-                        Expression.Equal(
-                            requestIdExpression.Body.Replace(requestIdExpression.Parameters[0], itemParameter),
-                            Expression.Property(completedContextParameter, typeof(MessageContext), nameof(MessageContext.RequestId))),
-                        itemParameter)),
-                instanceParameter,
-                completedContextParameter);
-
-            // filters instances for the Faulted event
-            var faultedContextParameter = Expression.Parameter(typeof(ConsumeContext<Fault<TRequest>>), "context");
-            var faultedExpression = Expression.Lambda<Func<TSaga, ConsumeContext<Fault<TRequest>>, bool>>(
-                Expression.Call(
-                    typeof(Enumerable),
-                    nameof(Enumerable.Any),
-                    new[] { typeof(TState) },
-                    itemsExpression.Body.Replace(itemsExpression.Parameters[0], instanceParameter),
-                    Expression.Lambda<Func<TState, bool>>(
-                        Expression.Equal(
-                            requestIdExpression.Body.Replace(requestIdExpression.Parameters[0], itemParameter),
-                            Expression.Property(faultedContextParameter, typeof(MessageContext), nameof(MessageContext.RequestId))),
-                        itemParameter)),
-                instanceParameter,
-                faultedContextParameter);
-
-            // filters instances for the TimeoutExpired event
-            var timeoutExpiredContextParameter = Expression.Parameter(typeof(ConsumeContext<RequestTimeoutExpired<TRequest>>), "context");
-            var timeoutExpiredExpression = Expression.Lambda<Func<TSaga, ConsumeContext<RequestTimeoutExpired<TRequest>>, bool>>(
-                Expression.Call(
-                    typeof(Enumerable),
-                    nameof(Enumerable.Any),
-                    new[] { typeof(TState) },
-                    itemsExpression.Body.Replace(itemsExpression.Parameters[0], instanceParameter),
-                    Expression.Lambda<Func<TState, bool>>(
-                        Expression.Equal(
-                            requestIdExpression.Body.Replace(requestIdExpression.Parameters[0], itemParameter),
-                            Expression.Convert(
-                                Expression.Property(
-                                    Expression.Property(timeoutExpiredContextParameter, typeof(ConsumeContext<RequestTimeoutExpired<TRequest>>), nameof(ConsumeContext<RequestTimeoutExpired<TRequest>>.Message)),
-                                    typeof(RequestTimeoutExpired<TRequest>),
-                                    nameof(RequestTimeoutExpired<TRequest>.RequestId)),
-                                typeof(Guid?))),
-                        itemParameter)),
-                instanceParameter,
-                timeoutExpiredContextParameter);
-
-            Event(propertyExpression, x => x.Completed, x => x.CorrelateBy(completedExpression));
-            Event(propertyExpression, x => x.Faulted, x => x.CorrelateBy(faultedExpression));
-            Event(propertyExpression, x => x.TimeoutExpired, x => x.CorrelateBy(timeoutExpiredExpression));
-            Event(propertyExpression, x => x.FinishedSignal, x => x.CorrelateById(m => (Guid)m.CorrelationId));
-
-            State(propertyExpression, x => x.Pending);
-
-            DuringAny(
-                When(request.Completed, request.CompletedEventFilter)
-                    .Add(new MultiRequestItemCompletedActivity<TSaga, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestItemFinishedActivity<TSaga, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TSaga, TState, TRequest, TResponse>(request)),
-                When(request.Faulted, request.FaultedEventFilter)
-                    .Add(new MultiRequestItemFaultedActivity<TSaga, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestItemFinishedActivity<TSaga, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TSaga, TState, TRequest, TResponse>(request)),
-                When(request.TimeoutExpired, request.RequestTimeoutExpiredEventFilter)
-                    .Add(new MultiRequestItemTimeoutExpiredActivity<TSaga, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestItemFinishedActivity<TSaga, TState, TRequest, TResponse>(request))
-                    .Add(new MultiRequestCancelItemTimeoutActivity<TSaga, TState, TRequest, TResponse>(request)),
-                When(request.FinishedSignal, request.FinishedSignalEventFilter)
-                    .Add(new MultiRequestFinishedActivity<TSaga, TState, TRequest, TResponse>(request)));
         }
 
         /// <summary>
@@ -249,6 +147,45 @@ namespace Cogito.MassTransit
                 return property;
 
             throw new ArgumentException("Expression must reference a property.", nameof(expression));
+        }
+
+        /// <summary>
+        /// Declares the parts of a multi-request through the protected members of the state machine.
+        /// </summary>
+        class Declarer : IMultiRequestDeclarer<TSaga>
+        {
+
+            readonly MassTransitStateMachine<TSaga> machine;
+
+            /// <summary>
+            /// Initializes a new instance.
+            /// </summary>
+            /// <param name="machine"></param>
+            public Declarer(MassTransitStateMachine<TSaga> machine)
+            {
+                this.machine = machine ?? throw new ArgumentNullException(nameof(machine));
+            }
+
+            /// <inheritdoc/>
+            public Event<T> Event<T>(string name, Action<IEventCorrelationConfigurator<TSaga, T>>? configure = null)
+                where T : class
+            {
+                return configure != null ? machine.Event(name, configure) : machine.Event<T>(name);
+            }
+
+            /// <inheritdoc/>
+            public State State(string name)
+            {
+                return machine.State(name);
+            }
+
+            /// <inheritdoc/>
+            public void DuringAny<T>(Event<T> @event, StateMachineCondition<TSaga, T> filter, Func<EventActivityBinder<TSaga, T>, EventActivityBinder<TSaga, T>> configure)
+                where T : class
+            {
+                machine.DuringAny(configure(machine.When(@event, filter)));
+            }
+
         }
 
     }
