@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -116,11 +117,29 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
 
         }
 
-        static async Task<ServiceProvider> StartAsync(SqliteConnection connection, Type type)
+        /// <summary>
+        /// A database file of its own, so that each context opens its own connection to it, and the test's reads
+        /// are isolated from the saga repository's transactions as they would be on a real database.
+        /// </summary>
+        sealed class TemporaryDatabase : IDisposable
+        {
+
+            readonly string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".db");
+
+            public string ConnectionString => new SqliteConnectionStringBuilder() { DataSource = path, Pooling = false }.ToString();
+
+            public void Dispose()
+            {
+                File.Delete(path);
+            }
+
+        }
+
+        static async Task<ServiceProvider> StartAsync(TemporaryDatabase database, Type type)
         {
             var services = new ServiceCollection();
             services.AddLogging();
-            services.AddDbContext<SagaDbContext>(o => o.UseSqlite(connection));
+            services.AddDbContext<SagaDbContext>(o => o.UseSqlite(database.ConnectionString));
             services.AddMassTransit(x => x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context)));
             services.AddFromAttributes(type);
 
@@ -164,10 +183,9 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
         [Fact]
         public async Task Optimistic_saga_is_saved_in_the_db_context()
         {
-            using var connection = new SqliteConnection("DataSource=:memory:");
-            await connection.OpenAsync();
+            using var database = new TemporaryDatabase();
 
-            var provider = await StartAsync(connection, typeof(OptimisticStateMachine));
+            var provider = await StartAsync(database, typeof(OptimisticStateMachine));
 
             try
             {
@@ -188,10 +206,9 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
         [Fact]
         public async Task Pessimistic_saga_is_saved_in_the_db_context()
         {
-            using var connection = new SqliteConnection("DataSource=:memory:");
-            await connection.OpenAsync();
+            using var database = new TemporaryDatabase();
 
-            var provider = await StartAsync(connection, typeof(PessimisticStateMachine));
+            var provider = await StartAsync(database, typeof(PessimisticStateMachine));
 
             try
             {
