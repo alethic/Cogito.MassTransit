@@ -43,6 +43,7 @@
         <ProjectReference Include="..\Cogito.MassTransit\Cogito.MassTransit.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Scheduler.Quartz\Cogito.MassTransit.Scheduler.Quartz.csproj" />
         <ProjectReference Include="..\Cogito.MassTransit.Scheduler.Hangfire\Cogito.MassTransit.Scheduler.Hangfire.csproj" />
+        <ProjectReference Include="..\Cogito.MassTransit.DependencyInjection\Cogito.MassTransit.DependencyInjection.csproj" />
     </ItemGroup>
 
 </Project>

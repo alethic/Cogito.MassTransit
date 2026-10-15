@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;net8.0</TargetFrameworks>
+        <Description>Registers MassTransit consumers, sagas and activities from attributes, onto any bus.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Cogito.DependencyInjection" Version="1.0.2" />
+      <PackageReference Include="MassTransit" Version="8.5.10" />
+    </ItemGroup>
+
+</Project>

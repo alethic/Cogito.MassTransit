@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/alethic/Cogito.MassTransit/actions/workflows/Cogito.MassTransit.yml/badge.svg)](https://github.com/alethic/Cogito.MassTransit/actions/workflows/Cogito.MassTransit.yml)
 
-Extensions for MassTransit: fan a request out to many handlers from a saga, and publish recurring work on a schedule.
+Extensions for MassTransit: register consumers and sagas from attributes, fan a request out to many handlers from a saga, and publish recurring work on a schedule.
 
 ## Packages
 
@@ -15,6 +15,10 @@ Extensions for MassTransit: fan a request out to many handlers from a saga, and 
 **[Cogito.MassTransit.Scheduler.Quartz](https://www.nuget.org/packages/Cogito.MassTransit.Scheduler.Quartz)** — Keeps the periodic schedule in Quartz.
 
 **[Cogito.MassTransit.Scheduler.Hangfire](https://www.nuget.org/packages/Cogito.MassTransit.Scheduler.Hangfire)** — Keeps the periodic schedule as Hangfire recurring jobs.
+
+**[Cogito.MassTransit.DependencyInjection](https://www.nuget.org/packages/Cogito.MassTransit.DependencyInjection)** — Registers consumers, sagas and activities from attributes on the types themselves, onto any bus.
+
+**[Cogito.MassTransit.EntityFrameworkCore](https://www.nuget.org/packages/Cogito.MassTransit.EntityFrameworkCore)** — Keeps saga instances in Entity Framework Core, registered from an attribute on the saga.
 
 Each package carries its own README with the detail; the links above go to nuget.org.
 
