@@ -21,6 +21,12 @@
         <PackageProjectReference Include="..\Cogito.MassTransit.Scheduler.Hangfire\Cogito.MassTransit.Scheduler.Hangfire.csproj">
             <PackageTargetPath>.</PackageTargetPath>
         </PackageProjectReference>
+        <PackageProjectReference Include="..\Cogito.MassTransit.DependencyInjection\Cogito.MassTransit.DependencyInjection.csproj">
+            <PackageTargetPath>.</PackageTargetPath>
+        </PackageProjectReference>
+        <PackageProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore.DependencyInjection\Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.csproj">
+            <PackageTargetPath>.</PackageTargetPath>
+        </PackageProjectReference>
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net8.0</TargetFrameworks>
+        <Description>Keeps MassTransit saga instances in Entity Framework Core, registered from an attribute on the saga.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cogito.MassTransit.DependencyInjection\Cogito.MassTransit.DependencyInjection.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.5.10" />
+    </ItemGroup>
+
+</Project>
