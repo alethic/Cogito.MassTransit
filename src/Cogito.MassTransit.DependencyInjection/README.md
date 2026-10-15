@@ -76,7 +76,7 @@ A saga needs a repository. Apply a repository attribute to the saga, or to its s
 
 - `[InMemorySagaRepository]` keeps instances in memory.
 - `[EntityFrameworkSagaRepository]`, from
-  [Cogito.MassTransit.EntityFrameworkCore](https://www.nuget.org/packages/Cogito.MassTransit.EntityFrameworkCore),
+  [Cogito.MassTransit.EntityFrameworkCore.DependencyInjection](https://www.nuget.org/packages/Cogito.MassTransit.EntityFrameworkCore.DependencyInjection),
   keeps them in Entity Framework Core.
 
 Without one, the saga takes the repository provider set on the bus, such as `SetInMemorySagaRepositoryProvider()`,

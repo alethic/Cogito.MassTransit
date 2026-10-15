@@ -1,4 +1,4 @@
-namespace Cogito.MassTransit.EntityFrameworkCore
+namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection
 {
 
     /// <summary>

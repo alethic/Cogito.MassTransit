@@ -109,12 +109,12 @@ jobs:
         - { run: Cogito.MassTransit.DependencyInjection.Tests, tfm: net8.0, sys: linux-x64 }
         - { run: Cogito.MassTransit.DependencyInjection.Tests, tfm: net8.0, sys: osx-arm64 }
         - { run: Cogito.MassTransit.DependencyInjection.Tests, tfm: net481, sys: win-x64 }
-        - { run: Cogito.MassTransit.EntityFrameworkCore.Tests, tfm: net10.0, sys: win-x64 }
-        - { run: Cogito.MassTransit.EntityFrameworkCore.Tests, tfm: net10.0, sys: linux-x64 }
-        - { run: Cogito.MassTransit.EntityFrameworkCore.Tests, tfm: net10.0, sys: osx-arm64 }
-        - { run: Cogito.MassTransit.EntityFrameworkCore.Tests, tfm: net8.0, sys: win-x64 }
-        - { run: Cogito.MassTransit.EntityFrameworkCore.Tests, tfm: net8.0, sys: linux-x64 }
-        - { run: Cogito.MassTransit.EntityFrameworkCore.Tests, tfm: net8.0, sys: osx-arm64 }
+        - { run: Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests, tfm: net10.0, sys: win-x64 }
+        - { run: Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests, tfm: net10.0, sys: linux-x64 }
+        - { run: Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests, tfm: net10.0, sys: osx-arm64 }
+        - { run: Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests, tfm: net8.0, sys: win-x64 }
+        - { run: Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests, tfm: net8.0, sys: linux-x64 }
+        - { run: Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests, tfm: net8.0, sys: osx-arm64 }
     name: Test (${{ matrix.run }}:${{ matrix.tfm }}:${{ matrix.sys }})
     needs:
     - build

@@ -12,8 +12,8 @@
         <TestTarget Include="Cogito.MassTransit.DependencyInjection.Tests|net481" ProjectName="Cogito.MassTransit.DependencyInjection.Tests" TargetFramework="net481" />
         <TestTarget Include="Cogito.MassTransit.DependencyInjection.Tests|net8.0" ProjectName="Cogito.MassTransit.DependencyInjection.Tests" TargetFramework="net8.0" />
         <TestTarget Include="Cogito.MassTransit.DependencyInjection.Tests|net10.0" ProjectName="Cogito.MassTransit.DependencyInjection.Tests" TargetFramework="net10.0" />
-        <TestTarget Include="Cogito.MassTransit.EntityFrameworkCore.Tests|net8.0" ProjectName="Cogito.MassTransit.EntityFrameworkCore.Tests" TargetFramework="net8.0" />
-        <TestTarget Include="Cogito.MassTransit.EntityFrameworkCore.Tests|net10.0" ProjectName="Cogito.MassTransit.EntityFrameworkCore.Tests" TargetFramework="net10.0" />
+        <TestTarget Include="Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests|net8.0" ProjectName="Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests" TargetFramework="net8.0" />
+        <TestTarget Include="Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests|net10.0" ProjectName="Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests" TargetFramework="net10.0" />
     </ItemGroup>
 
     <!-- Runs once per TFM/RID combination to generate individual output. -->

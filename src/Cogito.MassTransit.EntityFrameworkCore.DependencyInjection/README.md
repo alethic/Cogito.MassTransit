@@ -1,11 +1,11 @@
-# Cogito.MassTransit.EntityFrameworkCore
+# Cogito.MassTransit.EntityFrameworkCore.DependencyInjection
 
 Keeps MassTransit saga instances in Entity Framework Core, registered from an attribute on the saga.
 
 ## Install
 
 ```shell
-dotnet add package Cogito.MassTransit.EntityFrameworkCore
+dotnet add package Cogito.MassTransit.EntityFrameworkCore.DependencyInjection
 ```
 
 ## Use

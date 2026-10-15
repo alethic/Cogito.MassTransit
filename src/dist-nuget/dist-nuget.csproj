@@ -24,7 +24,7 @@
         <PackageProjectReference Include="..\Cogito.MassTransit.DependencyInjection\Cogito.MassTransit.DependencyInjection.csproj">
             <PackageTargetPath>.</PackageTargetPath>
         </PackageProjectReference>
-        <PackageProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore\Cogito.MassTransit.EntityFrameworkCore.csproj">
+        <PackageProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore.DependencyInjection\Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.csproj">
             <PackageTargetPath>.</PackageTargetPath>
         </PackageProjectReference>
     </ItemGroup>

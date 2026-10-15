@@ -17,7 +17,7 @@ using Microsoft.Extensions.Hosting;
 
 using Xunit;
 
-namespace Cogito.MassTransit.EntityFrameworkCore.Tests
+namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests
 {
 
     /// <summary>

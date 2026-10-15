@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore\Cogito.MassTransit.EntityFrameworkCore.csproj" />
+      <ProjectReference Include="..\Cogito.MassTransit.EntityFrameworkCore.DependencyInjection\Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -18,7 +18,7 @@ Extensions for MassTransit: register consumers and sagas from attributes, fan a 
 
 **[Cogito.MassTransit.DependencyInjection](https://www.nuget.org/packages/Cogito.MassTransit.DependencyInjection)** — Registers consumers, sagas and activities from attributes on the types themselves, onto any bus.
 
-**[Cogito.MassTransit.EntityFrameworkCore](https://www.nuget.org/packages/Cogito.MassTransit.EntityFrameworkCore)** — Keeps saga instances in Entity Framework Core, registered from an attribute on the saga.
+**[Cogito.MassTransit.EntityFrameworkCore.DependencyInjection](https://www.nuget.org/packages/Cogito.MassTransit.EntityFrameworkCore.DependencyInjection)** — Keeps saga instances in Entity Framework Core, registered from an attribute on the saga.
 
 Each package carries its own README with the detail; the links above go to nuget.org.
 

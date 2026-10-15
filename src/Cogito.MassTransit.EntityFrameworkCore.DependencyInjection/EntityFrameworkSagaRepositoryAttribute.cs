@@ -11,7 +11,7 @@ using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Cogito.MassTransit.EntityFrameworkCore
+namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection
 {
 
     /// <summary>
