@@ -19,6 +19,10 @@ using Xunit;
 namespace Cogito.MassTransit.EntityFrameworkCore.Tests
 {
 
+    /// <summary>
+    /// Registers this assembly by scanning it, as an application would. Every type here that carries a registration
+    /// attribute must register cleanly; cases that should fail apply the attribute to an unattributed type instead.
+    /// </summary>
     public class EntityFrameworkSagaRepositoryAttributeTests
     {
 
@@ -90,8 +94,10 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
 
         }
 
-        [EntityFrameworkSagaRepository(typeof(string))]
-        public class NotADbContextStateMachine : MassTransitStateMachine<OptimisticSaga>
+        /// <summary>
+        /// Unattributed, so attribute misuse can be tried on it without breaking the scan.
+        /// </summary>
+        public class UnattributedStateMachine : MassTransitStateMachine<OptimisticSaga>
         {
 
         }
@@ -113,13 +119,13 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
 
         }
 
-        static async Task<ServiceProvider> StartAsync(SqliteConnection connection, params Type[] types)
+        static async Task<ServiceProvider> StartAsync(SqliteConnection connection)
         {
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddDbContext<SagaDbContext>(o => o.UseSqlite(connection));
             services.AddMassTransit(x => x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context)));
-            services.AddFromAttributes(types);
+            services.AddFromAttributes(typeof(EntityFrameworkSagaRepositoryAttributeTests).Assembly);
 
             var provider = services.BuildServiceProvider(true);
 
@@ -164,7 +170,7 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
             using var connection = new SqliteConnection("DataSource=:memory:");
             await connection.OpenAsync();
 
-            var provider = await StartAsync(connection, typeof(OptimisticStateMachine));
+            var provider = await StartAsync(connection);
 
             try
             {
@@ -188,7 +194,7 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
             using var connection = new SqliteConnection("DataSource=:memory:");
             await connection.OpenAsync();
 
-            var provider = await StartAsync(connection, typeof(PessimisticStateMachine));
+            var provider = await StartAsync(connection);
 
             try
             {
@@ -209,8 +215,8 @@ namespace Cogito.MassTransit.EntityFrameworkCore.Tests
         [Fact]
         public void Db_context_type_must_be_a_db_context()
         {
-            var services = new ServiceCollection();
-            Assert.Throws<InvalidOperationException>(() => services.AddFromAttributes(typeof(NotADbContextStateMachine)));
+            var attribute = new EntityFrameworkSagaRepositoryAttribute(typeof(string));
+            Assert.Throws<InvalidOperationException>(() => attribute.Add(new ServiceCollection(), typeof(UnattributedStateMachine)));
         }
 
     }

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using Cogito.DependencyInjection;
-using Cogito.MassTransit.DependencyInjection;
 
 using MassTransit;
 using MassTransit.Configuration;
@@ -16,10 +14,14 @@ using Microsoft.Extensions.Hosting;
 
 using Xunit;
 
-namespace Cogito.MassTransit.Tests
+namespace Cogito.MassTransit.DependencyInjection.Tests
 {
 
-    public class DependencyInjectionAttributeTests
+    /// <summary>
+    /// Registers this assembly by scanning it, as an application would. Every type here that carries a registration
+    /// attribute must register cleanly; cases that should fail apply the attribute to an unattributed type instead.
+    /// </summary>
+    public class AddFromAttributesTests
     {
 
         public interface IOtherBus : IBus
@@ -94,19 +96,28 @@ namespace Cogito.MassTransit.Tests
 
         }
 
-        [AddConsumer(ExcludeFromConfigureEndpoints = true)]
-        public class ExcludedConsumer : IConsumer<NamedPing>
+        public class ExcludedPing
         {
 
-            public Task Consume(ConsumeContext<NamedPing> context) => Task.CompletedTask;
+            public Guid Id { get; set; }
 
         }
 
-        [AddConsumer(ExcludeFromConfigureEndpoints = true, EndpointName = "di-excluded")]
-        public class ExcludedNamedConsumer : IConsumer<NamedPing>
+        [AddConsumer(ExcludeFromConfigureEndpoints = true)]
+        public class ExcludedConsumer : IConsumer<ExcludedPing>
         {
 
-            public Task Consume(ConsumeContext<NamedPing> context) => Task.CompletedTask;
+            public Task Consume(ConsumeContext<ExcludedPing> context) => Task.CompletedTask;
+
+        }
+
+        /// <summary>
+        /// Unattributed, so attribute misuse can be tried on it without breaking the scan.
+        /// </summary>
+        public class UnattributedConsumer : IConsumer<ExcludedPing>
+        {
+
+            public Task Consume(ConsumeContext<ExcludedPing> context) => Task.CompletedTask;
 
         }
 
@@ -160,7 +171,9 @@ namespace Cogito.MassTransit.Tests
 
         }
 
-        [AddSagaStateMachine]
+        /// <summary>
+        /// Unattributed, since without a repository attribute it fails startup unless it is added before the bus.
+        /// </summary>
         public class ProviderStateMachine : MassTransitStateMachine<ProviderSaga>
         {
 
@@ -273,11 +286,31 @@ namespace Cogito.MassTransit.Tests
 
         }
 
-        static async Task<ServiceProvider> StartAsync(Action<IServiceCollection> configure)
+        /// <summary>
+        /// Starts a host with both buses and this assembly scanned, before or after the buses are added, with
+        /// anything else registered before and after the buses.
+        /// </summary>
+        static async Task<ServiceProvider> StartAsync(bool scanBeforeBus = false, Action<IServiceCollection>? beforeBus = null, Action<IBusRegistrationConfigurator>? configureBus = null, Action<IServiceCollection>? afterBus = null)
         {
             var services = new ServiceCollection();
             services.AddLogging();
-            configure(services);
+
+            if (scanBeforeBus)
+                services.AddFromAttributes(typeof(AddFromAttributesTests).Assembly);
+
+            beforeBus?.Invoke(services);
+
+            services.AddMassTransit(x =>
+            {
+                configureBus?.Invoke(x);
+                x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+            });
+            services.AddMassTransit<IOtherBus>(x => x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context)));
+
+            if (scanBeforeBus == false)
+                services.AddFromAttributes(typeof(AddFromAttributesTests).Assembly);
+
+            afterBus?.Invoke(services);
 
             var provider = services.BuildServiceProvider(true);
 
@@ -303,15 +336,6 @@ namespace Cogito.MassTransit.Tests
             await provider.DisposeAsync();
         }
 
-        static void AddBus(IServiceCollection services, Action<IBusRegistrationConfigurator>? configure = null)
-        {
-            services.AddMassTransit(x =>
-            {
-                configure?.Invoke(x);
-                x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
-            });
-        }
-
         static async Task SendAsync(IBus bus, string queue, object message)
         {
             var endpoint = await bus.GetSendEndpoint(new Uri("queue:" + queue));
@@ -321,18 +345,9 @@ namespace Cogito.MassTransit.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task Consumer_receives_on_its_named_endpoint_whether_added_before_or_after_the_bus(bool before)
+        public async Task Consumer_receives_on_its_named_endpoint_whether_scanned_before_or_after_the_bus(bool scanBeforeBus)
         {
-            var provider = await StartAsync(services =>
-            {
-                if (before)
-                    services.AddFromAttributes(typeof(NamedConsumer));
-
-                AddBus(services);
-
-                if (before == false)
-                    services.AddFromAttributes(typeof(NamedConsumer));
-            });
+            var provider = await StartAsync(scanBeforeBus);
 
             try
             {
@@ -349,17 +364,13 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Consumer_is_registered_onto_the_selected_bus_only()
         {
-            var provider = await StartAsync(services =>
-            {
-                AddBus(services);
-                services.AddMassTransit<IOtherBus>(x => x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context)));
-                services.AddFromAttributes(typeof(OtherBusConsumer));
-            });
+            var provider = await StartAsync();
 
             try
             {
                 Assert.DoesNotContain(provider.GetServices<IConsumerRegistration>(), i => i.Type == typeof(OtherBusConsumer));
                 Assert.Contains(provider.GetServices<Bind<IOtherBus, IConsumerRegistration>>(), i => i.Value.Type == typeof(OtherBusConsumer));
+                Assert.DoesNotContain(provider.GetServices<Bind<IOtherBus, IConsumerRegistration>>(), i => i.Value.Type == typeof(NamedConsumer));
 
                 var id = Guid.NewGuid();
                 await SendAsync(provider.GetRequiredService<IOtherBus>(), "di-other", new OtherPing() { Id = id });
@@ -374,11 +385,7 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Consumer_uses_its_definition()
         {
-            var provider = await StartAsync(services =>
-            {
-                AddBus(services);
-                services.AddFromAttributes(typeof(DefinedConsumer));
-            });
+            var provider = await StartAsync();
 
             try
             {
@@ -393,20 +400,25 @@ namespace Cogito.MassTransit.Tests
         }
 
         [Fact]
-        public void Consumer_can_be_excluded_from_configure_endpoints()
+        public async Task Consumer_can_be_excluded_from_configure_endpoints()
         {
-            var services = new ServiceCollection();
-            services.AddFromAttributes(typeof(ExcludedConsumer));
+            var provider = await StartAsync();
 
-            using var provider = services.BuildServiceProvider();
-            Assert.False(provider.GetServices<IConsumerRegistration>().Single(i => i.Type == typeof(ExcludedConsumer)).IncludeInConfigureEndpoints);
+            try
+            {
+                Assert.False(provider.GetServices<IConsumerRegistration>().Single(i => i.Type == typeof(ExcludedConsumer)).IncludeInConfigureEndpoints);
+            }
+            finally
+            {
+                await StopAsync(provider);
+            }
         }
 
         [Fact]
         public void Excluded_consumer_cannot_configure_its_endpoint()
         {
-            var services = new ServiceCollection();
-            Assert.Throws<InvalidOperationException>(() => services.AddFromAttributes(typeof(ExcludedNamedConsumer)));
+            var attribute = new AddConsumerAttribute() { ExcludeFromConfigureEndpoints = true, EndpointName = "di-excluded" };
+            Assert.Throws<InvalidOperationException>(() => attribute.Add(new ServiceCollection(), typeof(UnattributedConsumer)));
         }
 
         [Theory]
@@ -420,11 +432,7 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Saga_state_machine_with_a_repository_attribute_receives_on_its_named_endpoint()
         {
-            var provider = await StartAsync(services =>
-            {
-                AddBus(services);
-                services.AddFromAttributes(typeof(RepositoryStateMachine));
-            });
+            var provider = await StartAsync();
 
             try
             {
@@ -441,11 +449,7 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Saga_with_a_repository_attribute_receives_on_its_named_endpoint()
         {
-            var provider = await StartAsync(services =>
-            {
-                AddBus(services);
-                services.AddFromAttributes(typeof(ClassSaga));
-            });
+            var provider = await StartAsync();
 
             try
             {
@@ -462,11 +466,10 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Saga_without_a_repository_fails_startup()
         {
-            var e = await Assert.ThrowsAsync<InvalidOperationException>(() => StartAsync(services =>
-            {
-                AddBus(services, x => x.SetInMemorySagaRepositoryProvider());
-                services.AddFromAttributes(typeof(ProviderStateMachine));
-            }));
+            // the provider's repositories are assigned as AddMassTransit completes, so a saga added after it gets none
+            var e = await Assert.ThrowsAsync<InvalidOperationException>(() => StartAsync(
+                configureBus: x => x.SetInMemorySagaRepositoryProvider(),
+                afterBus: services => new AddSagaStateMachineAttribute().Add(services, typeof(ProviderStateMachine))));
 
             Assert.Contains(typeof(ProviderSaga).FullName!, e.Message);
         }
@@ -474,11 +477,10 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Saga_without_a_repository_attribute_uses_the_bus_provider_when_added_before_the_bus()
         {
-            var provider = await StartAsync(services =>
-            {
-                services.AddFromAttributes(typeof(ProviderStateMachine));
-                AddBus(services, x => x.SetInMemorySagaRepositoryProvider());
-            });
+            var provider = await StartAsync(
+                scanBeforeBus: true,
+                beforeBus: services => new AddSagaStateMachineAttribute().Add(services, typeof(ProviderStateMachine)),
+                configureBus: x => x.SetInMemorySagaRepositoryProvider());
 
             try
             {
@@ -495,11 +497,7 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Execute_activity_executes_on_its_named_endpoint()
         {
-            var provider = await StartAsync(services =>
-            {
-                AddBus(services);
-                services.AddFromAttributes(typeof(ExecuteOnlyActivity));
-            });
+            var provider = await StartAsync();
 
             try
             {
@@ -518,11 +516,7 @@ namespace Cogito.MassTransit.Tests
         [Fact]
         public async Task Activity_executes_and_compensates_on_its_named_endpoints()
         {
-            var provider = await StartAsync(services =>
-            {
-                AddBus(services);
-                services.AddFromAttributes(typeof(CompensatingActivity));
-            });
+            var provider = await StartAsync();
 
             try
             {

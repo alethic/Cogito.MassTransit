@@ -17,6 +17,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Cogito.MassTransit.DependencyInjection/Cogito.MassTransit.DependencyInjection.csproj" />
+    <Project Path="src/Cogito.MassTransit.DependencyInjection.Tests/Cogito.MassTransit.DependencyInjection.Tests.csproj" />
     <Project Path="src/Cogito.MassTransit.EntityFrameworkCore/Cogito.MassTransit.EntityFrameworkCore.csproj" />
     <Project Path="src/Cogito.MassTransit.EntityFrameworkCore.Tests/Cogito.MassTransit.EntityFrameworkCore.Tests.csproj" />
     <Project Path="src/Cogito.MassTransit.Extensions/Cogito.MassTransit.Extensions.csproj" />
