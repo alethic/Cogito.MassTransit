@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Linq;
 
 using Cogito.MassTransit.DependencyInjection;
 
@@ -59,20 +60,19 @@ namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection
         }
 
         /// <summary>
-        /// The database, whose statement locks instances when they are loaded. Unless set, it is SQL Server.
+        /// The <see cref="ILockStatementProvider"/> whose statement locks instances when they are loaded, such as
+        /// <see cref="PostgresLockStatementProvider"/>. It must have a constructor whose parameters are all optional.
+        /// Unless set, MassTransit's default is used, which is for SQL Server.
         /// </summary>
-        public SagaRepositoryDatabase Database { get; set; } = SagaRepositoryDatabase.SqlServer;
-
-        /// <summary>
-        /// The schema the saga's table is in, when it is not the <see cref="DbContext"/>'s default.
-        /// </summary>
-        public string? Schema { get; set; }
+        public Type? LockStatementProvider { get; set; }
 
         /// <inheritdoc />
         protected override void AddSagaRepository(IServiceCollection services, Type sagaType)
         {
             if (typeof(DbContext).IsAssignableFrom(DbContextType) == false)
                 throw new InvalidOperationException($"{DbContextType} is not a DbContext.");
+            if (LockStatementProvider != null && (LockStatementProvider.IsAbstract || typeof(ILockStatementProvider).IsAssignableFrom(LockStatementProvider) == false))
+                throw new InvalidOperationException($"{LockStatementProvider} is not an ILockStatementProvider that can be created.");
 
             ((IRegister)Activator.CreateInstance(typeof(Register<,>).MakeGenericType(sagaType, DbContextType))!).AddSagaRepository(services, this);
         }
@@ -95,22 +95,31 @@ namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection
                 configurator.ExistingDbContext<TDbContext>();
                 configurator.ConcurrencyMode = attribute.ConcurrencyMode;
                 configurator.IsolationLevel = attribute.IsolationLevel;
-                configurator.LockStatementProvider = CreateLockStatementProvider(attribute.Database, attribute.Schema);
+                if (attribute.LockStatementProvider != null)
+                    configurator.LockStatementProvider = CreateLockStatementProvider(attribute.LockStatementProvider);
                 configurator.Validate().ThrowIfContainsFailure("The Entity Framework saga repository configuration is invalid:");
                 configurator.Register(new SagaRepositoryRegistrationConfigurator<TSaga>(services));
             }
 
         }
 
-        static ILockStatementProvider CreateLockStatementProvider(SagaRepositoryDatabase database, string? schema) => database switch
+        /// <summary>
+        /// Creates the lock statement provider with a constructor whose parameters are all optional, taking their
+        /// defaults, as MassTransit's providers have.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        static ILockStatementProvider CreateLockStatementProvider(Type type)
         {
-            SagaRepositoryDatabase.SqlServer => schema != null ? new SqlServerLockStatementProvider(schema) : new SqlServerLockStatementProvider(),
-            SagaRepositoryDatabase.Postgres => schema != null ? new PostgresLockStatementProvider(schema) : new PostgresLockStatementProvider(),
-            SagaRepositoryDatabase.MySql => new MySqlLockStatementProvider(),
-            SagaRepositoryDatabase.Sqlite => schema != null ? new SqliteLockStatementProvider(schema) : new SqliteLockStatementProvider(),
-            SagaRepositoryDatabase.Oracle => schema != null ? new OracleLockStatementProvider(schema) : new OracleLockStatementProvider(),
-            _ => throw new InvalidOperationException($"Unknown saga repository database {database}."),
-        };
+            var constructor = type.GetConstructors()
+                .Where(i => i.GetParameters().All(j => j.IsOptional))
+                .OrderBy(i => i.GetParameters().Length)
+                .FirstOrDefault();
+            if (constructor == null)
+                throw new InvalidOperationException($"{type} has no constructor whose parameters are all optional.");
+
+            return (ILockStatementProvider)constructor.Invoke(constructor.GetParameters().Select(i => i.DefaultValue).ToArray());
+        }
 
     }
 

@@ -77,7 +77,7 @@ namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests
         }
 
         [AddSagaStateMachine(EndpointName = "ef-pessimistic")]
-        [EntityFrameworkSagaRepository(typeof(SagaDbContext), Database = SagaRepositoryDatabase.Sqlite)]
+        [EntityFrameworkSagaRepository(typeof(SagaDbContext), LockStatementProvider = typeof(SqliteLockStatementProvider))]
         public class PessimisticStateMachine : MassTransitStateMachine<PessimisticSaga>
         {
 
@@ -96,6 +96,12 @@ namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests
 
         [EntityFrameworkSagaRepository(typeof(string))]
         public class NotADbContextStateMachine : MassTransitStateMachine<OptimisticSaga>
+        {
+
+        }
+
+        [EntityFrameworkSagaRepository(typeof(SagaDbContext), LockStatementProvider = typeof(string))]
+        public class NotALockStatementProviderStateMachine : MassTransitStateMachine<OptimisticSaga>
         {
 
         }
@@ -231,6 +237,13 @@ namespace Cogito.MassTransit.EntityFrameworkCore.DependencyInjection.Tests
         {
             var services = new ServiceCollection();
             Assert.Throws<InvalidOperationException>(() => services.AddFromAttributes(typeof(NotADbContextStateMachine)));
+        }
+
+        [Fact]
+        public void Lock_statement_provider_must_be_a_lock_statement_provider()
+        {
+            var services = new ServiceCollection();
+            Assert.Throws<InvalidOperationException>(() => services.AddFromAttributes(typeof(NotALockStatementProviderStateMachine)));
         }
 
     }

@@ -28,9 +28,15 @@ The attribute takes:
 - `ConcurrencyMode`: `Pessimistic`, the default, locks an instance when it is loaded; `Optimistic` checks it for
   changes when it is saved.
 - `IsolationLevel` of the transaction: unless set, `Serializable` for pessimistic and `ReadCommitted` for optimistic.
-- `Database`, whose statement locks pessimistic instances: `SqlServer`, the default, `Postgres`, `MySql`, `Sqlite`
-  or `Oracle`.
-- `Schema` the saga's table is in, when it is not the `DbContext`'s default.
+- `LockStatementProvider`, MassTransit's `ILockStatementProvider` whose statement locks pessimistic instances when
+  they are loaded. Unless set, it is MassTransit's default, for SQL Server. On another database, name its provider:
+
+  ```csharp
+  [EntityFrameworkSagaRepository(typeof(OrderDbContext), LockStatementProvider = typeof(PostgresLockStatementProvider))]
+  ```
+
+  The provider is created with a constructor whose parameters are all optional, as MassTransit's providers have.
+  For a schema other than the `DbContext`'s default, derive a provider that passes it to the base constructor.
 
 The repository is registered directly, so it does not depend on whether the attributes are added before or after
 `AddMassTransit`.
